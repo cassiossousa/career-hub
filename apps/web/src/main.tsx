@@ -29,7 +29,7 @@ function App({ initialLocale }: { initialLocale: Locale }) {
   return (
     <TranslationProvider locale={locale} onLocaleChange={changeLocale}>
       <Navbar />
-      <main>
+      <main className="pt-20">
         <Routes>
           <Route path={routePaths.home} element={<Home />} />
           <Route path={routePaths.projects} element={<Projects />} />
@@ -42,10 +42,7 @@ function App({ initialLocale }: { initialLocale: Locale }) {
             element={<WorkExperience />}
           />
           <Route path={routePaths.resume} element={<Resume />} />
-          <Route
-            path="*"
-            element={<Navigate to={routePaths.home} replace />}
-          />
+          <Route path="*" element={<Navigate to={routePaths.home} replace />} />
         </Routes>
       </main>
       <Footer />

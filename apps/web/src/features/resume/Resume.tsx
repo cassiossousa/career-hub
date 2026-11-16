@@ -3,16 +3,17 @@ import { Button, Container, Stack, Typography } from '@mui/material';
 import { content } from 'virtual:portfolio-content';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
-import { mapContentToWorkRoles } from '../../services/work-experience/workModel';
+import {
+  mapContentToWorkRoles,
+  sortRolesByStart,
+} from '../../services/work-experience/workModel';
 import ResumeDocument from './ResumeDocument';
 
 export default function Resume() {
   const { locale, messages: t } = useTranslation();
   const { roles, projects } = useMemo(() => {
-    const roles = mapContentToWorkRoles(
-      content[locale].workExperience,
-      t,
-      locale,
+    const roles = sortRolesByStart(
+      mapContentToWorkRoles(content[locale].workExperience, t, locale),
     );
 
     const projects = getProjects(locale).filter((project) =>

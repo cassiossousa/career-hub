@@ -38,7 +38,7 @@ function AccordionItem({ role }: { role: WorkRole }) {
     <Accordion disableGutters elevation={0}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack spacing={0.5}>
-          <Typography variant="h3" component="h2">
+          <Typography variant="h3" component="h2" color="primary.dark">
             {role.company}
           </Typography>
           <Typography variant="h6" color="primary.main">

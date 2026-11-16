@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Box, Button, Container, Typography } from '@mui/material';
 import { content } from 'virtual:portfolio-content';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
@@ -29,19 +30,39 @@ export default function Resume() {
   }, [locale, t]);
 
   return (
-    <section className="container-main print:px-0 print:py-0">
-      <div className="mb-6 flex items-center justify-between gap-4 print:hidden">
-        <h1 className="text-3xl font-bold">{t.resume.title}</h1>
-        <button
+    <Container
+      component="section"
+      maxWidth="md"
+      sx={{ py: 6, '@media print': { py: 0, px: 0 } }}
+    >
+      <Box
+        sx={{
+          mb: 3,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          '@media print': { display: 'none' },
+        }}
+      >
+        <Typography variant="h1" component="h1">
+          {t.resume.title}
+        </Typography>
+        <Button
           type="button"
-          className="button-primary"
+          variant="contained"
           onClick={() => window.print()}
         >
           {t.resume.printAction}
-        </button>
-      </div>
-      <p className="my-3 text-sm print:hidden">{t.resume.printInstructions}</p>
+        </Button>
+      </Box>
+      <Typography
+        variant="body2"
+        sx={{ my: 1.5, '@media print': { display: 'none' } }}
+      >
+        {t.resume.printInstructions}
+      </Typography>
       <ResumeDocument data={data} projects={projects} messages={t} />
-    </section>
+    </Container>
   );
 }

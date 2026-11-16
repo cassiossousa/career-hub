@@ -1,6 +1,17 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-
+import {
+  AppBar,
+  Box,
+  Container,
+  IconButton,
+  Link as MuiLink,
+  Paper,
+  Stack,
+  Toolbar,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Link as RouterLink } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/provider';
 import { navigationItems, routePaths } from '../app/routePaths';
@@ -14,56 +25,96 @@ export default function Navbar() {
   }));
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 h-20 border-b border-border bg-background print:hidden">
-      <div className="relative mx-auto flex h-full max-w-5xl items-center justify-between px-6">
-        {/* Desktop nav */}
-        <div className="hidden md:flex gap-6">
-          {links.map((link) => (
-            <Link key={link.to} to={link.to} className="hover:underline">
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
-        <Link
-          to={routePaths.home}
-          className="mr-auto max-w-[45vw] truncate font-semibold md:hidden"
+    <AppBar
+      component="nav"
+      position="fixed"
+      color="default"
+      elevation={0}
+      sx={{
+        height: 80,
+        borderBottom: 1,
+        borderColor: 'divider',
+        '@media print': { display: 'none' },
+      }}
+    >
+      <Toolbar sx={{ minHeight: '80px !important', px: 0 }}>
+        <Container
+          maxWidth="md"
+          sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 2 }}
         >
-          {t.home.name}
-        </Link>
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+          >
+            {links.map((link) => (
+              <MuiLink
+                key={link.to}
+                component={RouterLink}
+                to={link.to}
+                color="text.secondary"
+                underline="hover"
+              >
+                {link.label}
+              </MuiLink>
+            ))}
+          </Stack>
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden px-3 py-2 border rounded"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={t.navigation.toggleMenu}
+          <MuiLink
+            component={RouterLink}
+            to={routePaths.home}
+            color="text.primary"
+            underline="none"
+            noWrap
+            sx={{
+              display: { xs: 'block', md: 'none' },
+              mr: 'auto',
+              maxWidth: '45vw',
+              fontWeight: 600,
+            }}
+          >
+            {t.home.name}
+          </MuiLink>
+
+          <IconButton
+            onClick={() => setMobileOpen((open) => !open)}
+            aria-label={t.navigation.toggleMenu}
+            aria-expanded={mobileOpen}
+            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+          >
+            {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+          </IconButton>
+
+          <Box sx={{ ml: 'auto' }}>
+            <LanguageSwitcher />
+          </Box>
+        </Container>
+      </Toolbar>
+
+      {mobileOpen && (
+        <Paper
+          square
+          elevation={4}
+          sx={{ display: { xs: 'block', md: 'none' }, borderRadius: 0 }}
         >
-          {mobileOpen ? '✕' : '☰'}
-        </button>
-
-        {/* Language switcher */}
-        <div className="flex gap-2 ml-4">
-          <LanguageSwitcher />
-        </div>
-
-        {/* Mobile nav */}
-        {mobileOpen && (
-          <div className="absolute top-full left-0 w-full bg-background dark:bg-neutral-900 shadow-md md:hidden z-10 transition-all duration-300">
-            <div className="flex flex-col p-4 space-y-2">
+          <Container maxWidth="md" sx={{ py: 2 }}>
+            <Stack spacing={2}>
               {links.map((link) => (
-                <Link
+                <MuiLink
                   key={link.to}
+                  component={RouterLink}
                   to={link.to}
-                  className="hover:underline"
+                  color="text.primary"
+                  underline="hover"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
-                </Link>
+                </MuiLink>
               ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
+            </Stack>
+          </Container>
+        </Paper>
+      )}
+    </AppBar>
   );
 }

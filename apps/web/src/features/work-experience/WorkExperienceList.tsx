@@ -1,4 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Container,
+  Typography,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import type { Translation } from '../../types/i18n';
 import type { WorkRole } from '../../services/work-experience/workModel';
 
@@ -10,63 +18,53 @@ export function WorkExperienceList({
   t: Translation;
 }) {
   return (
-    <section className="container-main">
-      <h1 className="text-3xl font-bold mb-10">{t.workExperience.title}</h1>
-      <div className="flex flex-col gap-4">
+    <Container component="section" maxWidth="md" sx={{ py: 6 }}>
+      <Typography variant="h1" component="h1" sx={{ mb: 5 }}>
+        {t.workExperience.title}
+      </Typography>
+      <Box>
         {roles.map((role, index) => (
           <AccordionItem key={`${role.company}-${index}`} role={role} />
         ))}
-      </div>
-    </section>
+      </Box>
+    </Container>
   );
 }
 
 function AccordionItem({ role }: { role: WorkRole }) {
-  const [open, setOpen] = useState(false);
-  const [height, setHeight] = useState(0);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setHeight(open ? (contentRef.current?.scrollHeight ?? 0) : 0);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [open]);
-
   return (
-    <article className="border-b pb-4">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        className="flex w-full justify-between items-start text-left"
-      >
-        <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">{role.company}</h2>
-          <h3 className="text-lg font-semibold text-primary">{role.title}</h3>
-          <p className="text-sm opacity-90">
+    <Accordion
+      disableGutters
+      elevation={0}
+      sx={{
+        borderBottom: 1,
+        borderColor: 'divider',
+        '&::before': { display: 'none' },
+      }}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Box>
+          <Typography variant="h3" component="h2">
+            {role.company}
+          </Typography>
+          <Typography variant="h6" color="primary.main">
+            {role.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             {role.location && `${role.location} | `}
             {role.period}
-          </p>
-        </div>
-        <span className="text-2xl" aria-hidden="true">
-          {open ? '▲' : '▼'}
-        </span>
-      </button>
-      <div
-        ref={contentRef}
-        style={{
-          maxHeight: `${height}px`,
-          overflow: 'hidden',
-          transition: 'max-height 0.3s ease',
-        }}
-      >
-        <ul className="mt-4 list-disc pl-5 space-y-2">
+          </Typography>
+        </Box>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Box component="ul" sx={{ m: 0, pl: 2.5, listStyleType: 'disc' }}>
           {role.bullets.map((bullet, index) => (
-            <li key={`${index}-${bullet}`}>{bullet}</li>
+            <Box component="li" key={`${index}-${bullet}`} sx={{ mb: 1 }}>
+              {bullet}
+            </Box>
           ))}
-        </ul>
-      </div>
-    </article>
+        </Box>
+      </AccordionDetails>
+    </Accordion>
   );
 }

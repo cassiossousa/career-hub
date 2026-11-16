@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Box, Link, Typography } from '@mui/material';
 import { skills } from '../../services/skills';
 import type { WorkRole } from '../../services/work-experience/workModel';
 import type { Translation } from '../../types/i18n';
@@ -27,10 +28,39 @@ function ResumeSection({
   children: ReactNode;
 }) {
   return (
-    <section className="resume-section">
-      <h2>{title}</h2>
+    <Box component="section">
+      <Typography
+        component="h2"
+        variant="h6"
+        sx={{
+          mt: 3,
+          mb: 1,
+          borderBottom: '1px solid #ddd',
+          pb: 0.25,
+          fontSize: 17,
+        }}
+      >
+        {title}
+      </Typography>
       {children}
-    </section>
+    </Box>
+  );
+}
+
+function ResumeList({ children }: { children: ReactNode }) {
+  return (
+    <Box
+      component="ul"
+      sx={{
+        mt: 0.75,
+        mb: 0,
+        pl: '22px',
+        listStyleType: 'disc',
+        '& li': { mb: '2px', fontSize: 12, lineHeight: 1.5 },
+      }}
+    >
+      {children}
+    </Box>
   );
 }
 
@@ -42,21 +72,32 @@ function ExperienceItem({
   bullets,
 }: WorkRole) {
   return (
-    <article className="resume-role">
-      <header className="resume-role-header">
-        <h3 className="resume-company">{company}</h3>
-        <div className="resume-title">{title}</div>
-        <div className="resume-meta">
+    <Box
+      component="article"
+      sx={{ mb: 1.75, breakInside: 'avoid', pageBreakInside: 'avoid' }}
+    >
+      <Box component="header" sx={{ mb: 0.5 }}>
+        <Typography
+          component="h3"
+          variant="subtitle1"
+          sx={{ m: 0, fontSize: 14, fontWeight: 600 }}
+        >
+          {company}
+        </Typography>
+        <Typography sx={{ fontSize: 13, fontWeight: 600 }}>{title}</Typography>
+        <Typography sx={{ color: '#666', fontSize: 12 }}>
           {location && `${location} | `}
           {period}
-        </div>
-      </header>
-      <ul>
+        </Typography>
+      </Box>
+      <ResumeList>
         {bullets.map((bullet, index) => (
-          <li key={`${index}-${bullet}`}>{bullet}</li>
+          <Box component="li" key={`${index}-${bullet}`}>
+            {bullet}
+          </Box>
         ))}
-      </ul>
-    </article>
+      </ResumeList>
+    </Box>
   );
 }
 
@@ -68,42 +109,62 @@ function ProjectItem({
   messages: Translation;
 }) {
   return (
-    <article className="resume-role">
-      <header className="resume-role-header">
-        <div className="resume-title">
+    <Box
+      component="article"
+      sx={{ mb: 1.75, breakInside: 'avoid', pageBreakInside: 'avoid' }}
+    >
+      <Box component="header" sx={{ mb: 0.5 }}>
+        <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
           {project.title}
           {project.technologies?.length ? (
-            <span className="resume-tech">
+            <Box
+              component="span"
+              sx={{ ml: 0.5, color: '#555', fontSize: 11, fontWeight: 400 }}
+            >
               ({project.technologies.join(', ')})
-            </span>
+            </Box>
           ) : null}
-        </div>
+        </Typography>
         {(project.repo || project.demo) && (
-          <div className="resume-links">
+          <Box sx={{ mt: 0.25, fontSize: 11, fontWeight: 600 }}>
             {project.repo && (
-              <a href={project.repo} target="_blank" rel="noreferrer">
+              <Link
+                href={project.repo}
+                target="_blank"
+                rel="noreferrer"
+                color="inherit"
+              >
                 {messages.links.github}
-              </a>
+              </Link>
             )}
             {project.repo && project.demo && (
-              <span className="resume-separator">•</span>
+              <Box component="span" sx={{ mx: 0.75, color: '#888' }}>
+                •
+              </Box>
             )}
             {project.demo && (
-              <a href={project.demo} target="_blank" rel="noreferrer">
+              <Link
+                href={project.demo}
+                target="_blank"
+                rel="noreferrer"
+                color="inherit"
+              >
                 {messages.links.demo}
-              </a>
+              </Link>
             )}
-          </div>
+          </Box>
         )}
-      </header>
+      </Box>
       {project.summary && (
-        <ul>
+        <ResumeList>
           {project.summary.slice(0, 3).map((summary) => (
-            <li key={summary}>{summary}</li>
+            <Box component="li" key={summary}>
+              {summary}
+            </Box>
           ))}
-        </ul>
+        </ResumeList>
       )}
-    </article>
+    </Box>
   );
 }
 
@@ -118,31 +179,72 @@ export default function ResumeDocument({
   ][];
 
   return (
-    <article className="resume-document">
-      <header className="resume-header">
-        <h1>{data.name}</h1>
-        <p className="resume-headline">{data.title}</p>
-        <div className="resume-contact">
-          <a
+    <Box
+      component="article"
+      sx={{
+        boxSizing: 'border-box',
+        mx: 'auto',
+        maxWidth: 768,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: '#fff',
+        p: 4,
+        color: '#0f172a',
+        boxShadow: 1,
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: 13,
+        lineHeight: 1.5,
+        '@media print': {
+          width: '100%',
+          maxWidth: 'none',
+          m: 0,
+          border: 0,
+          p: '14mm',
+          boxShadow: 'none',
+          WebkitBoxDecorationBreak: 'clone',
+          boxDecorationBreak: 'clone',
+        },
+      }}
+    >
+      <Box component="header" sx={{ mb: 2.5, textAlign: 'center' }}>
+        <Typography
+          component="h1"
+          variant="h4"
+          sx={{ mb: 0.5, fontSize: 28, letterSpacing: '-0.2px' }}
+        >
+          {data.name}
+        </Typography>
+        <Typography
+          component="p"
+          sx={{ mb: 0.75, color: '#333', fontSize: 14, fontWeight: 500 }}
+        >
+          {data.title}
+        </Typography>
+        <Box sx={{ fontSize: 12 }}>
+          <Link
             href={`https://github.com/${data.username}`}
             target="_blank"
             rel="noreferrer"
+            color="inherit"
           >
             github.com/{data.username}
-          </a>
-          <span className="resume-separator">•</span>
-          <a
+          </Link>
+          <Box component="span" sx={{ mx: 0.75, color: '#888' }}>
+            •
+          </Box>
+          <Link
             href={`https://linkedin.com/in/${data.username}`}
             target="_blank"
             rel="noreferrer"
+            color="inherit"
           >
             linkedin.com/in/{data.username}
-          </a>
-        </div>
-      </header>
+          </Link>
+        </Box>
+      </Box>
 
       <ResumeSection title={messages.resume.summaryTitle}>
-        <p>{data.summary}</p>
+        <Typography sx={{ fontSize: 'inherit' }}>{data.summary}</Typography>
       </ResumeSection>
 
       <ResumeSection title={messages.resume.experienceTitle}>
@@ -167,22 +269,25 @@ export default function ResumeDocument({
       )}
 
       <ResumeSection title={messages.skills.title}>
-        <ul>
+        <ResumeList>
           {skillEntries.map(([key, items]) => (
-            <li key={key}>
-              <strong>{messages.skills[key]}:</strong> {items.join(', ')}
-            </li>
+            <Box component="li" key={key}>
+              <Box component="strong">{messages.skills[key]}:</Box>{' '}
+              {items.join(', ')}
+            </Box>
           ))}
-        </ul>
+        </ResumeList>
       </ResumeSection>
 
       <ResumeSection title={messages.resume.languagesTitle}>
-        <ul>
+        <ResumeList>
           {data.languages.map((language) => (
-            <li key={language}>{language}</li>
+            <Box component="li" key={language}>
+              {language}
+            </Box>
           ))}
-        </ul>
+        </ResumeList>
       </ResumeSection>
-    </article>
+    </Box>
   );
 }

@@ -1,4 +1,5 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Box, Chip, Container, Link, Stack, Typography } from '@mui/material';
 import { useTranslation } from '../../i18n/provider';
 import { getProject } from '../../services/projects/getProjects';
 import { routePaths } from '../../app/routePaths';
@@ -7,14 +8,18 @@ function Section({ title, items }: { title: string; items?: string[] }) {
   if (!items?.length) return null;
 
   return (
-    <section className="mt-10">
-      <h2 className="text-xl font-semibold mb-3">{title}</h2>
-      <ul className="list-disc list-inside space-y-1">
+    <Box component="section" sx={{ mt: 5 }}>
+      <Typography variant="h3" component="h2" sx={{ mb: 1.5 }}>
+        {title}
+      </Typography>
+      <Box component="ul" sx={{ pl: 2.5, listStyleType: 'disc' }}>
         {items.map((item) => (
-          <li key={item}>{item}</li>
+          <Box component="li" key={item} sx={{ mb: 0.5 }}>
+            {item}
+          </Box>
         ))}
-      </ul>
-    </section>
+      </Box>
+    </Box>
   );
 }
 
@@ -25,65 +30,72 @@ export default function ProjectDetails() {
 
   if (!project) {
     return (
-      <section className="container-main">
-        <h1>{t.projects.notFound}</h1>
-        <Link to={routePaths.projects} className="underline">
+      <Container component="section" maxWidth="md" sx={{ py: 6 }}>
+        <Typography variant="h1" component="h1">
+          {t.projects.notFound}
+        </Typography>
+        <Link
+          component={RouterLink}
+          to={routePaths.projects}
+          underline="always"
+        >
           {t.projects.backToProjects}
         </Link>
-      </section>
+      </Container>
     );
   }
 
   return (
-    <article className="container-main max-w-3xl">
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold">{project.title}</h1>
+    <Container component="article" maxWidth="md" sx={{ py: 6 }}>
+      <Box component="header" sx={{ mb: 5 }}>
+        <Typography variant="h1" component="h1">
+          {project.title}
+        </Typography>
         {project.description && (
-          <p className="mt-3 text-lg">{project.description}</p>
+          <Typography variant="h6" sx={{ mt: 1.5 }}>
+            {project.description}
+          </Typography>
         )}
         {project.summary && (
-          <ul className="mt-4 list-disc list-inside space-y-1">
+          <Box component="ul" sx={{ mt: 2, pl: 2.5, listStyleType: 'disc' }}>
             {project.summary.map((bullet) => (
-              <li key={bullet}>{bullet}</li>
+              <Box component="li" key={bullet} sx={{ mb: 0.5 }}>
+                {bullet}
+              </Box>
             ))}
-          </ul>
+          </Box>
         )}
         {project.technologies && (
-          <div className="flex flex-wrap gap-2 mt-4">
+          <Stack direction="row" sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}>
             {project.technologies.map((tech) => (
-              <span
-                key={tech}
-                className="text-xs px-2 py-1 bg-neutral-200 dark:bg-neutral-700 rounded"
-              >
-                {tech}
-              </span>
+              <Chip key={tech} label={tech} size="small" />
             ))}
-          </div>
+          </Stack>
         )}
-        <div className="mt-4 flex gap-6 text-sm">
+        <Stack direction="row" spacing={3} sx={{ mt: 2 }}>
           {project.repo && (
-            <a
+            <Link
               href={project.repo}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline"
+              variant="body2"
             >
               {t.links.github}
-            </a>
+            </Link>
           )}
           {project.demo && (
-            <a
+            <Link
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline"
+              variant="body2"
             >
               {t.links.liveDemo}
-            </a>
+            </Link>
           )}
-        </div>
-      </header>
+        </Stack>
+      </Box>
       <Section title={t.projects.highlights} items={project.highlights} />
-    </article>
+    </Container>
   );
 }

@@ -1,3 +1,4 @@
+import { Box, Container, Link, Stack, Typography } from '@mui/material';
 import { useTranslation } from '../i18n/provider';
 
 export default function Footer() {
@@ -5,43 +6,64 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 print:hidden">
-      <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between gap-6">
-        <div>
-          <p className="font-semibold">{t.home.name}</p>
-          <p className="text-sm text-gray-500 mt-1">{t.home.title}</p>
-        </div>
+    <Box
+      component="footer"
+      sx={{
+        mt: 8,
+        borderTop: 1,
+        borderColor: 'divider',
+        '@media print': { display: 'none' },
+      }}
+    >
+      <Container maxWidth="lg" sx={{ py: 5 }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={3}
+          sx={{ justifyContent: 'space-between' }}
+        >
+          <Box>
+            <Typography sx={{ fontWeight: 600 }}>{t.home.name}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {t.home.title}
+            </Typography>
+          </Box>
 
-        <nav aria-label={t.navigation.footerLabel}>
-          <ul className="flex gap-6 text-sm">
-            <li>
-              <a
-                href={`https://github.com/${t.home.username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                {t.links.github}
-              </a>
-            </li>
+          <Box component="nav" aria-label={t.navigation.footerLabel}>
+            <Stack
+              component="ul"
+              direction="row"
+              spacing={3}
+              sx={{ m: 0, p: 0, listStyle: 'none' }}
+            >
+              <Box component="li">
+                <Link
+                  href={`https://github.com/${t.home.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="body2"
+                >
+                  {t.links.github}
+                </Link>
+              </Box>
 
-            <li>
-              <a
-                href={`https://linkedin.com/in/${t.home.username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                {t.links.linkedin}
-              </a>
-            </li>
-          </ul>
-        </nav>
+              <Box component="li">
+                <Link
+                  href={`https://linkedin.com/in/${t.home.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="body2"
+                >
+                  {t.links.linkedin}
+                </Link>
+              </Box>
+            </Stack>
+          </Box>
 
-        <p className="text-sm text-gray-500">
-          © {year} {t.home.name}
-        </p>
-      </div>
-    </footer>
+          <Typography variant="body2" color="text.secondary">
+            © {year} {t.home.name}
+          </Typography>
+        </Stack>
+      </Container>
+    </Box>
   );
 }

@@ -1,4 +1,13 @@
 import { generatePath, Link } from 'react-router-dom';
+import {
+  Box,
+  Card,
+  Chip,
+  Container,
+  Link as MuiLink,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
 import { routePaths } from '../../app/routePaths';
@@ -12,62 +21,96 @@ export default function Projects() {
   );
 
   return (
-    <section className="container-main">
-      <h1 className="text-3xl font-bold mb-8">{t.projects.title}</h1>
+    <Container component="section" maxWidth="md" sx={{ py: 6 }}>
+      <Typography variant="h1" component="h1" sx={{ mb: 4 }}>
+        {t.projects.title}
+      </Typography>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+          gap: 3,
+        }}
+      >
         {featuredProjects.map((project) => (
-          <article key={project.slug} className="card">
-            <Link
+          <Card
+            key={project.slug}
+            component="article"
+            variant="outlined"
+            sx={{ p: 3, boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
+          >
+            <MuiLink
+              component={Link}
               to={generatePath(routePaths.projectDetails, {
                 slug: project.slug,
               })}
-              className="text-xl font-semibold hover:underline"
+              variant="h3"
+              color="text.primary"
+              underline="hover"
             >
               {project.title}
-            </Link>
+            </MuiLink>
 
             {project.summary && (
-              <ul className="mt-3 list-disc list-inside text-sm">
+              <Box
+                component="ul"
+                sx={{
+                  mt: 1.5,
+                  pl: 2.5,
+                  listStyleType: 'disc',
+                  '& li': { fontSize: '0.875rem' },
+                }}
+              >
                 {project.summary.slice(0, 3).map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
+                  <Box component="li" key={bullet}>
+                    {bullet}
+                  </Box>
                 ))}
-              </ul>
+              </Box>
             )}
 
             {project.technologies && project.technologies.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
+              <Stack direction="row" sx={{ mt: 1.5, flexWrap: 'wrap', gap: 1 }}>
                 {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-xs px-2 py-1 bg-neutral-200 dark:bg-neutral-700 rounded"
-                  >
-                    {tech}
-                  </span>
+                  <Chip key={tech} label={tech} size="small" />
                 ))}
-              </div>
+              </Stack>
             )}
 
-            <div className="mt-3 flex gap-4 text-sm">
+            <Stack direction="row" spacing={2} sx={{ mt: 1.5 }}>
               {project.stars && (
-                <span aria-label={`${project.stars} ${t.projects.stars}`}>
+                <Typography
+                  variant="body2"
+                  aria-label={`${project.stars} ${t.projects.stars}`}
+                >
                   ⭐ {project.stars}
-                </span>
+                </Typography>
               )}
               {project.repo && (
-                <a href={project.repo} target="_blank" rel="noreferrer">
+                <MuiLink
+                  href={project.repo}
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="body2"
+                >
                   {t.links.github}
-                </a>
+                </MuiLink>
               )}
               {project.demo && (
-                <a href={project.demo} target="_blank" rel="noreferrer">
+                <MuiLink
+                  href={project.demo}
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="body2"
+                >
                   {t.links.demo}
-                </a>
+                </MuiLink>
               )}
-            </div>
-          </article>
+            </Stack>
+          </Card>
         ))}
-      </div>
-    </section>
+      </Box>
+    </Container>
   );
 }

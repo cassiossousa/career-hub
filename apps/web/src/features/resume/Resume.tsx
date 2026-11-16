@@ -1,44 +1,47 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { content } from 'virtual:portfolio-content';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
-import { renderResumeData } from '../../services/resume/renderResumeData';
-import { renderResumeHtml } from '../../services/resume/renderResumeHtml';
 import { mapContentToWorkRoles } from '../../services/work-experience/workModel';
+import ResumeDocument, { type ResumeDocumentData } from './ResumeDocument';
 
 export default function Resume() {
   const { locale, messages: t } = useTranslation();
-  const resumeRef = useRef<HTMLIFrameElement>(null);
-  const resumeHtml = useMemo(() => {
-    const roles = mapContentToWorkRoles(content[locale].workExperience, t);
+  const { data, projects } = useMemo(() => {
+    const roles = mapContentToWorkRoles(
+      content[locale].workExperience,
+      t,
+      locale,
+    );
     const projects = getProjects(locale).filter((project) =>
       project.topics?.includes('resume'),
     );
-    return renderResumeHtml(renderResumeData(roles, t), projects, t);
+    const data: ResumeDocumentData = {
+      name: t.home.name,
+      title: `${t.home.title} • ${t.home.subtitle}`,
+      username: t.home.username,
+      summary: t.resume.summary,
+      roles,
+      languages: [t.resume.languages.portuguese, t.resume.languages.english],
+    };
+
+    return { data, projects };
   }, [locale, t]);
 
   return (
-    <section className="container-main">
+    <section className="container-main print:px-0 print:py-0">
       <div className="mb-6 flex items-center justify-between gap-4 print:hidden">
         <h1 className="text-3xl font-bold">{t.resume.title}</h1>
         <button
           type="button"
           className="button-primary"
-          onClick={() => resumeRef.current?.contentWindow?.print()}
+          onClick={() => window.print()}
         >
-          Print / Save as PDF
+          {t.resume.printAction}
         </button>
       </div>
-      <iframe
-        ref={resumeRef}
-        title={t.resume.title}
-        srcDoc={resumeHtml}
-        className="h-[75vh] w-full border bg-white"
-      />
-      <p className="mt-3 text-sm print:hidden">
-        Use your browser&apos;s print dialog to print or save this resume as
-        PDF.
-      </p>
+      <p className="my-3 text-sm print:hidden">{t.resume.printInstructions}</p>
+      <ResumeDocument data={data} projects={projects} messages={t} />
     </section>
   );
 }

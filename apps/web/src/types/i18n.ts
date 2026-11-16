@@ -4,6 +4,21 @@ export type Locale = (typeof locales)[number];
 
 // Define translation structure
 export interface Translation {
+  navigation: {
+    home: string;
+    footerLabel: string;
+    toggleMenu: string;
+    switchToEnglish: string;
+    switchToPortuguese: string;
+  };
+
+  links: {
+    github: string;
+    linkedin: string;
+    demo: string;
+    liveDemo: string;
+  };
+
   home: {
     name: string;
     title: string;
@@ -28,6 +43,8 @@ export interface Translation {
 
   resume: {
     title: string;
+    printAction: string;
+    printInstructions: string;
     summaryTitle: string;
     summary: string;
     experienceTitle: string;
@@ -41,6 +58,10 @@ export interface Translation {
   projects: {
     title: string;
     description: string;
+    notFound: string;
+    backToProjects: string;
+    highlights: string;
+    stars: string;
   };
 }
 

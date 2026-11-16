@@ -110,4 +110,120 @@
       hover:text-foreground
       transition;
   }
+
+  .resume-document {
+    @apply mx-auto max-w-3xl border bg-white p-8 text-slate-900 shadow-sm;
+
+    font-family: system-ui;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .resume-header {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .resume-header h1 {
+    margin-bottom: 4px;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+  }
+
+  .resume-headline {
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .resume-contact {
+    font-size: 12px;
+  }
+
+  .resume-contact a,
+  .resume-links a {
+    color: #000;
+  }
+
+  .resume-separator {
+    margin: 0 6px;
+    color: #888;
+  }
+
+  .resume-section h2 {
+    margin-top: 24px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2px;
+    font-size: 17px;
+  }
+
+  .resume-role {
+    margin-bottom: 14px;
+    break-inside: avoid;
+  }
+
+  .resume-role-header {
+    margin-bottom: 4px;
+  }
+
+  .resume-company {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .resume-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .resume-meta {
+    color: #666;
+    font-size: 12px;
+  }
+
+  .resume-links {
+    margin-top: 2px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .resume-document ul {
+    margin: 6px 0 0;
+    padding-left: 22px;
+  }
+
+  .resume-document li {
+    margin-bottom: 2px;
+    font-size: 12px;
+  }
+
+  .resume-tech {
+    margin-left: 4px;
+    color: #555;
+    font-size: 11px;
+    font-weight: 400;
+  }
+}
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .resume-document {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    padding: 14mm;
+    box-shadow: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
 }

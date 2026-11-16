@@ -1,5 +1,5 @@
-import { ContentEntry } from '../../types/content';
-import { Translation } from '../../types/i18n';
+import type { ContentEntry } from '../../types/content';
+import type { Locale, Translation } from '../../types/i18n';
 
 export interface WorkRole {
   company: string;
@@ -30,7 +30,12 @@ function validateDate(dateString?: string): Date | null {
   return isNaN(date.getTime()) ? null : date;
 }
 
-function buildPeriod(start?: string, end?: string, t?: Translation): string {
+function buildPeriod(
+  start: string | undefined,
+  end: string | undefined,
+  t: Translation,
+  locale: Locale,
+): string {
   if (!start) return '';
 
   const startDate = validateDate(start);
@@ -38,16 +43,16 @@ function buildPeriod(start?: string, end?: string, t?: Translation): string {
 
   if (!startDate) return start; // Return as-is if invalid
 
-  const startStr = startDate.toLocaleDateString('en-US', {
+  const startStr = startDate.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
   });
 
-  if (!end) return `${startStr} - ${t?.workExperience.present ?? 'Present'}`;
+  if (!end) return `${startStr} - ${t.workExperience.present}`;
 
   if (!endDate) return `${startStr} - ${end}`; // Return end as-is if invalid
 
-  const endStr = endDate.toLocaleDateString('en-US', {
+  const endStr = endDate.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
   });
@@ -94,6 +99,7 @@ export function validateWorkRole(
 export function mapContentToWorkRoles(
   entries: ContentEntry[],
   t: Translation,
+  locale: Locale,
 ): WorkRole[] {
   const validRoles: WorkRole[] = [];
 
@@ -113,7 +119,7 @@ export function mapContentToWorkRoles(
       location,
       start,
       end,
-      period: buildPeriod(start, end, t),
+      period: buildPeriod(start, end, t, locale),
       bullets: parseBullets(entry.content),
     });
   }

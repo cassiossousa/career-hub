@@ -49,15 +49,19 @@ export default function Projects() {
             )}
 
             <div className="mt-3 flex gap-4 text-sm">
-              {project.stars && <span>⭐ {project.stars}</span>}
+              {project.stars && (
+                <span aria-label={`${project.stars} ${t.projects.stars}`}>
+                  ⭐ {project.stars}
+                </span>
+              )}
               {project.repo && (
                 <a href={project.repo} target="_blank" rel="noreferrer">
-                  GitHub
+                  {t.links.github}
                 </a>
               )}
               {project.demo && (
                 <a href={project.demo} target="_blank" rel="noreferrer">
-                  Demo
+                  {t.links.demo}
                 </a>
               )}
             </div>

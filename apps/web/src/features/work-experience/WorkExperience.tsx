@@ -9,7 +9,7 @@ import { WorkExperienceList } from './WorkExperienceList';
 export default function WorkExperience() {
   const { locale, messages } = useTranslation();
   const roles = sortRolesByStart(
-    mapContentToWorkRoles(content[locale].workExperience, messages),
+    mapContentToWorkRoles(content[locale].workExperience, messages, locale),
   );
 
   return <WorkExperienceList roles={roles} t={messages} />;

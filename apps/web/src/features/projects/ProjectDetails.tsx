@@ -20,15 +20,15 @@ function Section({ title, items }: { title: string; items?: string[] }) {
 
 export default function ProjectDetails() {
   const { slug } = useParams();
-  const { locale } = useTranslation();
+  const { locale, messages: t } = useTranslation();
   const project = slug ? getProject(slug, locale) : null;
 
   if (!project) {
     return (
       <section className="container-main">
-        <h1>Project not found</h1>
+        <h1>{t.projects.notFound}</h1>
         <Link to={routePaths.projects} className="underline">
-          Back to projects
+          {t.projects.backToProjects}
         </Link>
       </section>
     );
@@ -68,7 +68,7 @@ export default function ProjectDetails() {
               rel="noopener noreferrer"
               className="underline"
             >
-              GitHub
+              {t.links.github}
             </a>
           )}
           {project.demo && (
@@ -78,12 +78,12 @@ export default function ProjectDetails() {
               rel="noopener noreferrer"
               className="underline"
             >
-              Live Demo
+              {t.links.liveDemo}
             </a>
           )}
         </div>
       </header>
-      <Section title="Highlights" items={project.highlights} />
+      <Section title={t.projects.highlights} items={project.highlights} />
     </article>
   );
 }

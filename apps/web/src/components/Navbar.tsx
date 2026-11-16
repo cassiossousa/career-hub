@@ -3,40 +3,40 @@ import { Link } from 'react-router-dom';
 
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/provider';
-import { navigationItems } from '../app/routePaths';
+import { navigationItems, routePaths } from '../app/routePaths';
 
 export default function Navbar() {
   const { messages: t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const links = navigationItems.map(({ to, label, target }) => ({
+  const links = navigationItems.map(({ to, label }) => ({
     to,
     label: label(t),
-    target,
   }));
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 h-20 border-b border-border bg-background">
+    <nav className="fixed inset-x-0 top-0 z-50 h-20 border-b border-border bg-background print:hidden">
       <div className="relative mx-auto flex h-full max-w-5xl items-center justify-between px-6">
         {/* Desktop nav */}
         <div className="hidden md:flex gap-6">
           {links.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              {...(link.target && { target: link.target, rel: 'noreferrer' })}
-              className="hover:underline"
-            >
+            <Link key={link.to} to={link.to} className="hover:underline">
               {link.label}
-              {link.target && <span className="ml-1">↗</span>}
             </Link>
           ))}
         </div>
+
+        <Link
+          to={routePaths.home}
+          className="mr-auto max-w-[45vw] truncate font-semibold md:hidden"
+        >
+          {t.home.name}
+        </Link>
 
         {/* Mobile menu button */}
         <button
           className="md:hidden px-3 py-2 border rounded"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
+          aria-label={t.navigation.toggleMenu}
         >
           {mobileOpen ? '✕' : '☰'}
         </button>
@@ -54,15 +54,10 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  {...(link.target && {
-                    target: link.target,
-                    rel: 'noreferrer',
-                  })}
                   className="hover:underline"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
-                  {link.target && <span className="ml-1">↗</span>}
                 </Link>
               ))}
             </div>

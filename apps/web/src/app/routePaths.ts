@@ -9,7 +9,10 @@ export const routePaths = {
 } as const;
 
 export const navigationItems = [
-  { to: routePaths.home, label: () => 'Home' },
+  {
+    to: routePaths.home,
+    label: (messages: Translation) => messages.navigation.home,
+  },
   {
     to: routePaths.workExperience,
     label: (messages: Translation) => messages.workExperience.title,
@@ -21,10 +24,8 @@ export const navigationItems = [
   {
     to: routePaths.resume,
     label: (messages: Translation) => messages.resume.title,
-    target: '_blank',
   },
 ] satisfies {
   to: string;
   label: (messages: Translation) => string;
-  target?: '_blank';
 }[];

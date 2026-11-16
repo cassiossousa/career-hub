@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Button, Container, Stack, Typography } from '@mui/material';
 import { content } from 'virtual:portfolio-content';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
@@ -52,34 +52,35 @@ export default function Resume() {
       maxWidth="md"
       sx={{ py: 6, '@media print': { py: 0, px: 0 } }}
     >
-      <Box
-        sx={{
-          mb: 3,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 2,
-          '@media print': { display: 'none' },
-        }}
-      >
-        <Typography variant="h1" component="h1">
-          {t.resume.title}
-        </Typography>
-        <Button
-          type="button"
-          variant="contained"
-          onClick={() => window.print()}
+      <Stack spacing={3}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            '@media print': { display: 'none' },
+          }}
         >
-          {t.resume.printAction}
-        </Button>
-      </Box>
-      <Typography
-        variant="body2"
-        sx={{ my: 1.5, '@media print': { display: 'none' } }}
-      >
-        {t.resume.printInstructions}
-      </Typography>
-      <ResumeDocument data={data} projects={projects} labels={labels} />
+          <Typography variant="h1" component="h1">
+            {t.resume.title}
+          </Typography>
+          <Button
+            type="button"
+            variant="contained"
+            onClick={() => window.print()}
+          >
+            {t.resume.printAction}
+          </Button>
+        </Stack>
+        <Typography
+          variant="body2"
+          sx={{ '@media print': { display: 'none' } }}
+        >
+          {t.resume.printInstructions}
+        </Typography>
+        <ResumeDocument data={data} projects={projects} labels={labels} />
+      </Stack>
     </Container>
   );
 }

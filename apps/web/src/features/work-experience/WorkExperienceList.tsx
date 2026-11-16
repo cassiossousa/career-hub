@@ -2,8 +2,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Container,
+  Stack,
   Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -19,31 +19,25 @@ export function WorkExperienceList({
 }) {
   return (
     <Container component="section" maxWidth="md" sx={{ py: 6 }}>
-      <Typography variant="h1" component="h1" sx={{ mb: 5 }}>
-        {t.workExperience.title}
-      </Typography>
-      <Box>
-        {roles.map((role, index) => (
-          <AccordionItem key={`${role.company}-${index}`} role={role} />
-        ))}
-      </Box>
+      <Stack spacing={5}>
+        <Typography variant="h1" component="h1">
+          {t.workExperience.title}
+        </Typography>
+        <Stack>
+          {roles.map((role, index) => (
+            <AccordionItem key={`${role.company}-${index}`} role={role} />
+          ))}
+        </Stack>
+      </Stack>
     </Container>
   );
 }
 
 function AccordionItem({ role }: { role: WorkRole }) {
   return (
-    <Accordion
-      disableGutters
-      elevation={0}
-      sx={{
-        borderBottom: 1,
-        borderColor: 'divider',
-        '&::before': { display: 'none' },
-      }}
-    >
+    <Accordion disableGutters elevation={0}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box>
+        <Stack spacing={0.5}>
           <Typography variant="h3" component="h2">
             {role.company}
           </Typography>
@@ -54,16 +48,14 @@ function AccordionItem({ role }: { role: WorkRole }) {
             {role.location && `${role.location} | `}
             {role.period}
           </Typography>
-        </Box>
+        </Stack>
       </AccordionSummary>
       <AccordionDetails>
-        <Box component="ul" sx={{ m: 0, pl: 2.5, listStyleType: 'disc' }}>
+        <ul>
           {role.bullets.map((bullet, index) => (
-            <Box component="li" key={`${index}-${bullet}`} sx={{ mb: 1 }}>
-              {bullet}
-            </Box>
+            <li key={`${index}-${bullet}`}>{bullet}</li>
           ))}
-        </Box>
+        </ul>
       </AccordionDetails>
     </Accordion>
   );

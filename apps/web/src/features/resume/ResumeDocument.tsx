@@ -1,6 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import type { Project } from '../../types/project';
-import ResumeBulletList from './components/ResumeBulletList';
 import ResumeExperience from './components/ResumeExperience';
 import ResumeHeader from './components/ResumeHeader';
 import ResumeProjects from './components/ResumeProjects';
@@ -30,6 +29,7 @@ export default function ResumeDocument({
         maxWidth: 768,
         border: '1px solid',
         borderColor: 'divider',
+        borderRadius: 0,
         bgcolor: 'background.paper',
         p: 4,
         color: 'text.primary',
@@ -49,40 +49,40 @@ export default function ResumeDocument({
         },
       }}
     >
-      <ResumeHeader
-        name={data.name}
-        title={data.title}
-        username={data.username}
-      />
+      <Stack spacing={3}>
+        <ResumeHeader
+          name={data.name}
+          title={data.title}
+          username={data.username}
+        />
 
-      <ResumeSection title={labels.resume.summaryTitle}>
-        <Typography sx={{ fontSize: 'inherit' }}>{data.summary}</Typography>
-      </ResumeSection>
-
-      <ResumeExperience
-        title={labels.resume.experienceTitle}
-        roles={data.roles}
-      />
-
-      <ResumeProjects
-        title={labels.projectTitle}
-        projects={projects}
-        links={labels.projectLinks}
-      />
-
-      <ResumeSkills skills={labels.skills} />
-
-      {data.languages.length > 0 && (
-        <ResumeSection title={labels.resume.languagesTitle}>
-          <ResumeBulletList>
-            {data.languages.map((language) => (
-              <Box component="li" key={language}>
-                {language}
-              </Box>
-            ))}
-          </ResumeBulletList>
+        <ResumeSection title={labels.resume.summaryTitle}>
+          <Typography variant="body2">{data.summary}</Typography>
         </ResumeSection>
-      )}
+
+        <ResumeExperience
+          title={labels.resume.experienceTitle}
+          roles={data.roles}
+        />
+
+        <ResumeProjects
+          title={labels.projectTitle}
+          projects={projects}
+          links={labels.projectLinks}
+        />
+
+        <ResumeSkills skills={labels.skills} />
+
+        {data.languages.length > 0 && (
+          <ResumeSection title={labels.resume.languagesTitle}>
+            <Box component="ul">
+              {data.languages.map((language) => (
+                <li key={language}>{language}</li>
+              ))}
+            </Box>
+          </ResumeSection>
+        )}
+      </Stack>
     </Box>
   );
 }

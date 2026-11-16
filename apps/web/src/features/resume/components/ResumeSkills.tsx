@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import { skills as skillGroups } from '../../../services/skills';
 import type { ResumeSkillLabels } from '../types';
-import ResumeBulletList from './ResumeBulletList';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeSkills({
@@ -16,13 +15,13 @@ export default function ResumeSkills({
 
   return (
     <ResumeSection title={skills.title}>
-      <ResumeBulletList>
+      <Box component="ul">
         {skillEntries.map(([key, items]) => (
           <Box component="li" key={key}>
             <Box component="strong">{skills[key]}:</Box> {items.join(', ')}
           </Box>
         ))}
-      </ResumeBulletList>
+      </Box>
     </ResumeSection>
   );
 }

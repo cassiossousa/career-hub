@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   AppBar,
-  Box,
   Container,
   IconButton,
   Link as MuiLink,
@@ -37,57 +36,61 @@ export default function Navbar() {
         '@media print': { display: 'none' },
       }}
     >
-      <Toolbar sx={{ minHeight: '80px !important', px: 0 }}>
-        <Container
-          maxWidth="md"
-          sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 2 }}
-        >
+      <Toolbar disableGutters sx={{ minHeight: '80px !important' }}>
+        <Container maxWidth="md">
           <Stack
             direction="row"
-            spacing={3}
-            sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
-          >
-            {links.map((link) => (
-              <MuiLink
-                key={link.to}
-                component={RouterLink}
-                to={link.to}
-                color="text.secondary"
-                underline="hover"
-              >
-                {link.label}
-              </MuiLink>
-            ))}
-          </Stack>
-
-          <MuiLink
-            component={RouterLink}
-            to={routePaths.home}
-            color="text.primary"
-            underline="none"
-            noWrap
+            spacing={2}
             sx={{
-              display: { xs: 'block', md: 'none' },
-              mr: 'auto',
-              maxWidth: '45vw',
-              fontWeight: 600,
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            {t.home.name}
-          </MuiLink>
+            <Stack
+              direction="row"
+              spacing={3}
+              sx={{ display: { xs: 'none', md: 'flex' } }}
+            >
+              {links.map((link) => (
+                <MuiLink
+                  key={link.to}
+                  component={RouterLink}
+                  to={link.to}
+                  color="text.secondary"
+                  underline="hover"
+                >
+                  {link.label}
+                </MuiLink>
+              ))}
+            </Stack>
 
-          <IconButton
-            onClick={() => setMobileOpen((open) => !open)}
-            aria-label={t.navigation.toggleMenu}
-            aria-expanded={mobileOpen}
-            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
-          >
-            {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-          </IconButton>
+            <MuiLink
+              component={RouterLink}
+              to={routePaths.home}
+              color="text.primary"
+              underline="none"
+              noWrap
+              sx={{
+                display: { xs: 'block', md: 'none' },
+                maxWidth: '45vw',
+                fontWeight: 600,
+              }}
+            >
+              {t.home.name}
+            </MuiLink>
 
-          <Box sx={{ ml: 'auto' }}>
-            <LanguageSwitcher />
-          </Box>
+            <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+              <IconButton
+                onClick={() => setMobileOpen((open) => !open)}
+                aria-label={t.navigation.toggleMenu}
+                aria-expanded={mobileOpen}
+                sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+              >
+                {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+              </IconButton>
+              <LanguageSwitcher />
+            </Stack>
+          </Stack>
         </Container>
       </Toolbar>
 
@@ -95,7 +98,7 @@ export default function Navbar() {
         <Paper
           square
           elevation={4}
-          sx={{ display: { xs: 'block', md: 'none' }, borderRadius: 0 }}
+          sx={{ display: { xs: 'block', md: 'none' } }}
         >
           <Container maxWidth="md" sx={{ py: 2 }}>
             <Stack spacing={2}>

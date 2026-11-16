@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { Box, CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
+import {
+  Box,
+  CssBaseline,
+  GlobalStyles,
+  ThemeProvider,
+  Toolbar,
+} from '@mui/material';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import { TranslationProvider } from './i18n/provider';
@@ -38,7 +44,13 @@ function App({ initialLocale }: { initialLocale: Locale }) {
       />
       <TranslationProvider locale={locale} onLocaleChange={changeLocale}>
         <Navbar />
-        <Box component="main" sx={{ pt: 10, '@media print': { pt: 0 } }}>
+        <Toolbar
+          sx={{
+            minHeight: '80px !important',
+            '@media print': { display: 'none' },
+          }}
+        />
+        <Box component="main">
           <Routes>
             <Route path={routePaths.home} element={<Home />} />
             <Route path={routePaths.projects} element={<Projects />} />

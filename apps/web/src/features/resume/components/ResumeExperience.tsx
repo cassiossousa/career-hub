@@ -1,6 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import type { WorkRole } from '../../../services/work-experience/workModel';
-import ResumeBulletList from './ResumeBulletList';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeExperience({
@@ -14,37 +13,31 @@ export default function ResumeExperience({
 
   return (
     <ResumeSection title={title}>
-      {roles.map((role, index) => (
-        <Box
-          component="article"
-          key={`${role.company}-${role.period}-${index}`}
-          sx={{ mb: 1.75, breakInside: 'avoid', pageBreakInside: 'avoid' }}
-        >
-          <Box component="header" sx={{ mb: 0.5 }}>
-            <Typography
-              component="h3"
-              variant="subtitle1"
-              sx={{ m: 0, fontSize: 14, fontWeight: 600 }}
-            >
-              {role.company}
-            </Typography>
-            <Typography sx={{ fontSize: 13, fontWeight: 600 }}>
-              {role.title}
-            </Typography>
-            <Typography sx={{ color: 'text.secondary', fontSize: 12 }}>
-              {role.location && `${role.location} | `}
-              {role.period}
-            </Typography>
+      <Stack spacing={2}>
+        {roles.map((role, index) => (
+          <Box
+            component="article"
+            key={`${role.company}-${role.period}-${index}`}
+            sx={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}
+          >
+            <Stack component="header" spacing={0.5}>
+              <Typography component="h3" variant="subtitle1">
+                {role.company}
+              </Typography>
+              <Typography variant="subtitle2">{role.title}</Typography>
+              <Typography variant="caption" color="text.secondary">
+                {role.location && `${role.location} | `}
+                {role.period}
+              </Typography>
+            </Stack>
+            <Box component="ul">
+              {role.bullets.map((bullet, bulletIndex) => (
+                <li key={`${bulletIndex}-${bullet}`}>{bullet}</li>
+              ))}
+            </Box>
           </Box>
-          <ResumeBulletList>
-            {role.bullets.map((bullet, bulletIndex) => (
-              <Box component="li" key={`${bulletIndex}-${bullet}`}>
-                {bullet}
-              </Box>
-            ))}
-          </ResumeBulletList>
-        </Box>
-      ))}
+        ))}
+      </Stack>
     </ResumeSection>
   );
 }

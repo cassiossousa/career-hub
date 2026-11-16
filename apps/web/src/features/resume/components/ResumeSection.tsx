@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Divider, Stack, Typography } from '@mui/material';
 
 export default function ResumeSection({
   title,
@@ -9,22 +9,12 @@ export default function ResumeSection({
   children: ReactNode;
 }) {
   return (
-    <Box component="section">
-      <Typography
-        component="h2"
-        variant="h6"
-        sx={{
-          mt: 3,
-          mb: 1,
-          borderBottom: 1,
-          borderColor: 'divider',
-          pb: 0.25,
-          fontSize: 17,
-        }}
-      >
+    <Stack component="section" spacing={1}>
+      <Typography component="h2" variant="h6">
         {title}
       </Typography>
+      <Divider />
       {children}
-    </Box>
+    </Stack>
   );
 }

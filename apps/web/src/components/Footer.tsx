@@ -9,7 +9,6 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
-        mt: 8,
         borderTop: 1,
         borderColor: 'divider',
         '@media print': { display: 'none' },
@@ -21,43 +20,36 @@ export default function Footer() {
           spacing={3}
           sx={{ justifyContent: 'space-between' }}
         >
-          <Box>
-            <Typography sx={{ fontWeight: 600 }}>{t.home.name}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Stack spacing={0.5}>
+            <Typography variant="subtitle1">{t.home.name}</Typography>
+            <Typography variant="body2" color="text.secondary">
               {t.home.title}
             </Typography>
-          </Box>
+          </Stack>
 
-          <Box component="nav" aria-label={t.navigation.footerLabel}>
-            <Stack
-              component="ul"
-              direction="row"
-              spacing={3}
-              sx={{ m: 0, p: 0, listStyle: 'none' }}
+          <Stack
+            component="nav"
+            aria-label={t.navigation.footerLabel}
+            direction="row"
+            spacing={3}
+          >
+            <Link
+              href={`https://github.com/${t.home.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="body2"
             >
-              <Box component="li">
-                <Link
-                  href={`https://github.com/${t.home.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="body2"
-                >
-                  {t.links.github}
-                </Link>
-              </Box>
-
-              <Box component="li">
-                <Link
-                  href={`https://linkedin.com/in/${t.home.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="body2"
-                >
-                  {t.links.linkedin}
-                </Link>
-              </Box>
-            </Stack>
-          </Box>
+              {t.links.github}
+            </Link>
+            <Link
+              href={`https://linkedin.com/in/${t.home.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="body2"
+            >
+              {t.links.linkedin}
+            </Link>
+          </Stack>
 
           <Typography variant="body2" color="text.secondary">
             © {year} {t.home.name}

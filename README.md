@@ -54,6 +54,18 @@ Developer portfolio built with React, TypeScript, and Vite. Project and work exp
 - Resume pages are dynamically generated from structured project data.
 - Resume content is generated from bundled project and work experience metadata.
 
+## Workspace Structure
+
+- `apps/web` contains the React/Vite website.
+- `content` contains the MDX data bundled into the website at build time.
+- `scripts` contains repository maintenance tools such as GitHub project sync.
+- `apps/*` and `packages/*` are npm workspace boundaries for future API,
+  background-worker, and shared packages.
+
+The website remains a static frontend. GitHub Pages deploys only `apps/web`;
+database access, job-application submissions, and scheduled jobs will require
+server-capable hosting and should live outside the web bundle.
+
 ## Key Features
 
 - Automatic resume generation from project metadata

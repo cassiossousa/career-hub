@@ -4,7 +4,10 @@ import matter from 'gray-matter';
 
 import { ContentEntry, ContentType } from '../types/content';
 
-const CONTENT_ROOT = path.join(process.cwd(), 'content');
+const CONTENT_ROOT = path.join(
+  process.env.PORTFOLIO_ROOT ?? process.cwd(),
+  'content',
+);
 
 function getDir(type: ContentType) {
   return path.join(CONTENT_ROOT, type);
@@ -72,7 +75,10 @@ export function getEntry(
   };
 }
 
-export function getAllEntries(type: ContentType, locale: string) {
+export function getAllEntries(
+  type: ContentType,
+  locale: string,
+): ContentEntry[] {
   const dir = getDir(type);
 
   const files = fs

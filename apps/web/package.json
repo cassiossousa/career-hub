@@ -1,0 +1,29 @@
+{
+  "name": "@portfolio/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b && vite build",
+    "dev": "vite",
+    "start": "vite preview"
+  },
+  "dependencies": {
+    "gray-matter": "4.0.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.30.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "0.5.19",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "14.3.1",
+    "@types/node": "20.19.37",
+    "@types/react": "18.3.28",
+    "@vitejs/plugin-react": "4.7.0",
+    "autoprefixer": "10.4.27",
+    "jiti": "2.6.1",
+    "postcss": "8.5.8",
+    "tailwindcss": "3.4.19",
+    "vite": "6.4.1"
+  }
+}

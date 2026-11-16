@@ -1,14 +1,21 @@
 const config = {
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/apps/web/setupTests.ts'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    '^@/(.*)$': '<rootDir>/apps/web/src/$1',
   },
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/apps/web/tsconfig.json' },
+    ],
   },
   testMatch: ['**/*.(test|spec).(ts|tsx)'],
-  collectCoverageFrom: ['**/*.(ts|tsx)', '!**/*.d.ts', '!**/node_modules/**'],
+  collectCoverageFrom: [
+    'apps/web/src/**/*.(ts|tsx)',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+  ],
 };
 
 export default config;

@@ -4,8 +4,8 @@ import tseslint from 'typescript-eslint';
 const eslintConfig = defineConfig([
   ...tseslint.configs.recommended,
   globalIgnores([
-    'dist/**',
-    'build/**',
+    '**/dist/**',
+    '**/build/**',
   ]),
 ]);
 

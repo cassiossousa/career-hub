@@ -1,23 +1,13 @@
-import Link from 'next/link';
-import { cookies } from 'next/headers';
+import { Link } from 'react-router-dom';
+import { useTranslation } from '../../i18n/provider';
+import { getProjects } from '../../services/projects/getProjects';
 
-import { getProjects } from '../../lib/projects/getProjects';
-import { getDictionary } from '../../i18n/dictionaries';
-
-import { Locale, Translation } from '../../types/i18n';
-import type { Project } from '../../types/project';
-
-export default async function ProjectsPage() {
-  const cookieStore = await cookies();
-  const locale = (cookieStore.get('lang')?.value ?? 'en') as Locale;
-
-  const t: Translation = await getDictionary(locale);
-
-  const projects: Project[] = await getProjects(locale);
-  const featuredProjects = projects.filter(
-    (p) =>
-      Boolean(p.topics?.includes('featured') || p.featured) ||
-      Boolean(p.topics?.includes('resume')),
+export default function ProjectsPage() {
+  const { locale, messages: t } = useTranslation();
+  const featuredProjects = getProjects(locale).filter(
+    (project) =>
+      Boolean(project.topics?.includes('featured') || project.featured) ||
+      Boolean(project.topics?.includes('resume')),
   );
 
   return (
@@ -28,7 +18,7 @@ export default async function ProjectsPage() {
         {featuredProjects.map((project) => (
           <article key={project.slug} className="card">
             <Link
-              href={`/projects/${project.slug}`}
+              to={`/projects/${project.slug}`}
               className="text-xl font-semibold hover:underline"
             >
               {project.title}
@@ -57,15 +47,13 @@ export default async function ProjectsPage() {
 
             <div className="mt-3 flex gap-4 text-sm">
               {project.stars && <span>⭐ {project.stars}</span>}
-
               {project.repo && (
-                <a href={project.repo} target="_blank">
+                <a href={project.repo} target="_blank" rel="noreferrer">
                   GitHub
                 </a>
               )}
-
               {project.demo && (
-                <a href={project.demo} target="_blank">
+                <a href={project.demo} target="_blank" rel="noreferrer">
                   Demo
                 </a>
               )}

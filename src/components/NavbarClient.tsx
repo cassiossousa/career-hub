@@ -1,16 +1,11 @@
-'use client';
-
-import Link from 'next/link';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import LanguageSwitcher from './LanguageSwitcher';
-import { Translation } from '../types/i18n';
+import { useTranslation } from '../i18n/provider';
 
-interface NavbarClientProps {
-  t: Translation;
-}
-
-export default function NavbarClient({ t }: NavbarClientProps) {
+export default function NavbarClient() {
+  const { messages: t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [
@@ -27,7 +22,7 @@ export default function NavbarClient({ t }: NavbarClientProps) {
         {links.map((link) => (
           <Link
             key={link.href}
-            href={link.href}
+            to={link.href}
             {...(link.target && { target: link.target })}
             className="hover:underline"
           >
@@ -58,11 +53,12 @@ export default function NavbarClient({ t }: NavbarClientProps) {
             {links.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 className="hover:underline"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
+                {link.target && <span className="ml-1">↗</span>}
               </Link>
             ))}
           </div>

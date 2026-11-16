@@ -1,12 +1,7 @@
-import { cookies } from 'next/headers';
-import Link from 'next/link';
-import { Locale } from '../types/i18n';
-import { getDictionary } from '../i18n/dictionaries';
+import { useTranslation } from '../i18n/provider';
 
-export default async function Footer() {
-  const cookieStore = await cookies();
-  const locale = (cookieStore.get('lang')?.value as Locale) ?? 'en';
-  const t = await getDictionary(locale);
+export default function Footer() {
+  const { messages: t } = useTranslation();
   const year = new Date().getFullYear();
 
   return (

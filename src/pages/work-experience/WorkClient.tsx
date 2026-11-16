@@ -1,21 +1,17 @@
-'use client';
+import { useEffect, useRef, useState } from 'react';
+import type { Translation } from '../../types/i18n';
+import type { WorkRole } from '../../services/work-experience/workModel';
 
-import { useState, useRef, useEffect } from 'react';
-import { Translation } from '../../types/i18n';
-import { WorkRole } from '../../lib/work-experience/workModel';
-
-interface WorkClientProps {
+export function WorkClient({
+  roles,
+  t,
+}: {
   roles: WorkRole[];
   t: Translation;
-}
-
-export function WorkClient({ roles, t }: WorkClientProps) {
+}) {
   return (
     <section className="container-main">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
-        <h1 className="text-3xl font-bold">{t.workExperience.title}</h1>
-      </div>
-
+      <h1 className="text-3xl font-bold mb-10">{t.workExperience.title}</h1>
       <div className="flex flex-col gap-4">
         {roles.map((role, index) => (
           <AccordionItem key={`${role.company}-${index}`} role={role} />
@@ -27,37 +23,36 @@ export function WorkClient({ roles, t }: WorkClientProps) {
 
 function AccordionItem({ role }: { role: WorkRole }) {
   const [open, setOpen] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
-  const { company, title, location, period, bullets } = role;
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
-      if (contentRef.current) {
-        setHeight(open ? contentRef.current.scrollHeight : 0);
-      }
+      setHeight(open ? (contentRef.current?.scrollHeight ?? 0) : 0);
     });
-
     return () => cancelAnimationFrame(frame);
   }, [open]);
 
   return (
     <article className="border-b pb-4">
       <button
-        onClick={() => setOpen(!open)}
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
         className="flex w-full justify-between items-start text-left"
       >
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">{company}</h2>
-          <h3 className="text-lg font-semibold text-primary">{title}</h3>
+          <h2 className="text-xl font-semibold">{role.company}</h2>
+          <h3 className="text-lg font-semibold text-primary">{role.title}</h3>
           <p className="text-sm opacity-90">
-            {location && `${location} | `}
-            {period}
+            {role.location && `${role.location} | `}
+            {role.period}
           </p>
         </div>
-        <span className="text-2xl">{open ? '▲' : '▼'}</span>
+        <span className="text-2xl" aria-hidden="true">
+          {open ? '▲' : '▼'}
+        </span>
       </button>
-
       <div
         ref={contentRef}
         style={{
@@ -67,8 +62,8 @@ function AccordionItem({ role }: { role: WorkRole }) {
         }}
       >
         <ul className="mt-4 list-disc pl-5 space-y-2">
-          {bullets.map((b, i) => (
-            <li key={i}>{b}</li>
+          {role.bullets.map((bullet, index) => (
+            <li key={`${index}-${bullet}`}>{bullet}</li>
           ))}
         </ul>
       </div>

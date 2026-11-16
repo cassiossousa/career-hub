@@ -4,16 +4,16 @@ import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 
-import { getRepos, getRepoReadme } from '../lib/github.ts';
-import { normalizeGithubRepo } from '../lib/projects/githubMapper.ts';
+import { getRepos, getRepoReadme } from '../src/services/github.ts';
+import { normalizeGithubRepo } from '../src/services/projects/githubMapper.ts';
 
 /**
- * @typedef {import('../types/github').GitHubRepo} GitHubRepo
+ * @typedef {import('../src/types/github').GitHubRepo} GitHubRepo
  */
 
 function clean(obj) {
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined && v !== null),
+    Object.entries(obj).filter(([, value]) => value !== undefined && value !== null),
   );
 }
 

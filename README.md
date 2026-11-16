@@ -5,15 +5,15 @@ demo: https://professional-portfolio-mu-gray.vercel.app
 featured: true
 category: fullstack
 technologies:
-  - Next.js
+  - React
   - TypeScript
   - Tailwind
-  - Puppeteer
+  - Vite
   - Jest
 summary:
-  - Developer portfolio built with Next.js and TypeScript
+  - Developer portfolio built with React, TypeScript, and Vite
   - Automatically generates a resume filled with highlighted GitHub projects' metadata
-  - Server-side PDF resume generation using Puppeteer
+  - Browser-based resume printing and PDF export
 highlights:
   - Automated resume generation
   - Accessible, responsive UI
@@ -22,19 +22,19 @@ highlights:
 
 # Professional Portfolio
 
-Developer portfolio built with Next.js and TypeScript that automatically generates a resume from GitHub project data.
+Developer portfolio built with React, TypeScript, and Vite. Project and work experience data is bundled from MDX content at build time.
 
 ## Project Summary
 
-- Built a developer portfolio with Next.js and TypeScript.
+- Built a developer portfolio with React, TypeScript, and Vite.
 - Implemented automatic resume generation from project metadata stored in repositories.
-- Added server-side PDF rendering of resumes using Puppeteer.
+- Added a browser-printable resume that can be saved as PDF.
 
 ## Tech Stack
 
 ### Core
 
-- Next.js
+- Vite
 - TypeScript
 - React
 - TailwindCSS
@@ -52,7 +52,7 @@ Developer portfolio built with Next.js and TypeScript that automatically generat
 
 - GitHub repositories act as the single source of truth for project metadata.
 - Resume pages are dynamically generated from structured project data.
-- PDF resume generation implemented using server-side Puppeteer rendering.
+- Resume content is generated from bundled project and work experience metadata.
 
 ## Key Features
 
@@ -82,3 +82,6 @@ https://github.com/cassiossousa/professional-portfolio
 npm install
 npm run dev
 ```
+
+Project metadata is bundled from `content/` during the Vite build. To refresh
+GitHub-sourced project metadata, run `npm run sync-projects` before building.

@@ -12,13 +12,13 @@
   },
   "homepage": "https://professional-portfolio-mu-gray.vercel.app/",
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
+    "build": "tsc -b && vite build",
+    "dev": "vite",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "prettier": "prettier --write .",
     "prettier-check": "prettier --check .",
-    "start": "next start",
+    "start": "vite preview",
     "sync-projects": "node scripts/sync-github-projects.mjs",
     "test": "jest",
     "test-cov": "jest --coverage",
@@ -28,17 +28,13 @@
     "unimported": "npx knip --production --dependencies --files"
   },
   "dependencies": {
-    "@next/mdx": "16.1.6",
-    "@sparticuz/chromium": "141.0.0",
-    "dayjs": "1.11.20",
     "gray-matter": "4.0.3",
-    "next": "16.2.0",
-    "puppeteer": "24.6.1",
-    "puppeteer-core": "24.39.1",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.30.3"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "4.7.0",
     "@tailwindcss/typography": "0.5.19",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "14.3.1",
@@ -48,7 +44,6 @@
     "autoprefixer": "10.4.27",
     "dotenv": "17.3.1",
     "eslint": "9.39.4",
-    "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "10.1.8",
     "jest": "29.7.0",
     "jest-environment-jsdom": "30.3.0",
@@ -58,6 +53,7 @@
     "tailwindcss": "3.4.19",
     "ts-jest": "29.4.6",
     "ts-node": "10.9.2",
+    "vite": "6.4.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.57.0"
   }

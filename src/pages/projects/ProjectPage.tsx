@@ -1,17 +1,13 @@
-import { cookies } from 'next/headers';
-import { notFound } from 'next/navigation';
-
-import { getProject } from '../../../lib/projects/getProjects';
-
-import type { Locale } from '../../../types/i18n';
+import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from '../../i18n/provider';
+import { getProject } from '../../services/projects/getProjects';
 
 function Section({ title, items }: { title: string; items?: string[] }) {
-  if (!items || items.length === 0) return null;
+  if (!items?.length) return null;
 
   return (
     <section className="mt-10">
       <h2 className="text-xl font-semibold mb-3">{title}</h2>
-
       <ul className="list-disc list-inside space-y-1">
         {items.map((item) => (
           <li key={item}>{item}</li>
@@ -21,28 +17,29 @@ function Section({ title, items }: { title: string; items?: string[] }) {
   );
 }
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+export default function ProjectPage() {
+  const { slug } = useParams();
+  const { locale } = useTranslation();
+  const project = slug ? getProject(slug, locale) : null;
 
-  const locale = (await cookies()).get('lang')?.value as Locale;
-
-  const project = await getProject(slug, locale);
-
-  if (!project) notFound();
+  if (!project) {
+    return (
+      <section className="container-main">
+        <h1>Project not found</h1>
+        <Link to="/projects" className="underline">
+          Back to projects
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <article className="container-main max-w-3xl">
       <header className="mb-10">
         <h1 className="text-3xl font-bold">{project.title}</h1>
-
         {project.description && (
           <p className="mt-3 text-lg">{project.description}</p>
         )}
-
         {project.summary && (
           <ul className="mt-4 list-disc list-inside space-y-1">
             {project.summary.map((bullet) => (
@@ -50,7 +47,6 @@ export default async function ProjectPage({
             ))}
           </ul>
         )}
-
         {project.technologies && (
           <div className="flex flex-wrap gap-2 mt-4">
             {project.technologies.map((tech) => (
@@ -63,7 +59,6 @@ export default async function ProjectPage({
             ))}
           </div>
         )}
-
         <div className="mt-4 flex gap-6 text-sm">
           {project.repo && (
             <a
@@ -75,7 +70,6 @@ export default async function ProjectPage({
               GitHub
             </a>
           )}
-
           {project.demo && (
             <a
               href={project.demo}
@@ -88,7 +82,6 @@ export default async function ProjectPage({
           )}
         </div>
       </header>
-
       <Section title="Highlights" items={project.highlights} />
     </article>
   );

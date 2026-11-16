@@ -6,7 +6,7 @@ import { getEntry, getSlugs, getAllEntries } from './content';
 // Type for gray-matter result
 interface GrayMatterResult {
   content: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   orig: string;
   language: string;
   matter: string;

@@ -40,6 +40,12 @@ describe('Resume', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.queryByTitle('Resume')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: /experience/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: /projects/i }),
+    ).not.toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole('button', { name: /print \/ save as pdf/i }),

@@ -33,7 +33,23 @@ describe('ResumeDocument', () => {
     ];
 
     render(
-      <ResumeDocument data={data} projects={projects} messages={messages} />,
+      <ResumeDocument
+        data={data}
+        projects={projects}
+        labels={{
+          resume: {
+            summaryTitle: messages.resume.summaryTitle,
+            experienceTitle: messages.resume.experienceTitle,
+            languagesTitle: messages.resume.languagesTitle,
+          },
+          projectTitle: messages.projects.title,
+          projectLinks: {
+            github: messages.links.github,
+            demo: messages.links.demo,
+          },
+          skills: messages.skills,
+        }}
+      />,
     );
 
     expect(

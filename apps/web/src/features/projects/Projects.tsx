@@ -38,7 +38,7 @@ export default function Projects() {
             key={project.slug}
             component="article"
             variant="outlined"
-            sx={{ p: 3, boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
+            sx={{ p: 3, boxShadow: 1 }}
           >
             <MuiLink
               component={Link}

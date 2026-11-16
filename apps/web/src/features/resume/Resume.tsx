@@ -4,7 +4,8 @@ import { content } from 'virtual:portfolio-content';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
 import { mapContentToWorkRoles } from '../../services/work-experience/workModel';
-import ResumeDocument, { type ResumeDocumentData } from './ResumeDocument';
+import ResumeDocument from './ResumeDocument';
+import type { ResumeDocumentData, ResumeDocumentLabels } from './types';
 
 export default function Resume() {
   const { locale, messages: t } = useTranslation();
@@ -14,9 +15,11 @@ export default function Resume() {
       t,
       locale,
     );
+
     const projects = getProjects(locale).filter((project) =>
       project.topics?.includes('resume'),
     );
+
     const data: ResumeDocumentData = {
       name: t.home.name,
       title: `${t.home.title} • ${t.home.subtitle}`,
@@ -28,6 +31,20 @@ export default function Resume() {
 
     return { data, projects };
   }, [locale, t]);
+
+  const labels: ResumeDocumentLabels = {
+    resume: {
+      summaryTitle: t.resume.summaryTitle,
+      experienceTitle: t.resume.experienceTitle,
+      languagesTitle: t.resume.languagesTitle,
+    },
+    projectTitle: t.projects.title,
+    projectLinks: {
+      github: t.links.github,
+      demo: t.links.demo,
+    },
+    skills: t.skills,
+  };
 
   return (
     <Container
@@ -62,7 +79,7 @@ export default function Resume() {
       >
         {t.resume.printInstructions}
       </Typography>
-      <ResumeDocument data={data} projects={projects} messages={t} />
+      <ResumeDocument data={data} projects={projects} labels={labels} />
     </Container>
   );
 }

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from '../../i18n/provider';
 import { getProject } from '../../services/projects/getProjects';
+import { routePaths } from '../../app/routePaths';
 
 function Section({ title, items }: { title: string; items?: string[] }) {
   if (!items?.length) return null;
@@ -17,7 +18,7 @@ function Section({ title, items }: { title: string; items?: string[] }) {
   );
 }
 
-export default function ProjectPage() {
+export default function ProjectDetails() {
   const { slug } = useParams();
   const { locale } = useTranslation();
   const project = slug ? getProject(slug, locale) : null;
@@ -26,7 +27,7 @@ export default function ProjectPage() {
     return (
       <section className="container-main">
         <h1>Project not found</h1>
-        <Link to="/projects" className="underline">
+        <Link to={routePaths.projects} className="underline">
           Back to projects
         </Link>
       </section>

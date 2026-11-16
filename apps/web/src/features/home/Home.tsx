@@ -1,6 +1,6 @@
 import { useTranslation } from '../../i18n/provider';
 
-export default function HomePage() {
+export default function Home() {
   const { messages: t } = useTranslation();
 
   return (

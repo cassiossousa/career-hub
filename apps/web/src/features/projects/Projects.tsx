@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
+import { routePaths } from '../../app/routePaths';
 
-export default function ProjectsPage() {
+export default function Projects() {
   const { locale, messages: t } = useTranslation();
   const featuredProjects = getProjects(locale).filter(
     (project) =>
@@ -18,7 +19,9 @@ export default function ProjectsPage() {
         {featuredProjects.map((project) => (
           <article key={project.slug} className="card">
             <Link
-              to={`/projects/${project.slug}`}
+              to={generatePath(routePaths.projectDetails, {
+                slug: project.slug,
+              })}
               className="text-xl font-semibold hover:underline"
             >
               {project.title}

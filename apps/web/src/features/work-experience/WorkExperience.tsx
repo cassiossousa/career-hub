@@ -4,13 +4,13 @@ import {
   mapContentToWorkRoles,
   sortRolesByStart,
 } from '../../services/work-experience/workModel';
-import { WorkClient } from './WorkClient';
+import { WorkExperienceList } from './WorkExperienceList';
 
-export default function WorkExperiencePage() {
+export default function WorkExperience() {
   const { locale, messages } = useTranslation();
   const roles = sortRolesByStart(
     mapContentToWorkRoles(content[locale].workExperience, messages),
   );
 
-  return <WorkClient roles={roles} t={messages} />;
+  return <WorkExperienceList roles={roles} t={messages} />;
 }

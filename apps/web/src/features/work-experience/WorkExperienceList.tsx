@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Translation } from '../../types/i18n';
 import type { WorkRole } from '../../services/work-experience/workModel';
 
-export function WorkClient({
+export function WorkExperienceList({
   roles,
   t,
 }: {

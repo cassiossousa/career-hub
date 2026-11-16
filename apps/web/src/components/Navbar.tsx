@@ -3,17 +3,16 @@ import { Link } from 'react-router-dom';
 
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/provider';
+import { navigationItems } from '../app/routePaths';
 
-export default function NavbarClient() {
+export default function Navbar() {
   const { messages: t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const links = [
-    { href: '/', label: 'Home' },
-    { href: '/work-experience', label: t.workExperience.title },
-    { href: '/projects', label: t.projects.title },
-    { href: '/resume', label: t.resume.title, target: '_blank' },
-  ];
+  const links = navigationItems.map(({ to, label, target }) => ({
+    to,
+    label: label(t),
+    target,
+  }));
 
   return (
     <nav className="container-main flex justify-between items-center py-6 relative">
@@ -21,9 +20,9 @@ export default function NavbarClient() {
       <div className="hidden md:flex gap-6">
         {links.map((link) => (
           <Link
-            key={link.href}
-            to={link.href}
-            {...(link.target && { target: link.target })}
+            key={link.to}
+            to={link.to}
+            {...(link.target && { target: link.target, rel: 'noreferrer' })}
             className="hover:underline"
           >
             {link.label}
@@ -52,8 +51,9 @@ export default function NavbarClient() {
           <div className="flex flex-col p-4 space-y-2">
             {links.map((link) => (
               <Link
-                key={link.href}
-                to={link.href}
+                key={link.to}
+                to={link.to}
+                {...(link.target && { target: link.target, rel: 'noreferrer' })}
                 className="hover:underline"
                 onClick={() => setMobileOpen(false)}
               >

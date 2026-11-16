@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Footer from './components/Footer';
-import NavbarClient from './components/NavbarClient';
+import Navbar from './components/Navbar';
 import { TranslationProvider } from './i18n/provider';
+import { routePaths } from './app/routePaths';
 import type { Locale } from './types/i18n';
-import HomePage from './pages/home/HomePage';
-import ProjectPage from './pages/projects/ProjectPage';
-import ProjectsPage from './pages/projects/ProjectsList';
-import ResumePage from './pages/resume/ResumePage';
-import WorkExperiencePage from './pages/work-experience/WorkExperiencePage';
+import Home from './features/home/Home';
+import ProjectDetails from './features/projects/ProjectDetails';
+import Projects from './features/projects/Projects';
+import Resume from './features/resume/Resume';
+import WorkExperience from './features/work-experience/WorkExperience';
 import './styles.css';
 
 function initialLocale() {
@@ -27,15 +28,24 @@ function App({ initialLocale }: { initialLocale: Locale }) {
 
   return (
     <TranslationProvider locale={locale} onLocaleChange={changeLocale}>
-      <NavbarClient />
+      <Navbar />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/projects/:slug" element={<ProjectPage />} />
-          <Route path="/work-experience" element={<WorkExperiencePage />} />
-          <Route path="/resume" element={<ResumePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path={routePaths.home} element={<Home />} />
+          <Route path={routePaths.projects} element={<Projects />} />
+          <Route
+            path={routePaths.projectDetails}
+            element={<ProjectDetails />}
+          />
+          <Route
+            path={routePaths.workExperience}
+            element={<WorkExperience />}
+          />
+          <Route path={routePaths.resume} element={<Resume />} />
+          <Route
+            path="*"
+            element={<Navigate to={routePaths.home} replace />}
+          />
         </Routes>
       </main>
       <Footer />

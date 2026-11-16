@@ -6,7 +6,7 @@ import { renderResumeData } from '../../services/resume/renderResumeData';
 import { renderResumeHtml } from '../../services/resume/renderResumeHtml';
 import { mapContentToWorkRoles } from '../../services/work-experience/workModel';
 
-export default function ResumePage() {
+export default function Resume() {
   const { locale, messages: t } = useTranslation();
   const resumeRef = useRef<HTMLIFrameElement>(null);
   const resumeHtml = useMemo(() => {

@@ -1,27 +1,21 @@
 import { render, screen } from '@testing-library/react';
 import { getDictionary } from '../../i18n/dictionaries';
+import { TranslationProvider } from '../../i18n/provider';
 import type { Project } from '../../types/project';
-import ResumeDocument, { type ResumeDocumentData } from './ResumeDocument';
+import ResumeDocument from './ResumeDocument';
 
 describe('ResumeDocument', () => {
   it('renders resume sections, experience, and selected projects as React content', () => {
     const messages = getDictionary('en');
-    const data: ResumeDocumentData = {
-      name: 'Cássio Sousa',
-      title: 'Senior Software Engineer | Frontend Architecture',
-      username: 'cassiossousa',
-      summary: 'Builds reliable web applications.',
-      roles: [
-        {
-          company: 'Example Inc.',
-          title: 'Frontend Engineer',
-          location: 'Remote',
-          period: 'Jan 2022 - Present',
-          bullets: ['Built accessible interfaces'],
-        },
-      ],
-      languages: ['Portuguese - Native', 'English - Fluent'],
-    };
+    const roles = [
+      {
+        company: 'Example Inc.',
+        title: 'Frontend Engineer',
+        location: 'Remote',
+        period: 'Jan 2022 - Present',
+        bullets: ['Built accessible interfaces'],
+      },
+    ];
     const projects: Project[] = [
       {
         slug: 'portfolio',
@@ -33,29 +27,18 @@ describe('ResumeDocument', () => {
     ];
 
     render(
-      <ResumeDocument
-        data={data}
-        projects={projects}
-        labels={{
-          resume: {
-            summaryTitle: messages.resume.summaryTitle,
-            experienceTitle: messages.resume.experienceTitle,
-            languagesTitle: messages.resume.languagesTitle,
-          },
-          projectTitle: messages.projects.title,
-          projectLinks: {
-            github: messages.links.github,
-            demo: messages.links.demo,
-          },
-          skills: messages.skills,
-        }}
-      />,
+      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+        <ResumeDocument roles={roles} projects={projects} />
+      </TranslationProvider>,
     );
 
     expect(
-      screen.getByRole('heading', { level: 1, name: data.name }),
+      screen.getByRole('heading', {
+        level: 1,
+        name: messages.home.name,
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByText(data.summary)).toBeInTheDocument();
+    expect(screen.getByText(messages.resume.summary)).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Example Inc.' }),
     ).toBeInTheDocument();
@@ -68,6 +51,8 @@ describe('ResumeDocument', () => {
       'href',
       'https://github.com/example/portfolio',
     );
-    expect(screen.getByText('Portuguese - Native')).toBeInTheDocument();
+    expect(
+      screen.getByText(messages.resume.languages.portuguese),
+    ).toBeInTheDocument();
   });
 });

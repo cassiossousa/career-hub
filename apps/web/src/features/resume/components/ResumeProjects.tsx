@@ -1,6 +1,6 @@
 import { Box, Link, Stack, Typography } from '@mui/material';
 import type { Project } from '../../../types/project';
-import type { ResumeProjectLinks } from '../types';
+import type { Translation } from '../../../types/i18n';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeProjects({
@@ -10,7 +10,7 @@ export default function ResumeProjects({
 }: {
   title: string;
   projects: Project[];
-  links: ResumeProjectLinks;
+  links: Pick<Translation['links'], 'github' | 'demo'>;
 }) {
   if (!projects.length) return null;
 

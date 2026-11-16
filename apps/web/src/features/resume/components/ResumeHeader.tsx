@@ -1,11 +1,11 @@
 import { Link, Stack, Typography } from '@mui/material';
-import type { ResumeDocumentData } from '../types';
+import type { Translation } from '../../../types/i18n';
 
 export default function ResumeHeader({
   name,
   title,
   username,
-}: Pick<ResumeDocumentData, 'name' | 'title' | 'username'>) {
+}: Pick<Translation['home'], 'name' | 'username'> & { title: string }) {
   return (
     <Stack
       component="header"

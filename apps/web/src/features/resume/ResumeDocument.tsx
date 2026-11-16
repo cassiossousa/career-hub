@@ -1,38 +1,36 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Paper, Stack, Typography } from '@mui/material';
 import type { Project } from '../../types/project';
+import { useTranslation } from '../../i18n/provider';
+import type { WorkRole } from '../../services/work-experience/workModel';
 import ResumeExperience from './components/ResumeExperience';
 import ResumeHeader from './components/ResumeHeader';
 import ResumeProjects from './components/ResumeProjects';
 import ResumeSection from './components/ResumeSection';
 import ResumeSkills from './components/ResumeSkills';
-import type { ResumeDocumentData, ResumeDocumentLabels } from './types';
-
-export type { ResumeDocumentData } from './types';
 
 interface ResumeDocumentProps {
-  data: ResumeDocumentData;
+  roles: WorkRole[];
   projects: Project[];
-  labels: ResumeDocumentLabels;
 }
 
 export default function ResumeDocument({
-  data,
+  roles,
   projects,
-  labels,
 }: ResumeDocumentProps) {
+  const { messages: t } = useTranslation();
+  const languages = [t.resume.languages.portuguese, t.resume.languages.english];
+
   return (
-    <Box
+    <Paper
       component="article"
+      variant="outlined"
+      square
+      elevation={0}
       sx={{
         boxSizing: 'border-box',
         mx: 'auto',
         maxWidth: 768,
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 0,
-        bgcolor: 'background.paper',
         p: 4,
-        color: 'text.primary',
         boxShadow: 1,
         fontFamily: 'system-ui, sans-serif',
         fontSize: 13,
@@ -51,38 +49,35 @@ export default function ResumeDocument({
     >
       <Stack spacing={3}>
         <ResumeHeader
-          name={data.name}
-          title={data.title}
-          username={data.username}
+          name={t.home.name}
+          title={`${t.home.title} • ${t.home.subtitle}`}
+          username={t.home.username}
         />
 
-        <ResumeSection title={labels.resume.summaryTitle}>
-          <Typography variant="body2">{data.summary}</Typography>
+        <ResumeSection title={t.resume.summaryTitle}>
+          <Typography variant="body2">{t.resume.summary}</Typography>
         </ResumeSection>
 
-        <ResumeExperience
-          title={labels.resume.experienceTitle}
-          roles={data.roles}
-        />
+        <ResumeExperience title={t.resume.experienceTitle} roles={roles} />
 
         <ResumeProjects
-          title={labels.projectTitle}
+          title={t.projects.title}
           projects={projects}
-          links={labels.projectLinks}
+          links={{ github: t.links.github, demo: t.links.demo }}
         />
 
-        <ResumeSkills skills={labels.skills} />
+        <ResumeSkills skills={t.skills} />
 
-        {data.languages.length > 0 && (
-          <ResumeSection title={labels.resume.languagesTitle}>
+        {languages.length > 0 && (
+          <ResumeSection title={t.resume.languagesTitle}>
             <Box component="ul">
-              {data.languages.map((language) => (
+              {languages.map((language) => (
                 <li key={language}>{language}</li>
               ))}
             </Box>
           </ResumeSection>
         )}
       </Stack>
-    </Box>
+    </Paper>
   );
 }

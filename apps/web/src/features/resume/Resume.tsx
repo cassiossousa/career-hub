@@ -5,11 +5,10 @@ import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
 import { mapContentToWorkRoles } from '../../services/work-experience/workModel';
 import ResumeDocument from './ResumeDocument';
-import type { ResumeDocumentData, ResumeDocumentLabels } from './types';
 
 export default function Resume() {
   const { locale, messages: t } = useTranslation();
-  const { data, projects } = useMemo(() => {
+  const { roles, projects } = useMemo(() => {
     const roles = mapContentToWorkRoles(
       content[locale].workExperience,
       t,
@@ -20,31 +19,8 @@ export default function Resume() {
       project.topics?.includes('resume'),
     );
 
-    const data: ResumeDocumentData = {
-      name: t.home.name,
-      title: `${t.home.title} • ${t.home.subtitle}`,
-      username: t.home.username,
-      summary: t.resume.summary,
-      roles,
-      languages: [t.resume.languages.portuguese, t.resume.languages.english],
-    };
-
-    return { data, projects };
+    return { roles, projects };
   }, [locale, t]);
-
-  const labels: ResumeDocumentLabels = {
-    resume: {
-      summaryTitle: t.resume.summaryTitle,
-      experienceTitle: t.resume.experienceTitle,
-      languagesTitle: t.resume.languagesTitle,
-    },
-    projectTitle: t.projects.title,
-    projectLinks: {
-      github: t.links.github,
-      demo: t.links.demo,
-    },
-    skills: t.skills,
-  };
 
   return (
     <Container
@@ -79,7 +55,7 @@ export default function Resume() {
         >
           {t.resume.printInstructions}
         </Typography>
-        <ResumeDocument data={data} projects={projects} labels={labels} />
+        <ResumeDocument roles={roles} projects={projects} />
       </Stack>
     </Container>
   );

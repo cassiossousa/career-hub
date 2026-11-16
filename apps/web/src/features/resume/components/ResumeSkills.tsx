@@ -1,12 +1,12 @@
 import { Box } from '@mui/material';
 import { skills as skillGroups } from '../../../services/skills';
-import type { ResumeSkillLabels } from '../types';
+import type { Translation } from '../../../types/i18n';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeSkills({
   skills,
 }: {
-  skills: ResumeSkillLabels;
+  skills: Translation['skills'];
 }) {
   const skillEntries = Object.entries(skillGroups) as [
     keyof typeof skillGroups,

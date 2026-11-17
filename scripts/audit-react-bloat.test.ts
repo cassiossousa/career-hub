@@ -35,6 +35,18 @@ describe('React bloat audit', () => {
     expect(tooManyProps.status).toBe(1);
     expect(tooManyProps.stderr).toContain('ExcessiveProps has 7 props');
 
+    const booleanFlagSoup = runAudit(`
+      interface BooleanFlagSoupProps {
+        first: boolean;
+        second: boolean;
+        third: boolean;
+      }
+    `);
+    expect(booleanFlagSoup.status).toBe(1);
+    expect(booleanFlagSoup.stderr).toContain(
+      'BooleanFlagSoupProps has 3 boolean props',
+    );
+
     const boundedProps = runAudit(`
       interface BoundedProps {
         one: string;
@@ -49,6 +61,9 @@ describe('React bloat audit', () => {
   });
 
   it('rejects TSX files over the size limit', () => {
+    const boundaryFile = runAudit(`${'const line = 1;\n'.repeat(180)}`);
+    expect(boundaryFile.status).toBe(0);
+
     const oversizedFile = runAudit(`${'const line = 1;\n'.repeat(181)}`);
     expect(oversizedFile.status).toBe(1);
     expect(oversizedFile.stderr).toContain('TSX file has 181 lines');

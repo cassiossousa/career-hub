@@ -32,3 +32,5 @@ Run the automated verification pipeline and resolve all failures before respondi
 ```bash
 npm run verify:all
 ```
+
+Git pre-push runs the lighter `npm run verify:push` gate; pull-request CI also runs incremental mutation testing for changed TypeScript source files.

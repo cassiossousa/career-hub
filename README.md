@@ -79,7 +79,7 @@ server-capable hosting and should live outside the web bundle.
 - Component tests with @testing-library
 - Type-safe codebase with TypeScript
 - Linting with ESLint, Oxlint, and Biome
-- `npm run verify:all` runs lint, formatting, type, test, build, dead-code, and architecture checks
+- `npm run verify:all` runs lint, formatting, type, test, build, dead-code, React-bloat, and architecture checks
 - Pre-commit hooks fix and format staged files with Oxlint, Biome, and Prettier.
 - Pre-push hooks run TypeScript, Knip, React-bloat, and architecture checks.
 - Pull-request CI runs incremental Stryker mutation tests on changed source files.

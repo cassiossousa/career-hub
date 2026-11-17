@@ -85,17 +85,19 @@ function analyzeSourceFile(sourceFile) {
 }
 
 function getSourceFiles() {
-  return ts.sys.readDirectory(
-    sourceRoot,
-    ['.ts', '.tsx'],
-    [
-      '**/*.d.ts',
-      '**/*.test.ts',
-      '**/*.test.tsx',
-      '**/*.spec.ts',
-      '**/*.spec.tsx',
-    ],
-  );
+  return ts.sys
+    .readDirectory(
+      sourceRoot,
+      ['.ts', '.tsx'],
+      [
+        '**/*.d.ts',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/*.spec.ts',
+        '**/*.spec.tsx',
+      ],
+    )
+    .toSorted();
 }
 
 function main() {

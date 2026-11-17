@@ -33,4 +33,6 @@ If you modified business logic, reducers, or utility functions in `domain/` or `
 npm run check:mutate:diff
 ```
 
+Pre-commit fixes staged files; pre-push runs `npm run verify:push`. Pull-request CI also runs incremental mutation tests for changed TypeScript source files.
+
 Do not claim a task is complete until all commands exit with code `0`.

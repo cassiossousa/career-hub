@@ -27,6 +27,7 @@
     "dev": "npm run dev --workspace @portfolio/web",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:staged": "lint-staged",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
     "start": "npm run start --workspace @portfolio/web",

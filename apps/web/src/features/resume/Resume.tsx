@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { Button, Container, Stack, Typography } from '@mui/material';
 import { content } from 'virtual:portfolio-content';
+import { Button, Container, Stack, Typography } from '@mui/material';
+import { useMemo } from 'react';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
 import {
@@ -12,15 +12,15 @@ import ResumeDocument from './ResumeDocument';
 export default function Resume() {
   const { locale, messages: t } = useTranslation();
   const { roles, projects } = useMemo(() => {
-    const roles = sortRolesByStart(
+    const sortedRoles = sortRolesByStart(
       mapContentToWorkRoles(content[locale].workExperience, t, locale),
     );
 
-    const projects = getProjects(locale).filter((project) =>
+    const resumeProjects = getProjects(locale).filter((project) =>
       project.topics?.includes('resume'),
     );
 
-    return { roles, projects };
+    return { roles: sortedRoles, projects: resumeProjects };
   }, [locale, t]);
 
   return (

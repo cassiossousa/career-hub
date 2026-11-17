@@ -1,7 +1,7 @@
+import { content } from 'virtual:portfolio-content';
+import type { ProjectEntry } from '../../types/content';
 import type { Locale } from '../../types/i18n';
 import type { Project } from '../../types/project';
-import type { ProjectEntry } from '../../types/content';
-import { content } from 'virtual:portfolio-content';
 
 function fromProjectEntry(entry: ProjectEntry): Project {
   return {

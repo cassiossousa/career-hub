@@ -1,5 +1,5 @@
-import { useTranslation } from '../../i18n/provider';
 import { content } from 'virtual:portfolio-content';
+import { useTranslation } from '../../i18n/provider';
 import {
   mapContentToWorkRoles,
   sortRolesByStart,

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Container,
@@ -8,12 +9,11 @@ import {
   Stack,
   Toolbar,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import LanguageSwitcher from './LanguageSwitcher';
-import { useTranslation } from '../i18n/provider';
 import { navigationItems, routePaths } from '../app/routePaths';
+import { useTranslation } from '../i18n/provider';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const { messages: t } = useTranslation();

@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import matter from 'gray-matter';
-import { getEntry, getSlugs, getAllEntries } from './content';
+import { getAllEntries, getEntry, getSlugs } from './content';
 
 // Type for gray-matter result
 interface GrayMatterResult {
@@ -16,8 +16,8 @@ interface GrayMatterResult {
 }
 
 // Mock modules
-jest.mock('fs');
-jest.mock('path');
+jest.mock('node:fs');
+jest.mock('node:path');
 jest.mock('gray-matter');
 
 const mockFs = fs as jest.Mocked<typeof fs> & {

@@ -1,3 +1,4 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -7,9 +8,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import type { Translation } from '../../types/i18n';
 import type { WorkRole } from '../../services/work-experience/workModel';
+import type { Translation } from '../../types/i18n';
 
 export function WorkExperienceList({
   roles,
@@ -25,8 +25,11 @@ export function WorkExperienceList({
           {t.workExperience.title}
         </Typography>
         <Stack>
-          {roles.map((role, index) => (
-            <AccordionItem key={`${role.company}-${index}`} role={role} />
+          {roles.map((role) => (
+            <AccordionItem
+              key={`${role.company}-${role.title}-${role.start ?? role.period}`}
+              role={role}
+            />
           ))}
         </Stack>
       </Stack>
@@ -53,8 +56,8 @@ function AccordionItem({ role }: { role: WorkRole }) {
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>
         <Box component="ul" sx={{ mt: 0, pl: 3 }}>
-          {role.bullets.map((bullet, index) => (
-            <li key={`${index}-${bullet}`}>{bullet}</li>
+          {role.bullets.map((bullet) => (
+            <li key={bullet}>{bullet}</li>
           ))}
         </Box>
       </AccordionDetails>

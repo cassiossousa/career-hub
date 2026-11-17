@@ -11,7 +11,7 @@ export interface WorkRole {
   bullets: string[];
 }
 
-export interface WorkRoleValidationError {
+interface WorkRoleValidationError {
   field: string;
   message: string;
 }
@@ -27,7 +27,7 @@ function validateDate(dateString?: string): Date | null {
   if (!dateString) return null;
 
   const date = new Date(dateString);
-  return isNaN(date.getTime()) ? null : date;
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function buildPeriod(
@@ -60,9 +60,7 @@ function buildPeriod(
   return `${startStr} - ${endStr}`;
 }
 
-export function validateWorkRole(
-  entry: ContentEntry,
-): WorkRoleValidationError[] {
+function validateWorkRole(entry: ContentEntry): WorkRoleValidationError[] {
   const errors: WorkRoleValidationError[] = [];
   const { company, role, start, end } = entry.frontmatter;
 
@@ -128,7 +126,7 @@ export function mapContentToWorkRoles(
 }
 
 export function sortRolesByStart(roles: WorkRole[]): WorkRole[] {
-  return roles.sort((a, b) => {
+  return roles.toSorted((a, b) => {
     const aDate = validateDate(a.start);
     const bDate = validateDate(b.start);
 

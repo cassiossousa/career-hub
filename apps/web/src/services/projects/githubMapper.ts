@@ -1,7 +1,6 @@
 import matter from 'gray-matter';
-
-import type { Project } from '../../types/project';
 import type { GitHubRepo } from '../../types/github';
+import type { Project } from '../../types/project';
 
 function extractStack(repo: GitHubRepo): string[] {
   const stack = new Set<string>();

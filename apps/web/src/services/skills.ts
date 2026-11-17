@@ -1,4 +1,4 @@
-import { Translation } from '../types/i18n';
+import type { Translation } from '../types/i18n';
 
 export const skills: {
   [s in keyof Omit<Translation['skills'], 'title'>]: string[];

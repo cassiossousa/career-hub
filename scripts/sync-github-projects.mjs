@@ -13,7 +13,9 @@ import { normalizeGithubRepo } from '../apps/web/src/services/projects/githubMap
 
 function clean(obj) {
   return Object.fromEntries(
-    Object.entries(obj).filter(([, value]) => value !== undefined && value !== null),
+    Object.entries(obj).filter(
+      ([, value]) => value !== undefined && value !== null,
+    ),
   );
 }
 

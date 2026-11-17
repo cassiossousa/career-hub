@@ -1,7 +1,7 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
-import type { Project } from '../../types/project';
 import { useTranslation } from '../../i18n/provider';
 import type { WorkRole } from '../../services/work-experience/workModel';
+import type { Project } from '../../types/project';
 import ResumeExperience from './components/ResumeExperience';
 import ResumeHeader from './components/ResumeHeader';
 import ResumeProjects from './components/ResumeProjects';

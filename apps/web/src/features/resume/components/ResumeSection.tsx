@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
 import { Divider, Stack, Typography } from '@mui/material';
+import type { ReactNode } from 'react';
 
 export default function ResumeSection({
   title,

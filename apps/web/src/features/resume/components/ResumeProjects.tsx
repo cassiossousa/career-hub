@@ -1,6 +1,6 @@
 import { Box, Link, Stack, Typography } from '@mui/material';
-import type { Project } from '../../../types/project';
 import type { Translation } from '../../../types/i18n';
+import type { Project } from '../../../types/project';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeProjects({

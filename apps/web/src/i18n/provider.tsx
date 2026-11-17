@@ -1,6 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { Locale } from '../types/i18n';
-import { Translation } from '../types/i18n';
+import type { Locale, Translation } from '../types/i18n';
 import { getDictionary } from './dictionaries';
 
 interface TranslationContextValue {

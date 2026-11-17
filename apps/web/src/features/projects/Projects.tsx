@@ -1,4 +1,3 @@
-import { generatePath, Link } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -9,9 +8,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { generatePath, Link } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import { useTranslation } from '../../i18n/provider';
 import { getProjects } from '../../services/projects/getProjects';
-import { routePaths } from '../../app/routePaths';
 
 export default function Projects() {
   const { locale, messages: t } = useTranslation();

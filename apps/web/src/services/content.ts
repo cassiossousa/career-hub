@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import matter from 'gray-matter';
 
-import { ContentEntry, ContentType } from '../types/content';
+import type { ContentEntry, ContentType } from '../types/content';
 
 const CONTENT_ROOT = path.join(
   process.env.PORTFOLIO_ROOT ?? process.cwd(),

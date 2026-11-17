@@ -14,10 +14,10 @@ export default function ResumeExperience({
   return (
     <ResumeSection title={title}>
       <Stack spacing={2}>
-        {roles.map((role, index) => (
+        {roles.map((role) => (
           <Box
             component="article"
-            key={`${role.company}-${role.period}-${index}`}
+            key={`${role.company}-${role.title}-${role.start ?? role.period}`}
             sx={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}
           >
             <Stack component="header" spacing={0.5}>
@@ -31,8 +31,8 @@ export default function ResumeExperience({
               </Typography>
             </Stack>
             <Box component="ul">
-              {role.bullets.map((bullet, bulletIndex) => (
-                <li key={`${bulletIndex}-${bullet}`}>{bullet}</li>
+              {role.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
               ))}
             </Box>
           </Box>

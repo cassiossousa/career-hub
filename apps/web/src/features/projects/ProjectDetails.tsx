@@ -1,8 +1,8 @@
-import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Chip, Container, Grid, Link, Stack, Typography } from '@mui/material';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import { useTranslation } from '../../i18n/provider';
 import { getProject } from '../../services/projects/getProjects';
-import { routePaths } from '../../app/routePaths';
 
 function Section({ title, items }: { title: string; items?: string[] }) {
   if (!items?.length) return null;

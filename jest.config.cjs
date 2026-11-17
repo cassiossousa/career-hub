@@ -1,4 +1,4 @@
-const config = {
+module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/apps/web/setupTests.ts'],
   moduleNameMapper: {
@@ -17,5 +17,3 @@ const config = {
     '!**/node_modules/**',
   ],
 };
-
-export default config;

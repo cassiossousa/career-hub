@@ -78,7 +78,8 @@ server-capable hosting and should live outside the web bundle.
 - Unit tests with Jest
 - Component tests with @testing-library
 - Type-safe codebase with TypeScript
-- Linting and formatting with ESLint and Prettier
+- Linting with ESLint, Oxlint, and Biome
+- `npm run verify:all` runs lint, formatting, type, test, build, dead-code, and architecture checks
 
 ## Demo
 
@@ -96,4 +97,4 @@ npm run dev
 ```
 
 Project metadata is bundled from `content/` during the Vite build. To refresh
-GitHub-sourced project metadata, run `npm run sync-projects` before building.
+GitHub-sourced project metadata, run `npm run sync:projects` before building.

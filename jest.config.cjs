@@ -11,6 +11,7 @@ module.exports = {
     ],
   },
   testMatch: ['**/*.(test|spec).(ts|tsx)'],
+  testPathIgnorePatterns: ['<rootDir>/apps/web/e2e/'],
   collectCoverageFrom: [
     'apps/web/src/**/*.(ts|tsx)',
     '!**/*.d.ts',

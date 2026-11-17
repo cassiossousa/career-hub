@@ -1,9 +1,9 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import type { Locale } from './src/types/i18n';
+import { defineConfig, type Plugin } from 'vite';
 import type { ContentEntry, ContentType } from './src/types/content';
+import type { Locale } from './src/types/i18n';
 
 const virtualModuleId = 'virtual:portfolio-content';
 const resolvedVirtualModuleId = `\0${virtualModuleId}`;

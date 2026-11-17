@@ -5,11 +5,13 @@ You are working in a remediated, strictly typed front-end codebase. Your goal is
 ## 1. Architectural Boundaries
 
 - **Framework:** Vite + React SPA with strict client-side state separation.
-- **Directory Boundaries:**
-  - `src/routes/` — Route entrypoints and lazy boundaries only.
-  - `src/features/<domain>/` — Self-contained domain slices (UI components, domain hooks, state machines, tests). Never import internals from sibling features.
-  - `src/components/ui/` — Pure, stateless design-system primitives. Zero API or store imports.
-  - `src/domain/` — Pure TypeScript domain models, validators, and state reducers.
+- **Directory Boundaries** (under `apps/web/src/`):
+  - `app/` — Theme, route path constants, app-level wiring only.
+  - `features/<domain>/` — Self-contained domain slices (UI components, tests). Never import internals from sibling features; enforced by `apps/web/src/architecture.spec.ts`.
+  - `components/` — Shared presentational components. Must not import from `features/` or `services/`; enforced by `apps/web/src/architecture.spec.ts`.
+  - `services/`, `i18n/`, `types/` — Shared infrastructure layers features may consume.
+  - `e2e/` (sibling of `src/`) — Playwright browser specs. Excluded from Jest via `testPathIgnorePatterns`.
+- **Dependency cycles** anywhere in `apps/web/src` are forbidden; enforced by `npm run check:arch` (dependency-cruiser).
 
 ## 2. Hard Forbidden Anti-Patterns (Instant Rejection)
 
@@ -33,6 +35,28 @@ If you modified business logic, reducers, or utility functions in `domain/` or `
 npm run check:mutate:diff
 ```
 
-Pre-commit fixes staged files; pre-push runs `npm run verify:push`. Pull-request CI also runs incremental mutation tests for changed TypeScript source files.
+### Deep post-generation gate
 
-Do not claim a task is complete until all commands exit with code `0`.
+After any AI-assisted generation or refactor pass, ALSO run the deep audit. It layers runtime checks that `verify:all` intentionally excludes (they need a browser and a built bundle):
+
+```bash
+npm run audit:deep
+```
+
+`audit:deep` runs, in order, aborting on the first failure:
+
+1. `npm run check:arch` — dependency-cruiser boundary/cycle check.
+2. `npx jest apps/web/src/architecture.spec.ts` — feature-isolation and shared-component purity guardrails.
+3. `npx playwright test` — real-browser smoke + WCAG 2.1 AA audits for every public route (`apps/web/e2e/smoke.spec.ts`, config in `playwright.config.ts`, dev server on port 4173).
+4. Production-build memory-leak detection via `@memlab/api` (`scripts/memlab-run.cjs` + `scripts/memlab-portfolio.cjs`): builds the app, serves `vite preview` on port 4173, and fails on leaked-object clusters. Artifacts land in `.memlab/` (gitignored).
+
+Prerequisite (one-time per machine): `npx playwright install chromium`. The MemLab step reuses the Playwright Chromium binary when present.
+
+### CI, hooks, and local gates
+
+- **CI** (`.github/workflows/ci.yml`): `verify:all` on every push/PR, `check:mutate:diff` on PRs, and a dedicated `e2e` job that installs Playwright Chromium and runs `npm run test:e2e`.
+- **Pre-commit** (`.husky/pre-commit`): `lint-staged` — oxlint, biome, prettier on staged files.
+- **Pre-push** (`.husky/pre-push`): `npm run verify:push` (types + knip + bloat + arch only; browser gates stay out of the push path).
+- **Gitignored audit artifacts:** `.memlab/`, `test-results/`, `playwright-report/`, `dist/`.
+
+Do not claim a task is complete until `npm run verify:all` exits with code `0`; run `npm run audit:deep` whenever the change touched runtime behavior, routing, styling, or dependencies.

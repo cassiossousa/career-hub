@@ -11,13 +11,14 @@ Follow this exact 4-step protocol whenever implementing a feature or bugfix:
 
 Before creating any new component, hook, or utility:
 
-1. Search `src/components/ui/` and `src/domain/` for existing primitives.
+1. Search `apps/web/src/components/`, `apps/web/src/services/`, and `apps/web/src/app/` for existing primitives.
 2. Check `package.json`—do NOT add new dependencies when existing utilities or native Web APIs suffice.
+3. Respect enforced boundaries: features under `apps/web/src/features/` must not import sibling features, and `apps/web/src/components/` must not import features or services (`apps/web/src/architecture.spec.ts` fails otherwise).
 
 ## Step 2: Keep Diffs Small & Vertically Bounded
 
 1. Touch the minimum number of files required. Avoid drive-by rewrites of unrelated files.
-2. Keep UI components under **150 lines**. Extract pure business logic and data transformations into `src/domain/` functions so they can be tested without mounting React.
+2. Keep UI components under **150 lines**. Extract pure business logic and data transformations into `apps/web/src/services/` or `apps/web/src/domain/`-style pure functions so they can be tested without mounting React.
 3. Explicitly type all function return values and error states.
 
 ## Step 3: Write Falsifiable Tests
@@ -33,4 +34,10 @@ Run the automated verification pipeline and resolve all failures before respondi
 npm run verify:all
 ```
 
-Git pre-push runs the lighter `npm run verify:push` gate; pull-request CI also runs incremental mutation testing for changed TypeScript source files.
+For changes touching runtime behavior, routing, styling, or dependencies, also run the deep gate (requires `npx playwright install chromium` once per machine):
+
+```bash
+npm run audit:deep
+```
+
+`audit:deep` adds dependency-cruiser arch checks, the Jest boundary spec, Playwright smoke + WCAG AA audits (`apps/web/e2e/`), and a production-build MemLab leak check. CI runs `verify:all`, the e2e job, and incremental mutation testing on PRs; pre-commit runs lint-staged and pre-push runs `npm run verify:push`.

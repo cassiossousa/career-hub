@@ -8,6 +8,9 @@
 # testing
 /coverage
 /.stryker-tmp/
+/.memlab/
+/test-results/
+/playwright-report/
 
 # build output
 **/dist/

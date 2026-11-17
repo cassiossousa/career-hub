@@ -1,23 +1,26 @@
 ---
+
 title: professional-portfolio
 repo: https://github.com/cassiossousa/professional-portfolio
 demo: https://professional-portfolio-mu-gray.vercel.app
 featured: true
 category: fullstack
 technologies:
-  - React
-  - TypeScript
-  - Tailwind
-  - Vite
-  - Jest
-summary:
-  - Developer portfolio built with React, TypeScript, and Vite
-  - Automatically generates a resume filled with highlighted GitHub projects' metadata
-  - Browser-based resume printing and PDF export
-highlights:
-  - Automated resume generation
-  - Accessible, responsive UI
-  - GitHub-driven project metadata
+
+- React
+- TypeScript
+- Tailwind
+- Vite
+- Jest
+  summary:
+- Developer portfolio built with React, TypeScript, and Vite
+- Automatically generates a resume filled with highlighted GitHub projects' metadata
+- Browser-based resume printing and PDF export
+  highlights:
+- Automated resume generation
+- Accessible, responsive UI
+- GitHub-driven project metadata
+
 ---
 
 # Professional Portfolio

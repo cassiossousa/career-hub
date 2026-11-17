@@ -16,6 +16,7 @@
     "packages/*"
   ],
   "scripts": {
+    "prepare": "husky",
     "build": "npm run build --workspace @portfolio/web",
     "check:fast": "oxlint --deny-warnings -D correctness -D suspicious apps/web/src scripts/check-mutation-diff.mjs stryker.config.mjs && biome check apps/web/src scripts/check-mutation-diff.mjs stryker.config.mjs",
     "check:types": "tsc -b",
@@ -37,6 +38,18 @@
     "tsc": "tsc -b",
     "unimported": "npx knip --production --dependencies --files"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "oxlint --fix --deny-warnings -D correctness -D suspicious",
+      "biome check --write",
+      "prettier --write"
+    ],
+    "*.css": [
+      "biome check --write",
+      "prettier --write"
+    ],
+    "*.{json,jsonc,html,md,mdx,yml,yaml}": "prettier --write"
+  },
   "overrides": {
     "@stryker-mutator/core": {
       "minimatch": "11.0.9"
@@ -53,9 +66,11 @@
     "dotenv": "17.3.1",
     "eslint": "9.39.4",
     "gray-matter": "4.0.3",
+    "husky": "9.1.7",
     "jest": "29.7.0",
     "jest-environment-jsdom": "30.3.0",
     "knip": "6.45.1",
+    "lint-staged": "17.6.1",
     "oxlint": "1.94.0",
     "prettier": "3.8.1",
     "ts-jest": "29.4.15",

@@ -30,7 +30,7 @@ export default function ResumeProjects({
                   <Typography
                     component="span"
                     variant="caption"
-                    color="text.secondary"
+                    sx={{ color: 'text.secondary' }}
                   >
                     {' '}
                     ({project.technologies.join(', ')})
@@ -55,7 +55,10 @@ export default function ResumeProjects({
                     </Link>
                   )}
                   {project.repo && project.demo && (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary' }}
+                    >
                       •
                     </Typography>
                   )}

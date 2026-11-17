@@ -15,7 +15,11 @@ export default function ResumeHeader({
       <Typography component="h1" variant="h5">
         {name}
       </Typography>
-      <Typography component="p" variant="body2" color="text.secondary">
+      <Typography
+        component="p"
+        variant="body2"
+        sx={{ color: 'text.secondary' }}
+      >
         {title}
       </Typography>
       <Stack
@@ -32,7 +36,7 @@ export default function ResumeHeader({
         >
           github.com/{username}
         </Link>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           •
         </Typography>
         <Link

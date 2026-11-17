@@ -40,8 +40,8 @@ export default function Projects() {
                         slug: project.slug,
                       })}
                       variant="h3"
-                      color="text.primary"
                       underline="hover"
+                      sx={{ color: 'text.primary' }}
                     >
                       {project.title}
                     </MuiLink>

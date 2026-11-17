@@ -22,7 +22,7 @@ export default function Footer() {
         >
           <Stack spacing={0.5}>
             <Typography variant="subtitle1">{t.home.name}</Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {t.home.title}
             </Typography>
           </Stack>
@@ -51,7 +51,7 @@ export default function Footer() {
             </Link>
           </Stack>
 
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             © {year} {t.home.name}
           </Typography>
         </Stack>

@@ -37,7 +37,14 @@ export default function Navbar() {
       }}
     >
       <Toolbar disableGutters sx={{ minHeight: '80px !important' }}>
-        <Container maxWidth="md">
+        <Container
+          maxWidth="md"
+          sx={{
+            px: { xs: 2, sm: 2 },
+            pl: { md: 0 },
+            pr: { md: 3 },
+          }}
+        >
           <Stack
             direction="row"
             spacing={2}
@@ -46,50 +53,57 @@ export default function Navbar() {
               justifyContent: 'space-between',
             }}
           >
-            <Stack
-              direction="row"
-              spacing={3}
-              sx={{ display: { xs: 'none', md: 'flex' } }}
-            >
-              {links.map((link) => (
-                <MuiLink
-                  key={link.to}
-                  component={RouterLink}
-                  to={link.to}
-                  color="text.secondary"
-                  underline="hover"
-                >
-                  {link.label}
-                </MuiLink>
-              ))}
-            </Stack>
-
-            <MuiLink
-              component={RouterLink}
-              to={routePaths.home}
-              color="text.primary"
-              underline="none"
-              noWrap
-              sx={{
-                display: { xs: 'block', md: 'none' },
-                maxWidth: '45vw',
-                fontWeight: 600,
-              }}
-            >
-              {t.home.name}
-            </MuiLink>
-
-            <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-              <IconButton
-                onClick={() => setMobileOpen((open) => !open)}
-                aria-label={t.navigation.toggleMenu}
-                aria-expanded={mobileOpen}
-                sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+            <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  alignItems: 'center',
+                }}
               >
-                {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-              </IconButton>
-              <LanguageSwitcher />
+                <IconButton
+                  onClick={() => setMobileOpen((open) => !open)}
+                  aria-label={t.navigation.toggleMenu}
+                  aria-expanded={mobileOpen}
+                >
+                  {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+                </IconButton>
+                <MuiLink
+                  component={RouterLink}
+                  to={routePaths.home}
+                  underline="none"
+                  noWrap
+                  sx={{
+                    maxWidth: '45vw',
+                    fontWeight: 600,
+                    color: 'text.primary',
+                  }}
+                >
+                  {t.home.name}
+                </MuiLink>
+              </Stack>
+
+              <Stack
+                direction="row"
+                spacing={3}
+                sx={{ display: { xs: 'none', md: 'flex' } }}
+              >
+                {links.map((link) => (
+                  <MuiLink
+                    key={link.to}
+                    component={RouterLink}
+                    to={link.to}
+                    underline="hover"
+                    sx={{ color: 'text.secondary' }}
+                  >
+                    {link.label}
+                  </MuiLink>
+                ))}
+              </Stack>
             </Stack>
+
+            <LanguageSwitcher />
           </Stack>
         </Container>
       </Toolbar>
@@ -107,9 +121,9 @@ export default function Navbar() {
                   key={link.to}
                   component={RouterLink}
                   to={link.to}
-                  color="text.primary"
                   underline="hover"
                   onClick={() => setMobileOpen(false)}
+                  sx={{ color: 'text.primary' }}
                 >
                   {link.label}
                 </MuiLink>

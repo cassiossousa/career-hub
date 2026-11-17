@@ -25,7 +25,7 @@ export default function ResumeExperience({
                 {role.company}
               </Typography>
               <Typography variant="subtitle2">{role.title}</Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 {role.location && `${role.location} | `}
                 {role.period}
               </Typography>

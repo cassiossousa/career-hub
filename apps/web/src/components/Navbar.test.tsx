@@ -13,9 +13,16 @@ describe('Navbar', () => {
       </MemoryRouter>,
     );
 
+    const homeLink = screen.getByRole('link', {
+      name: 'Cássio dos Santos Sousa',
+    });
+    const menuButton = screen.getByRole('button', { name: 'Toggle menu' });
+
+    expect(homeLink).toHaveAttribute('href', '/');
     expect(
-      screen.getByRole('link', { name: 'Cássio dos Santos Sousa' }),
-    ).toHaveAttribute('href', '/');
+      menuButton.compareDocumentPosition(homeLink) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
 
     expect(screen.getByRole('link', { name: /^Resume/ })).toHaveAttribute(
       'href',

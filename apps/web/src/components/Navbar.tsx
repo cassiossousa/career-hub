@@ -26,10 +26,11 @@ export default function Navbar() {
   return (
     <AppBar
       component="nav"
-      position="fixed"
+      position="sticky"
       color="default"
       elevation={0}
       sx={{
+        gridColumn: '1 / -1',
         height: 80,
         borderBottom: 1,
         borderColor: 'divider',
@@ -37,14 +38,7 @@ export default function Navbar() {
       }}
     >
       <Toolbar disableGutters sx={{ minHeight: '80px !important' }}>
-        <Container
-          maxWidth="md"
-          sx={{
-            px: { xs: 2, sm: 2 },
-            pl: { md: 0 },
-            pr: { md: 3 },
-          }}
-        >
+        <Container maxWidth="md">
           <Stack
             direction="row"
             spacing={2}

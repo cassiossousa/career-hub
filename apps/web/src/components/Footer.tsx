@@ -9,12 +9,13 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
+        gridColumn: '1 / -1',
         borderTop: 1,
         borderColor: 'divider',
         '@media print': { display: 'none' },
       }}
     >
-      <Container maxWidth="lg" sx={{ py: 5 }}>
+      <Container maxWidth="md" sx={{ py: 5 }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={3}

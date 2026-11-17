@@ -19,7 +19,7 @@ export function WorkExperienceList({
   t: Translation;
 }) {
   return (
-    <Container component="section" maxWidth="md" sx={{ p: 3 }}>
+    <Container component="section" maxWidth="md" sx={{ py: 3 }}>
       <Stack spacing={5}>
         <Typography variant="h1" component="h1">
           {t.workExperience.title}

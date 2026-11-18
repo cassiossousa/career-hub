@@ -80,7 +80,8 @@ async function main() {
   await withPreviewServer(() => run('node apps/web/scripts/memlab-run.mjs'));
 
   console.log('=== [5/5] Core Web Vitals budgets (Lighthouse CI) ===');
-  run('node apps/web/scripts/lighthouse-run.mjs');
+  // dist/ was already built for the MemLab step — skip the duplicate build.
+  run('node apps/web/scripts/lighthouse-run.mjs --skip-build');
 
   console.log('\nAll post-generation verification layers cleared.');
 }

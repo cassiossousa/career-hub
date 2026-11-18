@@ -47,11 +47,7 @@
     "sync:projects:check": "node scripts/sync-github-projects.mjs --check",
     "test": "jest --config apps/web/jest.config.cjs",
     "test:e2e": "playwright test --config apps/web/playwright.config.ts",
-    "test:cov": "jest --config apps/web/jest.config.cjs --coverage",
-    "ts:prune": "npx knip --include exports,types,nsExports,nsTypes",
-    "ts:unused-exports": "npx knip --include exports,types,nsExports,nsTypes",
-    "tsc": "tsc -b",
-    "unimported": "npx knip --production --dependencies --files"
+    "test:cov": "jest --config apps/web/jest.config.cjs --coverage"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [

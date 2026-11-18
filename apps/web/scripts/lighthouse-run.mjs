@@ -12,5 +12,7 @@ const chromePath = resolvePlaywrightChromium();
 const env = { ...process.env };
 if (chromePath) env.CHROME_PATH = chromePath;
 
-run('npm run build', env);
+if (!process.argv.includes('--skip-build')) {
+  run('npm run build', env);
+}
 run('npx lhci autorun', env);

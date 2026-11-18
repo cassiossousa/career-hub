@@ -20,7 +20,7 @@ You are working in a remediated, strictly typed front-end codebase. Your goal is
 - **NO Prop-Drilling Soup:** Components accepting > 6 props must be decomposed or backed by a bounded domain hook/context.
 - **NO Ghost Files or Unapproved Dependencies:** Do not install new `npm` packages without explicit approval. Do not leave unused exports, dead helpers, or commented-out code blocks behind.
 - **NO Tautological "Test Theater":** Never write snapshot tests or `expect(fn).toHaveBeenCalled()` mocks that pass when core business logic is broken.
-- **NO Raw Web Storage:** Never call `localStorage`/`sessionStorage` directly. Use `storageGetItem`/`storageSetItem` from `apps/web/src/app/storage.ts` — raw access throws when storage is disabled (enforced by ESLint `no-restricted-syntax`).
+- **NO Raw Web Storage:** Never call `localStorage`/`sessionStorage` directly. Use `storageGetItem`/`storageSetItem` from `apps/web/src/app/storage.ts` — raw access throws when storage is disabled (enforced by ESLint `no-restricted-syntax`). Sole exception: `app/storage.spec.ts`, which must touch raw storage to test the disabled-storage failure path (scoped per-file override in `eslint.config.ts`).
 - **NO Copy-Paste Sprawl:** Duplicated blocks ≥ 5 lines / 40 tokens fail `npm run check:clones` (jscpd). Extract shared helpers instead.
 
 ## 3. Mandatory Definition of Done (Run Before Finishing)

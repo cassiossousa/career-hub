@@ -27,7 +27,7 @@
     "check:arch": "depcruise apps/web/src --validate .dependency-cruiser.cjs",
     "check:audit": "npm audit --omit=dev --audit-level=high",
     "check:bundle": "node scripts/audit-bundle-budget.mjs",
-    "check:clones": "jscpd apps/web/src apps/web/e2e scripts --min-lines 5 --min-tokens 40 --reporters console",
+    "check:clones": "jscpd apps/web/src apps/web/e2e scripts --min-lines 5 --min-tokens 40 --reporters console --exit-code 1",
     "check:lighthouse": "node scripts/lighthouse-run.mjs",
     "check:mutate:diff": "node scripts/check-mutation-diff.mjs",
     "fix:all": "npm run fix:fast && npm run lint:fix && npm run prettier && npm run verify:all",

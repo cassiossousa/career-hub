@@ -73,6 +73,12 @@ const eslintConfig = defineConfig([
     },
   },
   {
+    // The storage spec must touch raw Web Storage to simulate disabled/quota
+    // storage — that failure path is untestable through the wrapper itself.
+    files: ['apps/web/src/app/storage.spec.ts'],
+    rules: { 'no-restricted-syntax': 'off' },
+  },
+  {
     files: ['apps/web/src/i18n/locales/*.ts'],
     rules: { 'check-file/filename-naming-convention': 'off' },
   },

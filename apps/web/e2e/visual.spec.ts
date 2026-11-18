@@ -13,6 +13,13 @@ const routes = [
 ] as const;
 
 test.describe('visual regression', () => {
+  // Freeze the clock so year-dependent copy (e.g. `yearsSince(2016)` on the
+  // home page) renders identically on every run — otherwise baselines go stale
+  // every Jan 1.
+  test.beforeEach(async ({ page }) => {
+    await page.clock.install({ time: new Date('2026-06-01T00:00:00Z') });
+  });
+
   // Baselines are only generated for win32 (local) and linux (CI container).
   // macOS font rasterization differs and has no committed baseline.
   test.skip(

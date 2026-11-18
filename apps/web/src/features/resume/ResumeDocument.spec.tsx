@@ -13,7 +13,7 @@ describe('ResumeDocument', () => {
         title: 'Frontend Engineer',
         location: 'Remote',
         period: 'Jan 2022 - Present',
-        bullets: ['Built accessible interfaces'],
+        bullets: [{ line: 'Built accessible interfaces', skills: [] }],
       },
     ];
     const projects: Project[] = [

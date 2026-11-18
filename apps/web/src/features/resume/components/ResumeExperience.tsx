@@ -32,7 +32,7 @@ export default function ResumeExperience({
             </Stack>
             <Box component="ul">
               {role.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
+                <li key={bullet.line}>{bullet.line}</li>
               ))}
             </Box>
           </Box>

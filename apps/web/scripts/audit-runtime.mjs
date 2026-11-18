@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 const PORT = 4173;
+const skipBuild = process.argv.includes('--skip-build');
 const BASE_URL = `http://localhost:${PORT}`;
 
 function run(command) {
@@ -61,22 +62,28 @@ async function withPreviewServer(fn) {
 
 async function main() {
   console.log(
-    '=== [1/4] Architectural boundary checks (dependency-cruiser) ===',
+    '=== [1/5] Architectural boundary checks (dependency-cruiser) ===',
   );
   run('npm run check:arch');
 
-  console.log('=== [2/4] Architecture guardrail specs (Jest) ===');
+  console.log('=== [2/5] Architecture guardrail specs (Jest) ===');
   run(
     'npx jest --config apps/web/jest.config.cjs src/architecture.spec.ts --runInBand',
   );
 
   console.log(
-    '=== [3/4] Browser smoke & accessibility checks (Playwright + Axe) ===',
+    '=== [3/5] Browser smoke & accessibility checks (Playwright + Axe) ===',
   );
   run('npx playwright test --config apps/web/playwright.config.ts');
 
   console.log('=== [4/5] Memory leak detection (MemLab, production build) ===');
-  run('npm run build');
+  // --skip-build reuses an existing dist/ (e.g. right after `npm run build` or
+  // `verify:all`) instead of compiling a second time.
+  if (skipBuild) {
+    console.log('Skipping build (--skip-build); reusing existing dist/.');
+  } else {
+    run('npm run build');
+  }
   await withPreviewServer(() => run('node apps/web/scripts/memlab-run.mjs'));
 
   console.log('=== [5/5] Core Web Vitals budgets (Lighthouse CI) ===');

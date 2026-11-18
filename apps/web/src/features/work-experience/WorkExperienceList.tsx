@@ -57,7 +57,7 @@ function AccordionItem({ role }: { role: WorkRole }) {
       <AccordionDetails sx={{ p: 0 }}>
         <Box component="ul" sx={{ mt: 0, pl: 3 }}>
           {role.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
+            <li key={bullet.line}>{bullet.line}</li>
           ))}
         </Box>
       </AccordionDetails>

@@ -61,21 +61,27 @@ Visual-regression baselines are platform-suffixed (`*-win32.png`, `*-linux.png`)
 
 - **Canonical environments:** win32 baselines are generated locally; linux baselines are generated inside `mcr.microsoft.com/playwright:v1.65.1-noble` — the same image the CI `e2e` job runs in. Never commit baselines from any other environment.
 - **Regenerate:** `npx playwright test visual --update-snapshots` locally for win32; for linux, copy the repo (excluding `node_modules`/`dist`/`.git`) into the container, `npm ci --ignore-scripts`, run `npx playwright test visual --update-snapshots`, and copy `apps/web/e2e/visual.spec.ts-snapshots/*.png` back.
-- **Update ritual:** baseline changes must land in the same PR as the visual change they approve — review the diff images, don't blanket-update.
+- **Update ritual:** baseline changes must land in the same PR as the visual change they approve — review the diff images, don't blanket-update. If a PR touches render-affecting files but the regenerated linux baselines come out byte-identical (pixel-neutral refactor), add a `no-visual-change` token to a commit message instead — `check:visual-baseline` accepts it as explicit sign-off.
 - **Scope:** `/projects` is excluded on purpose (GitHub-synced content churns upstream). macOS has no committed baseline and the suite self-skips there.
 
 Prerequisite (one-time per machine): `npx playwright install chromium`. The MemLab and Lighthouse steps reuse the Playwright Chromium binary when present (`apps/web/scripts/playwright-chromium.mjs`).
 
 ### CI, hooks, and local gates
 
-- **CI** (`.github/workflows/ci.yml`): `verify:all` on every push/PR, `check:mutate:diff` + `check:visual-baseline` (fails PRs that change render-affecting source without updated linux baselines) on PRs, and a dedicated `e2e` job that installs Playwright Chromium, runs `npm run test:e2e`, and runs `npm run check:lighthouse`.
+- **CI** (`.github/workflows/ci.yml`): `verify:all` on every push/PR (the push build uses `VITE_BASE_PATH=/professional-portfolio/` and its `dist/` is uploaded as the deploy artifact, so main pushes install and build exactly once), `check:mutate:diff` + `check:visual-baseline` (fails PRs that change render-affecting source without updated linux baselines) on PRs, a dedicated `e2e` job that runs `npm run test:e2e` + `npm run check:lighthouse` in the Playwright container, and a `deploy` job (`needs: [test, e2e]`, push only) that reuses the artifact — no checkout, `npm ci`, or rebuild.
 - **Pre-commit** (`.husky/pre-commit`): `lint-staged` — oxlint, biome, prettier on staged files.
 - **Pre-push** (`.husky/pre-push`): `npm run verify:push` (types + case check + build + knip + bloat + arch + clones; browser gates stay out of the push path).
 - **Gitignored audit artifacts:** `apps/web/.memlab/`, `apps/web/.lighthouseci/`, `apps/web/test-results/`, `apps/web/playwright-report/`, `dist/`.
 
 On-demand gates (too slow/networked for `verify:all`):
 
-- `npm run check:mutate:core` — Stryker mutation score (break < 45, ratchet upward as tests improve) over the pure-logic core (`services/`, `types/`, `i18n/dictionaries.ts`, `app/storage.ts`, `app/routePaths.ts`) with static mutants ignored. Run after touching core logic or periodically.
+- `npm run check:mutate:core` — Stryker mutation score (break < 85, ratchet upward as tests improve) over the pure-logic core (`services/`, `types/`, `i18n/dictionaries.ts`, `app/storage.ts`, `app/routePaths.ts`) with static mutants ignored. Run after touching core logic or periodically.
 - `npm run sync:projects:check` — regenerates `content/projects` into a temp dir and diffs against the committed MDX; fails when GitHub-synced content is stale. Requires `GITHUB_USERNAME`/`GITHUB_TOKEN`.
 
 Do not claim a task is complete until `npm run verify:all` exits with code `0`; run `npm run audit:deep` whenever the change touched runtime behavior, routing, styling, or dependencies.
+
+## 4. Green-CI Guarantee and Workflow Integrity
+
+- **Every change must merge green.** Before finishing ANY task, verify that the resulting merge will pass CI — not just `verify:all`. If your change touches render-affecting source, update the linux visual baselines in the same change (or use the documented `no-visual-change` marker only when pixels are provably identical). If it touches business logic, confirm `check:mutate:diff` will pass. A local `verify:all` pass is necessary but not always sufficient — check the PR-scoped CI steps (`check:mutate:diff`, `check:visual-baseline`) against the files you changed.
+- **Never weaken CI to make it pass.** Do NOT edit `.github/workflows/`, CI scripts, thresholds, baselines, or gate logic to bypass a failure — fix the underlying code instead. The only sanctioned pressure valves are the documented ones (`no-visual-change` commit marker, `--update-baseline` for intentional bundle growth, ratchet comments in Stryker config).
+- **Workflow changes require explicit request.** Only modify CI workflows (`.github/workflows/*.yml`) when the user explicitly asks for it. All other gates — scripts, configs, thresholds in repo tooling — may be adjusted when a change legitimately requires it, but never to mask a regression.

@@ -104,3 +104,7 @@ npm run dev
 
 Project metadata is bundled from `content/` during the Vite build. To refresh
 GitHub-sourced project metadata, run `npm run sync:projects` before building.
+
+The Vite dev server proxies `/api` to `http://localhost:8000` by default;
+override with `API_PROXY_TARGET`. The backend API lives in a separate
+repository.

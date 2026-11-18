@@ -60,6 +60,16 @@ const anyEntryArb: fc.Arbitrary<ContentEntry> = fc.record({
   content: fc.string(),
 });
 
+const workEntry = (
+  frontmatter: ContentEntry['frontmatter'],
+  content = '',
+): ContentEntry => ({
+  slug: 'slug',
+  type: 'work-experience',
+  frontmatter,
+  content,
+});
+
 const roleIdentity = (role: WorkRole) =>
   JSON.stringify([role.company, role.title, role.start, role.end]);
 
@@ -76,7 +86,24 @@ const workRoleArb: fc.Arbitrary<WorkRole> = fc.record({
   start: fc.option(fc.string(), { nil: undefined }),
   end: fc.option(fc.string(), { nil: undefined }),
   period: fc.string(),
-  bullets: fc.array(fc.string()),
+  bullets: fc.array(
+    fc.record({
+      line: fc.string(),
+      skills: fc.array(
+        fc.record({
+          category: fc.constantFrom(
+            'frontend',
+            'backend',
+            'databases',
+            'distributed',
+            'cloud',
+            'testing',
+          ),
+          name: fc.string(),
+        }),
+      ),
+    }),
+  ),
 });
 
 describe('sortRolesByStart', () => {
@@ -171,12 +198,17 @@ describe('mapContentToWorkRoles', () => {
           const expectedBullets = entry.content
             .split('\n')
             .map((line) => line.trim())
-            .filter(Boolean);
+            .filter(Boolean)
+            .map((line) =>
+              line.replace(/<!--\s*skills:\s*(.+?)\s*-->/g, '').trim(),
+            )
+            .filter((line) => line !== '');
 
           return (
             role.company === (entry.frontmatter.company ?? '') &&
             role.title === (entry.frontmatter.role ?? '') &&
-            JSON.stringify(role.bullets) === JSON.stringify(expectedBullets) &&
+            JSON.stringify(role.bullets.map((bullet) => bullet.line)) ===
+              JSON.stringify(expectedBullets) &&
             (entry.frontmatter.start === undefined
               ? role.period === ''
               : role.period !== '')
@@ -195,9 +227,217 @@ describe('mapContentToWorkRoles', () => {
           (role) =>
             role.company.trim() !== '' &&
             role.title.trim() !== '' &&
-            role.bullets.every((bullet) => bullet.trim() !== ''),
+            role.bullets.every((bullet) => bullet.line.trim() !== ''),
         );
       }),
+    );
+  });
+  it('formats periods for dated, open-ended, and undated roles', () => {
+    const roles = mapContentToWorkRoles(
+      [
+        workEntry({
+          company: 'A',
+          role: 'Eng',
+          start: '2020-01-15',
+          end: '2021-03-20',
+        }),
+        workEntry({ company: 'B', role: 'Eng', start: '2022-06-15' }),
+        workEntry({ company: 'C', role: 'Eng' }),
+      ],
+      en,
+      locale,
+    );
+
+    expect(roles.map((role) => role.period)).toEqual([
+      'Jan 2020 - Mar 2021',
+      'Jun 2022 - Present',
+      '',
+    ]);
+  });
+
+  it('rejects invalid dates and reports the offending field', () => {
+    const roles = mapContentToWorkRoles(
+      [
+        workEntry({ company: 'A', role: 'Eng', start: 'not-a-date' }),
+        workEntry({ company: 'B', role: 'Eng', end: 'garbage' }),
+      ],
+      en,
+      locale,
+    );
+
+    expect(roles).toEqual([]);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Invalid work entry for A:',
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'start',
+          message: 'Invalid start date format',
+        }),
+      ]),
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      'Invalid work entry for B:',
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'end',
+          message: 'Invalid end date format',
+        }),
+      ]),
+    );
+  });
+
+  it('rejects whitespace-only company and role', () => {
+    const roles = mapContentToWorkRoles(
+      [
+        workEntry({ company: '   ', role: 'Eng' }),
+        workEntry({ company: 'A', role: '\t ' }),
+        workEntry({ company: 'B', role: 'Eng' }),
+      ],
+      en,
+      locale,
+    );
+
+    expect(roles.map((role) => role.company)).toEqual(['B']);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Invalid work entry'),
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'company',
+          message: 'Company is required',
+        }),
+      ]),
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      'Invalid work entry for A:',
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'role',
+          message: 'Role title is required',
+        }),
+      ]),
+    );
+  });
+
+  it('rejects end before start but accepts equal and open-ended dates', () => {
+    const roles = mapContentToWorkRoles(
+      [
+        workEntry({
+          company: 'Bad',
+          role: 'Eng',
+          start: '2021-01-15',
+          end: '2020-01-15',
+        }),
+        workEntry({
+          company: 'Same',
+          role: 'Eng',
+          start: '2020-06-15',
+          end: '2020-06-15',
+        }),
+        workEntry({ company: 'Open', role: 'Eng', start: '2019-01-15' }),
+      ],
+      en,
+      locale,
+    );
+
+    expect(roles.map((role) => role.company)).toEqual(['Same', 'Open']);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Invalid work entry for Bad:',
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'end',
+          message: 'End date must be after start date',
+        }),
+      ]),
+    );
+  });
+
+  it('sorts valid starts descending and keeps undated or invalid starts last', () => {
+    const roles: WorkRole[] = [
+      { company: 'undated', title: 't', period: '', bullets: [] },
+      {
+        company: 'invalid',
+        title: 't',
+        start: 'garbage',
+        period: '',
+        bullets: [],
+      },
+      {
+        company: 'old',
+        title: 't',
+        start: '2020-01-15',
+        period: '',
+        bullets: [],
+      },
+      {
+        company: 'new',
+        title: 't',
+        start: '2024-01-15',
+        period: '',
+        bullets: [],
+      },
+    ];
+
+    expect(sortRolesByStart(roles).map((role) => role.company)).toEqual([
+      'new',
+      'old',
+      'undated',
+      'invalid',
+    ]);
+  });
+
+  it('extracts categorized skills from bullet tags and strips the tag', () => {
+    const roles = mapContentToWorkRoles(
+      [
+        workEntry(
+          { company: 'A', role: 'Eng' },
+          'Shipped UI <!-- skills: React, TypeScript -->\n' +
+            'Scaled APIs <!-- skills: Node.js, PostgreSQL, React -->',
+        ),
+      ],
+      en,
+      locale,
+    );
+
+    expect(roles[0].bullets).toEqual([
+      {
+        line: 'Shipped UI',
+        skills: [
+          { category: 'frontend', name: 'React' },
+          { category: 'frontend', name: 'TypeScript' },
+        ],
+      },
+      {
+        line: 'Scaled APIs',
+        skills: [
+          { category: 'backend', name: 'Node.js' },
+          { category: 'databases', name: 'PostgreSQL' },
+          { category: 'frontend', name: 'React' },
+        ],
+      },
+    ]);
+  });
+
+  it('warns and skips unknown skills, dedupes names, and drops tag-only bullets', () => {
+    const roles = mapContentToWorkRoles(
+      [
+        workEntry(
+          { company: 'A', role: 'Eng' },
+          '<!-- skills: React -->\n' +
+            'Did things <!-- skills: NotARealSkill, React, React -->',
+        ),
+      ],
+      en,
+      locale,
+    );
+
+    expect(roles[0].bullets).toEqual([
+      {
+        line: 'Did things',
+        skills: [{ category: 'frontend', name: 'React' }],
+      },
+    ]);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Unknown skill "NotARealSkill" in work experience content',
     );
   });
 });

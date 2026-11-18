@@ -66,7 +66,7 @@ export default function ResumeDocument({
           links={{ github: t.links.github, demo: t.links.demo }}
         />
 
-        <ResumeSkills skills={t.skills} />
+        <ResumeSkills skills={t.skills} roles={roles} />
 
         {languages.length > 0 && (
           <ResumeSection title={t.resume.languagesTitle}>

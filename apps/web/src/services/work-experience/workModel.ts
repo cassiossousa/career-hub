@@ -1,5 +1,16 @@
 import type { ContentEntry } from '../../types/content';
 import type { Locale, Translation } from '../../types/i18n';
+import { findSkillCategory, type SkillCategory } from '../skills';
+
+interface WorkBulletSkill {
+  category: SkillCategory;
+  name: string;
+}
+
+interface WorkBullet {
+  line: string;
+  skills: WorkBulletSkill[];
+}
 
 export interface WorkRole {
   company: string;
@@ -8,7 +19,7 @@ export interface WorkRole {
   start?: string;
   end?: string;
   period: string;
-  bullets: string[];
+  bullets: WorkBullet[];
 }
 
 interface WorkRoleValidationError {
@@ -16,11 +27,47 @@ interface WorkRoleValidationError {
   message: string;
 }
 
-function parseBullets(content: string): string[] {
+const SKILLS_TAG_PATTERN = /<!--\s*skills:\s*(.+?)\s*-->/g;
+
+function parseBulletSkills(raw: string): WorkBulletSkill[] {
+  const skills: WorkBulletSkill[] = [];
+
+  for (const name of raw
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)) {
+    const category = findSkillCategory(name);
+    if (!category) {
+      console.warn(`Unknown skill "${name}" in work experience content`);
+      continue;
+    }
+    if (!skills.some((skill) => skill.name === name)) {
+      skills.push({ category, name });
+    }
+  }
+
+  return skills;
+}
+
+function parseBullet(line: string): WorkBullet {
+  const skills: WorkBulletSkill[] = [];
+  const text = line
+    .replace(SKILLS_TAG_PATTERN, (_match, raw: string) => {
+      skills.push(...parseBulletSkills(raw));
+      return '';
+    })
+    .trim();
+
+  return { line: text, skills };
+}
+
+function parseBullets(content: string): WorkBullet[] {
   return content
     .split('\n')
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map(parseBullet)
+    .filter((bullet) => bullet.line !== '');
 }
 
 function validateDate(dateString?: string): Date | null {

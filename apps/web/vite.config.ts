@@ -35,6 +35,13 @@ function portfolioContent(getAllEntries: GetAllEntries): Plugin {
   };
 }
 
+const apiProxy = {
+  '/api': {
+    target: process.env.API_PROXY_TARGET ?? 'http://localhost:8000',
+    changeOrigin: true,
+  },
+};
+
 export default defineConfig(async () => {
   const webRoot = path.dirname(fileURLToPath(import.meta.url));
   process.env.PORTFOLIO_ROOT = path.resolve(webRoot, '../..');
@@ -45,5 +52,7 @@ export default defineConfig(async () => {
     root: webRoot,
     base: process.env.VITE_BASE_PATH ?? '/',
     plugins: [react(), portfolioContent(getAllEntries)],
+    server: { proxy: apiProxy },
+    preview: { host: true, port: 4173, proxy: apiProxy },
   };
 });

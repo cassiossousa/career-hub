@@ -1,6 +1,7 @@
 import { defineConfig, globalIgnores } from 'eslint/config';
 import checkFile from 'eslint-plugin-check-file';
 import noBarrelFiles from 'eslint-plugin-no-barrel-files';
+import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
 import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
@@ -32,11 +33,13 @@ const eslintConfig = defineConfig([
   {
     files: ['apps/web/src/**/*.{ts,tsx}'],
     plugins: {
+      'react-hooks': reactHooks,
       sonarjs,
       'check-file': checkFile,
       'no-barrel-files': noBarrelFiles,
     },
     rules: {
+      ...reactHooks.configs['recommended-latest'].rules,
       'sonarjs/cognitive-complexity': ['error', 10],
       '@typescript-eslint/restrict-template-expressions': [
         'error',

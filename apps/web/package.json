@@ -3,9 +3,20 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "audit:deep": "node scripts/audit-runtime.mjs",
     "build": "tsc -b && vite build",
+    "check:arch": "depcruise src -c .dependency-cruiser.cjs",
+    "check:bloat": "node scripts/audit-react-bloat.mjs",
+    "check:bundle": "node scripts/audit-bundle-budget.mjs",
+    "check:lighthouse": "node scripts/lighthouse-run.mjs",
+    "check:mutate:core": "node scripts/check-mutation-core.mjs",
+    "check:mutate:diff": "node scripts/check-mutation-diff.mjs",
+    "check:visual-baseline": "node scripts/check-visual-baseline-drift.mjs",
     "dev": "vite",
-    "start": "vite preview"
+    "start": "vite preview",
+    "test": "jest",
+    "test:cov": "jest --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

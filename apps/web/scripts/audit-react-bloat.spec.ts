@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-const auditScript = path.resolve('scripts/audit-react-bloat.mjs');
+const auditScript = path.resolve(__dirname, 'audit-react-bloat.mjs');
 
 function runAudit(source: string, extension = '.tsx') {
   const directory = mkdtempSync(path.join(tmpdir(), 'react-bloat-audit-'));

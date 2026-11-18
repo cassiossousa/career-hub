@@ -4,13 +4,13 @@ import { runStryker } from './run-stryker.mjs';
 // covers changed files, so pre-existing weak spots would never surface.
 
 const CORE_GLOBS = [
-  'apps/web/src/services/**',
-  'apps/web/src/types/**',
-  'apps/web/src/i18n/dictionaries.ts',
-  'apps/web/src/app/storage.ts',
-  'apps/web/src/app/routePaths.ts',
-  '!apps/web/src/**/*.spec.ts',
-  '!apps/web/src/**/*.test.ts',
+  'src/services/**',
+  'src/types/**',
+  'src/i18n/dictionaries.ts',
+  'src/app/storage.ts',
+  'src/app/routePaths.ts',
+  '!src/**/*.spec.ts',
+  '!src/**/*.test.ts',
 ].join(',');
 
 runStryker(CORE_GLOBS, {

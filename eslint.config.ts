@@ -1,7 +1,9 @@
+import eslintReact from '@eslint-react/eslint-plugin';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import checkFile from 'eslint-plugin-check-file';
 import noBarrelFiles from 'eslint-plugin-no-barrel-files';
 import reactHooks from 'eslint-plugin-react-hooks';
+import reactYouMightNotNeedAnEffect from 'eslint-plugin-react-you-might-not-need-an-effect';
 import security from 'eslint-plugin-security';
 import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
@@ -29,6 +31,14 @@ const eslintConfig = defineConfig([
       ...security.configs.recommended.rules,
       'security/detect-object-injection': 'off',
     },
+  },
+  {
+    files: ['apps/web/src/**/*.{ts,tsx}'],
+    ...eslintReact.configs['recommended-type-checked'],
+  },
+  {
+    files: ['apps/web/src/**/*.{ts,tsx}'],
+    ...reactYouMightNotNeedAnEffect.configs.recommended,
   },
   {
     files: ['apps/web/src/**/*.{ts,tsx}'],
@@ -92,8 +102,8 @@ const eslintConfig = defineConfig([
   globalIgnores([
     '**/dist/**',
     '**/build/**',
-    '.stryker-tmp/**',
-    'coverage/**',
+    '**/.stryker-tmp/**',
+    '**/coverage/**',
   ]),
 ]);
 

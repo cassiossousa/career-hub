@@ -73,6 +73,20 @@ function expectStandardEntry(
   });
 }
 
+function entryWithWordCount(words: number) {
+  setupEntryMocks();
+  const content = Array.from({ length: words }, (_, i) => `w${i}`).join(' ');
+  mockMatter.mockReturnValue(matterResult(defaultFrontmatter, content));
+  return getEntry('work-experience', 'test-job', 'en');
+}
+
+function setupWorkFiles(files: string[]) {
+  mockFs.readdirSync.mockReturnValue(files);
+  mockFs.existsSync.mockReturnValue(true);
+  mockFs.readFileSync.mockReturnValue('---\ntitle: T\n---\n# C');
+  mockMatter.mockReturnValue(matterResult({ title: 'T' }));
+}
+
 describe('content.ts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -258,6 +272,121 @@ describe('content.ts', () => {
       // Act & Assert
       expect(() => getSlugs('work-experience')).not.toThrow();
       expect(getSlugs('work-experience')).toEqual([]);
+    });
+  });
+
+  describe('getSlugs for projects', () => {
+    it('returns base .mdx slugs and excludes localized or non-mdx files', () => {
+      mockFs.readdirSync.mockReturnValue([
+        'alpha.mdx',
+        'beta.mdx',
+        'gamma.pt-BR.mdx',
+        'notes.txt',
+        'delta.en.mdx',
+      ]);
+
+      expect(getSlugs('projects')).toEqual(['alpha', 'beta']);
+    });
+
+    it('returns an empty array for an empty projects directory', () => {
+      mockFs.readdirSync.mockReturnValue([]);
+
+      expect(getSlugs('projects')).toEqual([]);
+    });
+  });
+
+  describe('getEntry frontmatter normalization', () => {
+    it('converts Date frontmatter values to ISO strings', () => {
+      const date = new Date('2024-01-15T00:00:00.000Z');
+      setupEntryMocks();
+      mockMatter.mockReturnValue(matterResult({ ...defaultFrontmatter, date }));
+
+      const result = getEntry('work-experience', 'test-job', 'en');
+
+      expect(result.frontmatter.date).toBe('2024-01-15T00:00:00.000Z');
+    });
+
+    it('keeps string frontmatter dates unchanged', () => {
+      setupEntryMocks();
+      mockMatter.mockReturnValue(
+        matterResult({ ...defaultFrontmatter, date: 'Jan 2023' }),
+      );
+
+      const result = getEntry('work-experience', 'test-job', 'en');
+
+      expect(result.frontmatter.date).toBe('Jan 2023');
+    });
+
+    it('drops non-string non-Date frontmatter dates', () => {
+      setupEntryMocks();
+      mockMatter.mockReturnValue(
+        matterResult({ ...defaultFrontmatter, date: 20230115 }),
+      );
+
+      const result = getEntry('work-experience', 'test-job', 'en');
+
+      expect(result.frontmatter.date).toBeUndefined();
+    });
+  });
+
+  describe('calculateReadingTime via getEntry', () => {
+    it('returns 1 for short content', () => {
+      expect(entryWithWordCount(10).readingTime).toBe(1);
+    });
+
+    it('returns 1 for exactly 200 words', () => {
+      expect(entryWithWordCount(200).readingTime).toBe(1);
+    });
+
+    it('returns 2 for 201 words', () => {
+      expect(entryWithWordCount(201).readingTime).toBe(2);
+    });
+
+    it('returns 2 for 400 words', () => {
+      expect(entryWithWordCount(400).readingTime).toBe(2);
+    });
+
+    it('returns 1 for empty content', () => {
+      expect(entryWithWordCount(0).readingTime).toBe(1);
+    });
+  });
+
+  describe('getAllEntries locale filtering for work-experience', () => {
+    it('includes base and current-locale files, excludes other locales, and dedupes slugs', () => {
+      setupWorkFiles([
+        'alpha.mdx',
+        'alpha.pt-BR.mdx',
+        'beta.pt-BR.mdx',
+        'gamma.fr.mdx',
+        'delta.mdx',
+      ]);
+
+      const result = getAllEntries('work-experience', 'pt-BR');
+
+      expect(result.map((entry) => entry.slug).toSorted()).toEqual([
+        'alpha',
+        'beta',
+        'delta',
+      ]);
+    });
+
+    it('uses only base files for the English locale', () => {
+      setupWorkFiles(['alpha.mdx', 'alpha.pt-BR.mdx', 'beta.mdx']);
+
+      const result = getAllEntries('work-experience', 'en');
+
+      expect(result.map((entry) => entry.slug).toSorted()).toEqual([
+        'alpha',
+        'beta',
+      ]);
+    });
+
+    it('does not filter files for non-work content types', () => {
+      setupWorkFiles(['one.pt-BR.mdx', 'two.fr.mdx', 'three.mdx']);
+
+      const result = getAllEntries('projects', 'en');
+
+      expect(result).toHaveLength(3);
     });
   });
 });

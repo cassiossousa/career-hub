@@ -6,10 +6,12 @@ import {
   writeFileSync,
 } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
-const DIST_ASSETS = path.resolve('apps/web/dist/assets');
-const BASELINE_FILE = path.resolve('.bundle-baseline.json');
+const WEB_ROOT = fileURLToPath(new URL('..', import.meta.url));
+const DIST_ASSETS = path.join(WEB_ROOT, 'dist', 'assets');
+const BASELINE_FILE = path.join(WEB_ROOT, '.bundle-baseline.json');
 const UPDATE_BASELINE = process.argv.includes('--update-baseline');
 
 // Budgets are gzip sizes — what actually ships over the wire.
@@ -23,7 +25,7 @@ const BUDGETS = [
 const DELTA_LIMIT_BYTES = 5 * 1024;
 
 if (!statSync(DIST_ASSETS, { throwIfNoEntry: false })?.isDirectory()) {
-  console.error('apps/web/dist/assets not found — run `npm run build` first.');
+  console.error('dist/assets not found — run `npm run build` first.');
   process.exit(1);
 }
 

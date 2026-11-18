@@ -1,9 +1,10 @@
 import { Box, Container, Link, Stack, Typography } from '@mui/material';
 import { useTranslation } from '../i18n/Provider';
 
+const currentYear = new Date().getFullYear();
+
 export default function Footer() {
   const { messages: t } = useTranslation();
-  const year = new Date().getFullYear();
 
   return (
     <Box
@@ -53,7 +54,7 @@ export default function Footer() {
           </Stack>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            © {year} {t.home.name}
+            © {currentYear} {t.home.name}
           </Typography>
         </Stack>
       </Container>

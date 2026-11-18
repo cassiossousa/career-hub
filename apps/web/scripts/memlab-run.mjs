@@ -1,10 +1,13 @@
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import memlabApi from '@memlab/api';
 import { resolvePlaywrightChromium } from './playwright-chromium.mjs';
 
+const WEB_ROOT = fileURLToPath(new URL('..', import.meta.url));
+
 async function main() {
-  const workDir = path.resolve('.memlab');
+  const workDir = path.join(WEB_ROOT, '.memlab');
   mkdirSync(workDir, { recursive: true });
 
   const scenario = (await import('./memlab-portfolio.cjs')).default;

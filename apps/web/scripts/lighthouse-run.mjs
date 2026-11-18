@@ -1,8 +1,11 @@
 import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { resolvePlaywrightChromium } from './playwright-chromium.mjs';
 
+const WEB_ROOT = fileURLToPath(new URL('..', import.meta.url));
+
 function run(command, env) {
-  execSync(command, { stdio: 'inherit', shell: true, env });
+  execSync(command, { stdio: 'inherit', shell: true, env, cwd: WEB_ROOT });
 }
 
 const chromePath = resolvePlaywrightChromium();

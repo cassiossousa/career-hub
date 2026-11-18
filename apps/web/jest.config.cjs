@@ -1,61 +1,56 @@
 module.exports = {
+  rootDir: __dirname,
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/apps/web/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/apps/web/src/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
-    '^.+\\.(ts|tsx)$': [
-      'ts-jest',
-      { tsconfig: '<rootDir>/apps/web/tsconfig.json' },
-    ],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
   },
   testMatch: ['**/*.(test|spec).(ts|tsx)'],
-  testPathIgnorePatterns: [
-    '<rootDir>/apps/web/e2e/',
-    '<rootDir>/.stryker-tmp/',
-  ],
+  testPathIgnorePatterns: ['<rootDir>/e2e/', '<rootDir>/.stryker-tmp/'],
   modulePathIgnorePatterns: ['<rootDir>/.stryker-tmp/'],
   collectCoverageFrom: [
-    'apps/web/src/**/*.(ts|tsx)',
+    '<rootDir>/src/**/*.(ts|tsx)',
     '!**/*.d.ts',
     '!**/node_modules/**',
     // Entry bootstrap and theme config are verified by build + e2e, not unit tests.
-    '!apps/web/src/main.tsx',
-    '!apps/web/src/app/theme.ts',
+    '!<rootDir>/src/main.tsx',
+    '!<rootDir>/src/app/theme.ts',
   ],
   coverageThreshold: {
-    'apps/web/src/app/**': {
+    '**/src/app/**': {
       statements: 95,
       branches: 95,
       functions: 95,
       lines: 95,
     },
-    'apps/web/src/components/**': {
+    '**/src/components/**': {
       statements: 75,
       branches: 45,
       functions: 40,
       lines: 80,
     },
-    'apps/web/src/features/**': {
+    '**/src/features/**': {
       statements: 90,
       branches: 70,
       functions: 70,
       lines: 90,
     },
-    'apps/web/src/i18n/**': {
+    '**/src/i18n/**': {
       statements: 95,
       branches: 95,
       functions: 95,
       lines: 95,
     },
-    'apps/web/src/services/**': {
+    '**/src/services/**': {
       statements: 75,
       branches: 75,
       functions: 75,
       lines: 80,
     },
-    'apps/web/src/types/**': {
+    '**/src/types/**': {
       statements: 95,
       branches: 95,
       functions: 95,

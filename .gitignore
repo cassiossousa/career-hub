@@ -6,12 +6,12 @@
 .pnp.js
 
 # testing
-/coverage
-/.stryker-tmp/
-/.memlab/
-/test-results/
-/playwright-report/
-/.lighthouseci/
+coverage/
+.stryker-tmp/
+.memlab/
+test-results/
+playwright-report/
+.lighthouseci/
 
 # build output
 **/dist/

@@ -1,8 +1,11 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const sourceRoot = path.resolve('apps/web/src');
+const WEB_ROOT = fileURLToPath(new URL('..', import.meta.url));
+const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
+const sourceRoot = path.join(WEB_ROOT, 'src');
 const maxProps = 6;
 const maxBooleanProps = 2;
 const maxTsxLines = 180;
@@ -28,7 +31,7 @@ function isBooleanType(typeNode) {
 function analyzeSourceFile(sourceFile) {
   const findings = [];
   const relativePath = path
-    .relative(process.cwd(), sourceFile.fileName)
+    .relative(REPO_ROOT, sourceFile.fileName)
     .replace(/\\/g, '/');
 
   if (sourceFile.fileName.endsWith('.tsx')) {

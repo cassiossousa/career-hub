@@ -68,7 +68,7 @@ export default function Projects() {
                       )}
 
                     <Stack direction="row" spacing={2}>
-                      {project.stars && (
+                      {project.stars !== undefined && project.stars > 0 && (
                         <Typography
                           variant="body2"
                           aria-label={`${project.stars} ${t.projects.stars}`}

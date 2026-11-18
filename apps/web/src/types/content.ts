@@ -1,3 +1,5 @@
+import type { Simplify } from 'type-fest';
+
 export type ContentType = 'work-experience' | 'projects';
 
 interface BaseFrontmatter {
@@ -32,4 +34,4 @@ export interface ContentEntry<T extends BaseFrontmatter = BaseFrontmatter> {
   readingTime?: number;
 }
 
-export type ProjectEntry = ContentEntry<ProjectFrontmatter>;
+export type ProjectEntry = Simplify<ContentEntry<ProjectFrontmatter>>;

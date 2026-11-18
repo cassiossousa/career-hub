@@ -11,6 +11,6 @@ module.exports = {
   options: {
     doNotFollow: { path: 'node_modules' },
     tsPreCompilationDeps: true,
-    tsConfig: { fileName: 'apps/web/tsconfig.json' },
+    tsConfig: { fileName: `${__dirname}/tsconfig.json` },
   },
 };

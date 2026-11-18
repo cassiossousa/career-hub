@@ -2,8 +2,18 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
-      "entry": ["scripts/memlab-run.mjs", "scripts/memlab-portfolio.cjs"],
+      "entry": [
+        "scripts/check-case-sensitivity.mjs",
+        "scripts/sync-github-projects.mjs"
+      ],
       "ignoreDependencies": ["@lhci/cli"]
+    },
+    "apps/web": {
+      "entry": [
+        "scripts/memlab-run.mjs",
+        "scripts/memlab-portfolio.cjs",
+        "stryker.core.config.mjs"
+      ]
     }
   }
 }

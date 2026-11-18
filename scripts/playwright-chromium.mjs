@@ -15,10 +15,22 @@ const BINARY_NAMES = {
 };
 
 function playwrightBrowsersDir() {
+  if (process.env.PLAYWRIGHT_BROWSERS_PATH) {
+    return process.env.PLAYWRIGHT_BROWSERS_PATH;
+  }
   if (process.platform === 'win32') {
     return path.join(homedir(), 'AppData', 'Local', 'ms-playwright');
   }
-  return path.join(homedir(), '.cache', 'ms-playwright');
+  const cacheDir = path.join(homedir(), '.cache', 'ms-playwright');
+  // The official Playwright CI image keeps browsers at /ms-playwright.
+  if (
+    process.platform === 'linux' &&
+    existsSync('/ms-playwright') &&
+    !existsSync(cacheDir)
+  ) {
+    return '/ms-playwright';
+  }
+  return cacheDir;
 }
 
 export function resolvePlaywrightChromium() {

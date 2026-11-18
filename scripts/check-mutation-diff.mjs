@@ -1,5 +1,5 @@
-import { execFileSync, spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { runStryker } from './run-stryker.mjs';
 
 const changedFiles = execFileSync(
   'git',
@@ -19,27 +19,4 @@ if (changedFiles.length === 0) {
   process.exit(0);
 }
 
-const strykerCli = resolve(
-  'node_modules',
-  '@stryker-mutator',
-  'core',
-  'bin',
-  'stryker.js',
-);
-const result = spawnSync(
-  process.execPath,
-  [
-    strykerCli,
-    'run',
-    '--mutate',
-    changedFiles.join(','),
-    ...process.argv.slice(2),
-  ],
-  { stdio: 'inherit' },
-);
-
-if (result.error) {
-  throw result.error;
-}
-
-process.exitCode = result.status ?? 1;
+runStryker(changedFiles.join(','));

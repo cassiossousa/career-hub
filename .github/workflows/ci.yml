@@ -24,6 +24,9 @@ jobs:
       - name: Run incremental mutation tests
         if: github.event_name == 'pull_request'
         run: npm run check:mutate:diff
+      - name: Check visual baseline drift
+        if: github.event_name == 'pull_request'
+        run: npm run check:visual-baseline
 
   e2e:
     runs-on: ubuntu-latest

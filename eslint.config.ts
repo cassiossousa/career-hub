@@ -89,7 +89,12 @@ const eslintConfig = defineConfig([
     files: ['apps/web/src/main.tsx'],
     rules: { 'check-file/filename-naming-convention': 'off' },
   },
-  globalIgnores(['**/dist/**', '**/build/**', '.stryker-tmp/**']),
+  globalIgnores([
+    '**/dist/**',
+    '**/build/**',
+    '.stryker-tmp/**',
+    'coverage/**',
+  ]),
 ]);
 
 export default eslintConfig;

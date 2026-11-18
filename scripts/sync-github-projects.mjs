@@ -51,7 +51,7 @@ async function clearProjects(dir) {
   } catch {}
 }
 
-async function run() {
+async function run(targetDir) {
   /** @type {GitHubRepo[]} */
   const repos = await getRepos(true);
 
@@ -61,7 +61,7 @@ async function run() {
       Boolean(repo.topics?.includes('resume')),
   );
 
-  const dir = path.join(process.cwd(), 'content/projects');
+  const dir = targetDir;
 
   await fs.mkdir(dir, { recursive: true });
 
@@ -121,4 +121,53 @@ async function run() {
   console.log(`Synced ${featured.length} GitHub projects.`);
 }
 
-run();
+const CHECK_MODE = process.argv.includes('--check');
+
+async function check() {
+  const os = await import('node:os');
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'sync-projects-'));
+  await run(tmp);
+
+  const expectedDir = path.join(process.cwd(), 'content/projects');
+  const expectedFiles = (await fs.readdir(expectedDir))
+    .filter((f) => f.endsWith('.mdx'))
+    .toSorted();
+  const actualFiles = (await fs.readdir(tmp))
+    .filter((f) => f.endsWith('.mdx'))
+    .toSorted();
+
+  const diffs = [];
+  if (JSON.stringify(expectedFiles) !== JSON.stringify(actualFiles)) {
+    diffs.push('file list differs');
+  } else {
+    for (const name of expectedFiles) {
+      const [expected, actual] = await Promise.all([
+        fs.readFile(path.join(expectedDir, name), 'utf8'),
+        fs.readFile(path.join(tmp, name), 'utf8'),
+      ]);
+      if (expected !== actual) diffs.push(name);
+    }
+  }
+
+  if (diffs.length > 0) {
+    console.error(
+      'content/projects is stale — run npm run sync:projects and commit the result. Diffs: ' +
+        diffs.join(', '),
+    );
+    process.exit(1);
+  }
+
+  console.log('content/projects is up to date.');
+}
+
+if (CHECK_MODE) {
+  check().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+} else {
+  run(path.join(process.cwd(), 'content/projects')).catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

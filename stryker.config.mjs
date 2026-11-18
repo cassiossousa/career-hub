@@ -17,5 +17,6 @@ export default {
     '**/dist/**',
   ],
   coverageAnalysis: 'perTest',
+  thresholds: { high: 80, low: 60, break: 60 },
   tsconfigFile: 'apps/web/tsconfig.json',
 };

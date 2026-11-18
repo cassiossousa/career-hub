@@ -1,5 +1,5 @@
 import { IconButton, Stack } from '@mui/material';
-import { useTranslation } from '../i18n/provider';
+import { useTranslation } from '../i18n/Provider';
 
 export default function LanguageSwitcher() {
   const { locale, messages, onLocaleChange } = useTranslation();
@@ -8,7 +8,9 @@ export default function LanguageSwitcher() {
     <Stack direction="row" spacing={1}>
       <IconButton
         type="button"
-        onClick={() => onLocaleChange('en')}
+        onClick={() => {
+          onLocaleChange('en');
+        }}
         aria-label={messages.navigation.switchToEnglish}
         aria-pressed={locale === 'en'}
         size="small"
@@ -18,7 +20,9 @@ export default function LanguageSwitcher() {
       </IconButton>
       <IconButton
         type="button"
-        onClick={() => onLocaleChange('pt-BR')}
+        onClick={() => {
+          onLocaleChange('pt-BR');
+        }}
         aria-label={messages.navigation.switchToPortuguese}
         aria-pressed={locale === 'pt-BR'}
         size="small"

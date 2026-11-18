@@ -1,12 +1,9 @@
 declare module 'virtual:portfolio-content' {
-  import type { ContentEntry, ProjectEntry } from './content';
-  import type { Locale } from './i18n';
-
   export const content: Record<
-    Locale,
+    import('./i18n').Locale,
     {
-      projects: ProjectEntry[];
-      workExperience: ContentEntry[];
+      projects: import('./content').ProjectEntry[];
+      workExperience: import('./content').ContentEntry[];
     }
   >;
 }

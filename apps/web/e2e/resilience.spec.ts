@@ -48,40 +48,28 @@ test.describe('resilience: storage, network, and viewport faults', () => {
     await expect(page.locator('main')).toBeVisible();
   });
 
-  for (const route of publicRoutes) {
-    test(`no horizontal overflow at 360px on ${route}`, async ({ page }) => {
-      await page.setViewportSize({ width: 360, height: 800 });
-      await page.goto(route);
+  for (const locale of [undefined, 'pt-BR'] as const) {
+    for (const route of publicRoutes) {
+      test(`no horizontal overflow${locale ? ` in ${locale}` : ''} at 360px on ${route}`, async ({
+        page,
+      }) => {
+        if (locale) {
+          await page.addInitScript((lang) => {
+            localStorage.setItem('lang', lang);
+          }, locale);
+        }
+        await page.setViewportSize({ width: 360, height: 800 });
+        await page.goto(route);
 
-      await expect(page.locator('main')).toBeVisible();
+        await expect(page.locator('main')).toBeVisible();
 
-      const hasOverflow = await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth >
-          document.documentElement.clientWidth,
-      );
-      expect(hasOverflow).toBe(false);
-    });
-  }
-
-  for (const route of publicRoutes) {
-    test(`no horizontal overflow in pt-BR at 360px on ${route}`, async ({
-      page,
-    }) => {
-      await page.addInitScript(() => {
-        localStorage.setItem('lang', 'pt-BR');
+        const hasOverflow = await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth,
+        );
+        expect(hasOverflow).toBe(false);
       });
-      await page.setViewportSize({ width: 360, height: 800 });
-      await page.goto(route);
-
-      await expect(page.locator('main')).toBeVisible();
-
-      const hasOverflow = await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth >
-          document.documentElement.clientWidth,
-      );
-      expect(hasOverflow).toBe(false);
-    });
+    }
   }
 });

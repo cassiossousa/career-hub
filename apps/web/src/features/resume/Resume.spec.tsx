@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
-import { TranslationProvider } from '../../i18n/provider';
+import { TranslationProvider } from '../../i18n/Provider';
 import Resume from './Resume';
 
 jest.mock(

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { routePaths } from './app/routePaths';
+import { storageGetItem, storageSetItem } from './app/storage';
 import { appTheme } from './app/theme';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
@@ -11,24 +12,12 @@ import ProjectDetails from './features/projects/ProjectDetails';
 import Projects from './features/projects/Projects';
 import Resume from './features/resume/Resume';
 import WorkExperience from './features/work-experience/WorkExperience';
-import { TranslationProvider } from './i18n/provider';
+import { TranslationProvider } from './i18n/Provider';
 import type { Locale } from './types/i18n';
 
 function readStoredLocale(): Locale | null {
-  try {
-    const stored = localStorage.getItem('lang');
-    return stored === 'pt-BR' || stored === 'en' ? stored : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredLocale(locale: Locale) {
-  try {
-    localStorage.setItem('lang', locale);
-  } catch {
-    // Storage unavailable (private mode, quota, disabled) — locale stays in memory.
-  }
+  const stored = storageGetItem('lang');
+  return stored === 'pt-BR' || stored === 'en' ? stored : null;
 }
 
 function initialLocale() {
@@ -39,7 +28,7 @@ function App({ initialLocale: startingLocale }: { initialLocale: Locale }) {
   const [locale, setLocale] = useState<Locale>(startingLocale);
 
   function changeLocale(nextLocale: Locale) {
-    writeStoredLocale(nextLocale);
+    storageSetItem('lang', nextLocale);
     setLocale(nextLocale);
   }
 

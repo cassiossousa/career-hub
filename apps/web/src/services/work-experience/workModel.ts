@@ -60,6 +60,22 @@ function buildPeriod(
   return `${startStr} - ${endStr}`;
 }
 
+function dateOrderError(
+  start: string | undefined,
+  end: string | undefined,
+): WorkRoleValidationError | null {
+  if (!start || !end) return null;
+
+  const startDate = validateDate(start);
+  const endDate = validateDate(end);
+
+  if (startDate && endDate && startDate > endDate) {
+    return { field: 'end', message: 'End date must be after start date' };
+  }
+
+  return null;
+}
+
 function validateWorkRole(entry: ContentEntry): WorkRoleValidationError[] {
   const errors: WorkRoleValidationError[] = [];
   const { company, role, start, end } = entry.frontmatter;
@@ -80,16 +96,8 @@ function validateWorkRole(entry: ContentEntry): WorkRoleValidationError[] {
     errors.push({ field: 'end', message: 'Invalid end date format' });
   }
 
-  if (start && end) {
-    const startDate = validateDate(start);
-    const endDate = validateDate(end);
-    if (startDate && endDate && startDate > endDate) {
-      errors.push({
-        field: 'end',
-        message: 'End date must be after start date',
-      });
-    }
-  }
+  const orderError = dateOrderError(start, end);
+  if (orderError) errors.push(orderError);
 
   return errors;
 }

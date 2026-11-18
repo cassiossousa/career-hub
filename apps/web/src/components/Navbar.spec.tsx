@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { TranslationProvider } from '../i18n/provider';
+import { TranslationProvider } from '../i18n/Provider';
 import Navbar from './Navbar';
 
 describe('Navbar', () => {

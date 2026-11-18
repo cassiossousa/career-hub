@@ -7,7 +7,7 @@ function fromProjectEntry(entry: ProjectEntry): Project {
   return {
     slug: entry.slug,
     title: entry.frontmatter.title ?? entry.slug,
-    description: entry.content?.split('\n')[0]?.trim(),
+    description: entry.content.split('\n')[0].trim(),
     repo: entry.frontmatter.repo,
     demo: entry.frontmatter.demo,
     stars: entry.frontmatter.stars,

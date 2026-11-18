@@ -12,7 +12,7 @@ import {
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { navigationItems, routePaths } from '../app/routePaths';
-import { useTranslation } from '../i18n/provider';
+import { useTranslation } from '../i18n/Provider';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
@@ -57,7 +57,9 @@ export default function Navbar() {
                 }}
               >
                 <IconButton
-                  onClick={() => setMobileOpen((open) => !open)}
+                  onClick={() => {
+                    setMobileOpen((open) => !open);
+                  }}
                   aria-label={t.navigation.toggleMenu}
                   aria-expanded={mobileOpen}
                 >
@@ -116,7 +118,9 @@ export default function Navbar() {
                   component={RouterLink}
                   to={link.to}
                   underline="hover"
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => {
+                    setMobileOpen(false);
+                  }}
                   sx={{ color: 'text.primary' }}
                 >
                   {link.label}

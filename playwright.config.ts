@@ -6,6 +6,8 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   reporter: 'list',
+  snapshotPathTemplate:
+    '{testDir}/{testFileName}-snapshots/{arg}-{platform}{ext}',
   use: {
     baseURL: 'http://localhost:4173',
   },

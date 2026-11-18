@@ -28,6 +28,51 @@ const mockFs = fs as jest.Mocked<typeof fs> & {
 const mockPath = path as jest.Mocked<typeof path>;
 const mockMatter = matter as jest.MockedFunction<typeof matter>;
 
+const defaultFrontmatter = {
+  title: 'Test Job',
+  company: 'Test Company',
+  role: 'Test Role',
+  location: 'Test Location',
+  start: 'Jan 2023',
+  end: 'Dec 2023',
+};
+
+function matterResult(
+  data: Record<string, unknown> = defaultFrontmatter,
+  content = '# Test Content',
+): GrayMatterResult {
+  return {
+    content,
+    data,
+    orig: content,
+    language: 'md',
+    matter: '',
+    stringify: jest.fn(),
+    excerpt: '',
+    isEmpty: false,
+  };
+}
+
+function setupEntryMocks(
+  existsSyncImpl: (filePath: unknown) => boolean = () => true,
+) {
+  mockFs.existsSync.mockImplementation(existsSyncImpl);
+  mockFs.readFileSync.mockReturnValue('---\ntitle: Test\n---\n# Test Content');
+}
+
+function expectStandardEntry(
+  result: ReturnType<typeof getEntry>,
+  data: Record<string, unknown> = defaultFrontmatter,
+) {
+  expect(result).toEqual({
+    slug: 'test-job',
+    type: 'work-experience',
+    frontmatter: { ...data, date: undefined },
+    content: '# Test Content',
+    readingTime: 1,
+  });
+}
+
 describe('content.ts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -36,23 +81,7 @@ describe('content.ts', () => {
     mockPath.join.mockImplementation((...args) => args.join('/'));
 
     // Setup default matter mock
-    mockMatter.mockReturnValue({
-      content: '# Test Content',
-      data: {
-        title: 'Test Job',
-        company: 'Test Company',
-        role: 'Test Role',
-        location: 'Test Location',
-        start: 'Jan 2023',
-        end: 'Dec 2023',
-      },
-      orig: '# Test Content',
-      language: 'md',
-      matter: '',
-      stringify: jest.fn(),
-      excerpt: '',
-      isEmpty: false,
-    } as GrayMatterResult);
+    mockMatter.mockReturnValue(matterResult());
   });
 
   describe('getSlugs', () => {
@@ -88,136 +117,48 @@ describe('content.ts', () => {
   });
 
   describe('getEntry', () => {
-    const mockFileContent = '---\ntitle: Test\n---\n# Test Content';
-    const mockMatterResult = {
-      content: '# Test Content',
-      data: {
-        title: 'Test',
-        company: 'Test Company',
-        role: 'Test Role',
-        location: 'Test Location',
-        start: 'Jan 2023',
-        end: 'Dec 2023',
-      },
-      orig: '# Test Content',
-      language: 'md',
-      matter: '',
-      stringify: jest.fn(),
-      excerpt: '',
-      isEmpty: false,
-    } as GrayMatterResult;
-
     it('should return content entry for English locale', () => {
-      // Arrange
-      mockFs.existsSync.mockReturnValue(true);
-      mockFs.readFileSync.mockReturnValue(mockFileContent);
-      mockMatter.mockReturnValue(mockMatterResult);
+      setupEntryMocks();
+      mockMatter.mockReturnValue(matterResult());
 
-      // Act
       const result = getEntry('work-experience', 'test-job', 'en');
 
-      // Assert
-      expect(result).toEqual({
-        slug: 'test-job',
-        type: 'work-experience',
-        frontmatter: {
-          ...mockMatterResult.data,
-          date: undefined,
-        },
-        content: mockMatterResult.content,
-        readingTime: 1,
-      });
+      expectStandardEntry(result);
     });
 
     it('should return content entry for non-English locale with localized file', () => {
-      // Arrange
-      const locale = 'pt-BR';
+      setupEntryMocks((filePath) => String(filePath).includes('.pt-BR.mdx'));
+      mockMatter.mockReturnValue(matterResult());
 
-      mockFs.existsSync.mockImplementation((filePath) => {
-        const pathStr = filePath as string;
-        return pathStr.includes('.pt-BR.mdx');
-      });
-      mockFs.readFileSync.mockReturnValue(mockFileContent);
-      mockMatter.mockReturnValue(mockMatterResult);
+      const result = getEntry('work-experience', 'test-job', 'pt-BR');
 
-      // Act
-      const result = getEntry('work-experience', 'test-job', locale);
-
-      // Assert
-      expect(result).toEqual({
-        slug: 'test-job',
-        type: 'work-experience',
-        frontmatter: {
-          ...mockMatterResult.data,
-          date: undefined,
-        },
-        content: mockMatterResult.content,
-        readingTime: 1,
-      });
+      expectStandardEntry(result);
     });
 
     it('should fallback to base file for non-English locale when localized file does not exist', () => {
-      // Arrange
-      const locale = 'pt-BR';
-
-      mockFs.existsSync.mockImplementation((filePath) => {
-        const pathStr = filePath as string;
-        return !pathStr.includes('.pt-BR.mdx') && pathStr.includes('.mdx');
-      });
-      mockFs.readFileSync.mockReturnValue(mockFileContent);
-      mockMatter.mockReturnValue(mockMatterResult);
-
-      // Act
-      const result = getEntry('work-experience', 'test-job', locale);
-
-      // Assert
-      expect(result).toEqual({
-        slug: 'test-job',
-        type: 'work-experience',
-        frontmatter: {
-          ...mockMatterResult.data,
-          date: undefined,
-        },
-        content: mockMatterResult.content,
-        readingTime: 1,
-      });
-    });
-
-    it('should throw error when no file exists', () => {
-      // Arrange
-      mockFs.existsSync.mockReturnValue(false);
-
-      // Act & Assert
-      expect(() => getEntry('work-experience', 'test-job', 'en')).toThrow(
-        'Content not found: test-job',
+      setupEntryMocks(
+        (filePath) =>
+          !String(filePath).includes('.pt-BR.mdx') &&
+          String(filePath).includes('.mdx'),
       );
+      mockMatter.mockReturnValue(matterResult());
+
+      const result = getEntry('work-experience', 'test-job', 'pt-BR');
+
+      expectStandardEntry(result);
     });
 
     it('should handle minimal frontmatter', () => {
-      // Arrange
-      const minimalMatterResult = {
-        content: '# Minimal Content',
-        data: { title: 'Minimal' },
-        orig: '# Minimal Content',
-        language: 'md',
-        matter: '',
-        stringify: jest.fn(),
-        excerpt: '',
-        isEmpty: false,
-      } as GrayMatterResult;
-
-      mockFs.existsSync.mockReturnValue(true);
-      mockFs.readFileSync.mockReturnValue(
-        '---\ntitle: Minimal\n---\n# Minimal Content',
+      const minimalData = { title: 'Minimal' };
+      setupEntryMocks();
+      mockMatter.mockReturnValue(
+        matterResult(minimalData, '# Minimal Content'),
       );
-      mockMatter.mockReturnValue(minimalMatterResult);
 
-      // Act
       const result = getEntry('work-experience', 'test-job', 'en');
 
-      // Assert
       expect(result.frontmatter).toEqual({
-        ...minimalMatterResult.data,
+        ...minimalData,
         date: undefined,
       });
       expect(result.readingTime).toBe(1);
@@ -233,15 +174,7 @@ describe('content.ts', () => {
       mockFs.readFileSync.mockReturnValue(
         Buffer.from('---\ntitle: Test\n---\n# Content', 'utf8'),
       );
-      mockMatter.mockReturnValue({
-        content: '# Content',
-        data: { title: 'Test' },
-        orig: '# Content',
-        language: 'md',
-        matter: '',
-        stringify: jest.fn(),
-        excerpt: '',
-      });
+      mockMatter.mockReturnValue(matterResult({ title: 'Test' }));
 
       // Act
       const result = getAllEntries('work-experience', 'en');

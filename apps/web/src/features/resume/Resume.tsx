@@ -1,7 +1,7 @@
 import { content } from 'virtual:portfolio-content';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { useMemo } from 'react';
-import { useTranslation } from '../../i18n/provider';
+import { useTranslation } from '../../i18n/Provider';
 import { getProjects } from '../../services/projects/getProjects';
 import {
   mapContentToWorkRoles,
@@ -45,7 +45,9 @@ export default function Resume() {
           <Button
             type="button"
             variant="contained"
-            onClick={() => window.print()}
+            onClick={() => {
+              window.print();
+            }}
           >
             {t.resume.printAction}
           </Button>

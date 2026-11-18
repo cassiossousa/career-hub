@@ -10,7 +10,7 @@ interface BaseFrontmatter {
   location?: string;
 }
 
-export interface ProjectFrontmatter extends BaseFrontmatter {
+interface ProjectFrontmatter extends BaseFrontmatter {
   repo?: string;
   demo?: string;
   stars?: number;

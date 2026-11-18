@@ -8,7 +8,8 @@ const SERVICES_ROOT = path.join(SRC_ROOT, 'services');
 
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx']);
 const IMPORT_PATTERN =
-  /(?:import|export)\s[^'"]*?\sfrom\s+['"]([^'"]+)['"]|import\s+['"]([^'"]+)['"]/g;
+  /(?:import|export)\s[^'"]*?from\s+['"][^'"]+['"]|\bimport\s*['"][^'"]+['"]/g;
+const SPECIFIER_PATTERN = /['"]([^'"]+)['"]/;
 
 function listSourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {
@@ -20,10 +21,14 @@ function listSourceFiles(dir: string): string[] {
 
 function relativeImports(file: string): string[] {
   const source = readFileSync(file, 'utf8');
-  return [...source.matchAll(IMPORT_PATTERN)]
-    .map((match) => match[1] ?? match[2])
-    .filter((specifier): specifier is string => specifier !== undefined)
-    .filter((specifier) => specifier.startsWith('.'));
+  const specifiers: string[] = [];
+
+  for (const match of source.matchAll(IMPORT_PATTERN)) {
+    const specifier = match[0].match(SPECIFIER_PATTERN)?.[1];
+    if (specifier) specifiers.push(specifier);
+  }
+
+  return specifiers.filter((specifier) => specifier.startsWith('.'));
 }
 
 function resolveSpecifier(file: string, specifier: string): string {

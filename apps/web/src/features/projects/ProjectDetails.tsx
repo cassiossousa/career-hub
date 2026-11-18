@@ -1,7 +1,7 @@
 import { Chip, Container, Grid, Link, Stack, Typography } from '@mui/material';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
-import { useTranslation } from '../../i18n/provider';
+import { useTranslation } from '../../i18n/Provider';
 import { getProject } from '../../services/projects/getProjects';
 
 function Section({ title, items }: { title: string; items?: string[] }) {

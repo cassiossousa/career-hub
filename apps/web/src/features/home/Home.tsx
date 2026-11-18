@@ -1,5 +1,5 @@
 import { Container, Stack, Typography } from '@mui/material';
-import { useTranslation } from '../../i18n/provider';
+import { useTranslation } from '../../i18n/Provider';
 
 export default function Home() {
   const { messages: t } = useTranslation();

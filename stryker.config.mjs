@@ -9,6 +9,13 @@ export default {
     '!apps/web/src/**/*.{test,spec}.{ts,tsx}',
   ],
   reporters: ['clear-text', 'progress'],
+  ignorePatterns: [
+    'test-results/**',
+    'playwright-report/**',
+    '.lighthouseci/**',
+    '.memlab/**',
+    '**/dist/**',
+  ],
   coverageAnalysis: 'perTest',
   tsconfigFile: 'apps/web/tsconfig.json',
 };

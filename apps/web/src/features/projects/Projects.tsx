@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { generatePath, Link } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
-import { useTranslation } from '../../i18n/provider';
+import { useTranslation } from '../../i18n/Provider';
 import { getProjects } from '../../services/projects/getProjects';
 
 export default function Projects() {

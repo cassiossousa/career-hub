@@ -1,8 +1,8 @@
 import 'dotenv/config';
 
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import matter from 'gray-matter';
-import path from 'path';
 
 import { getRepoReadme, getRepos } from '../apps/web/src/services/github.ts';
 import { normalizeGithubRepo } from '../apps/web/src/services/projects/githubMapper.ts';

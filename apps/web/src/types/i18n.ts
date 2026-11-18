@@ -1,6 +1,4 @@
-export const locales = ['en', 'pt-BR'] as const;
-
-export type Locale = (typeof locales)[number];
+export type Locale = 'en' | 'pt-BR';
 
 // Define translation structure
 export interface Translation {

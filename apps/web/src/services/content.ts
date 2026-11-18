@@ -60,8 +60,13 @@ export function getEntry(
   const source = fs.readFileSync(file, 'utf8');
   const { data, content } = matter(source);
 
+  const rawDate: unknown = data.date;
   const normalizedDate =
-    data.date instanceof Date ? data.date.toISOString() : data.date;
+    rawDate instanceof Date
+      ? rawDate.toISOString()
+      : typeof rawDate === 'string'
+        ? rawDate
+        : undefined;
 
   return {
     slug,

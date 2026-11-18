@@ -19,7 +19,10 @@ function simulateFailure() {
   }
 }
 
-async function fetchJson(url: string, bypassFailRate: boolean) {
+async function fetchJson(
+  url: string,
+  bypassFailRate: boolean,
+): Promise<unknown> {
   if (!bypassFailRate) {
     simulateFailure();
   }
@@ -30,7 +33,60 @@ async function fetchJson(url: string, bypassFailRate: boolean) {
     throw new Error(`GitHub request failed (${res.status})`);
   }
 
-  return res.json();
+  const data: unknown = await res.json();
+  return data;
+}
+
+function isStringOrNull(value: unknown): value is string | null {
+  return typeof value === 'string' || value === null;
+}
+
+function isGitHubRepo(value: unknown): value is GitHubRepo {
+  if (typeof value !== 'object' || value === null) return false;
+
+  if (
+    !('name' in value) ||
+    typeof value.name !== 'string' ||
+    !('html_url' in value) ||
+    typeof value.html_url !== 'string' ||
+    !('stargazers_count' in value) ||
+    typeof value.stargazers_count !== 'number' ||
+    !('description' in value) ||
+    !isStringOrNull(value.description) ||
+    !('homepage' in value) ||
+    !isStringOrNull(value.homepage)
+  ) {
+    return false;
+  }
+
+  if (
+    'topics' in value &&
+    value.topics !== undefined &&
+    (!Array.isArray(value.topics) ||
+      !value.topics.every((topic) => typeof topic === 'string'))
+  ) {
+    return false;
+  }
+
+  if (
+    'language' in value &&
+    value.language !== undefined &&
+    value.language !== null &&
+    typeof value.language !== 'string'
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function isReadmePayload(value: unknown): value is { content: string } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'content' in value &&
+    typeof value.content === 'string'
+  );
 }
 
 export async function getRepos(
@@ -38,10 +94,16 @@ export async function getRepos(
 ): Promise<GitHubRepo[]> {
   if (!USERNAME) throw new Error('Missing GITHUB_USERNAME');
 
-  return fetchJson(
+  const data: unknown = await fetchJson(
     `${BASE}/users/${USERNAME}/repos?per_page=100&sort=updated&type=owner`,
     bypassFailRate,
   );
+
+  if (!Array.isArray(data)) {
+    throw new Error('Unexpected GitHub repos response');
+  }
+
+  return data.filter(isGitHubRepo);
 }
 
 export async function getRepoReadme(
@@ -51,12 +113,12 @@ export async function getRepoReadme(
   if (!USERNAME) return;
 
   try {
-    const data = await fetchJson(
+    const data: unknown = await fetchJson(
       `${BASE}/repos/${USERNAME}/${repo}/readme`,
       bypassFailRate,
     );
 
-    if (!data?.content) return;
+    if (!isReadmePayload(data)) return;
 
     return Buffer.from(data.content, 'base64').toString('utf8');
   } catch {

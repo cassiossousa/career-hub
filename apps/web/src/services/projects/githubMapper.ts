@@ -38,14 +38,8 @@ function extractBullets(section?: string): string[] | undefined {
 }
 
 function extractTechnologies(section?: string): string[] | undefined {
-  if (!section) return;
-
-  const bullets = [...section.matchAll(/^- (.*)/gm)];
-
-  if (!bullets.length) return;
-
-  return bullets.map((b) =>
-    b[1].replace(/\*\*/g, '').replace(/:.*/, '').trim(),
+  return extractBullets(section)?.map((line) =>
+    line.replace(/\*\*/g, '').replace(/:.*/, '').trim(),
   );
 }
 
@@ -76,21 +70,56 @@ function extractDescription(content: string): string | undefined {
   }
 }
 
+interface ReadmeFrontmatter {
+  title?: string;
+  demo?: string;
+  technologies?: string[];
+  summary?: string[];
+  highlights?: string[];
+  topics?: string[];
+  featured?: boolean;
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === 'string')
+  );
+}
+
+function toReadmeFrontmatter(data: unknown): ReadmeFrontmatter {
+  if (typeof data !== 'object' || data === null) return {};
+
+  const fields = new Map<string, unknown>(Object.entries(data));
+
+  const stringField = (key: string) => {
+    const value = fields.get(key);
+    return typeof value === 'string' ? value : undefined;
+  };
+
+  const arrayField = (key: string) => {
+    const value = fields.get(key);
+    return isStringArray(value) ? value : undefined;
+  };
+
+  const featured = fields.get('featured');
+
+  return {
+    title: stringField('title'),
+    demo: stringField('demo'),
+    technologies: arrayField('technologies'),
+    summary: arrayField('summary'),
+    highlights: arrayField('highlights'),
+    topics: arrayField('topics'),
+    featured: typeof featured === 'boolean' ? featured : undefined,
+  };
+}
+
 function parseReadme(readme?: string) {
   if (!readme) return {};
 
   try {
     const parsed = matter(readme);
-
-    const data = parsed.data as {
-      title?: string;
-      demo?: string;
-      technologies?: string[];
-      summary?: string[];
-      highlights?: string[];
-      topics?: string[];
-      featured?: boolean;
-    };
+    const data = toReadmeFrontmatter(parsed.data);
 
     const content = removeTopHeading(parsed.content.trim());
 

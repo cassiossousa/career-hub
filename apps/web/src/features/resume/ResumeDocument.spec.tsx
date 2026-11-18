@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { getDictionary } from '../../i18n/dictionaries';
-import { TranslationProvider } from '../../i18n/provider';
+import { TranslationProvider } from '../../i18n/Provider';
 import type { Project } from '../../types/project';
 import ResumeDocument from './ResumeDocument';
 

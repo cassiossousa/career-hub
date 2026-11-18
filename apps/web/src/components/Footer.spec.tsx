@@ -5,7 +5,7 @@ import Footer from './Footer';
 describe('Footer', () => {
   it('renders identity, social links, and the copyright year', () => {
     render(
-      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+      <TranslationProvider>
         <Footer />
       </TranslationProvider>,
     );

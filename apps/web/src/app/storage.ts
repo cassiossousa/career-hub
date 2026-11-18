@@ -13,3 +13,11 @@ export function storageSetItem(key: string, value: string) {
     // Storage unavailable (private mode, quota, disabled) — value stays in memory.
   }
 }
+
+export function storageRemoveItem(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Storage unavailable — nothing to remove.
+  }
+}

@@ -33,7 +33,7 @@ jest.mock('../../services/projects/getProjects', () => ({
 function renderProjects() {
   render(
     <MemoryRouter>
-      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+      <TranslationProvider>
         <Projects />
       </TranslationProvider>
     </MemoryRouter>,

@@ -5,7 +5,7 @@ import Home from './Home';
 describe('Home', () => {
   it('renders the localized hero content', () => {
     render(
-      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+      <TranslationProvider>
         <Home />
       </TranslationProvider>,
     );

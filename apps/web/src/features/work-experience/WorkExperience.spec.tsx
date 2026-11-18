@@ -42,7 +42,7 @@ jest.mock(
 describe('WorkExperience', () => {
   it('renders roles newest first with company, title, and bullets', () => {
     render(
-      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+      <TranslationProvider>
         <WorkExperience />
       </TranslationProvider>,
     );

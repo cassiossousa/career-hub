@@ -7,7 +7,7 @@ describe('Navbar', () => {
   it('shows the home name on small screens and keeps resume navigation in the app', () => {
     render(
       <MemoryRouter>
-        <TranslationProvider locale="en" onLocaleChange={() => {}}>
+        <TranslationProvider>
           <Navbar />
         </TranslationProvider>
       </MemoryRouter>,

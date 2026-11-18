@@ -1,4 +1,4 @@
-import { storageGetItem, storageSetItem } from './storage';
+import { storageGetItem, storageRemoveItem, storageSetItem } from './storage';
 
 describe('storage helpers', () => {
   beforeEach(() => {
@@ -15,6 +15,23 @@ describe('storage helpers', () => {
 
   it('returns null for missing keys', () => {
     expect(storageGetItem('missing')).toBeNull();
+  });
+
+  it('removes stored values', () => {
+    storageSetItem('lang', 'pt-BR');
+    storageRemoveItem('lang');
+
+    expect(storageGetItem('lang')).toBeNull();
+  });
+
+  it('does not throw when storage removal fails', () => {
+    jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('Storage disabled');
+    });
+
+    expect(() => {
+      storageRemoveItem('lang');
+    }).not.toThrow();
   });
 
   it('returns null instead of throwing when storage reads fail', () => {

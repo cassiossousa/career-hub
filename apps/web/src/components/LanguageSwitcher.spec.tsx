@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { storageRemoveItem, storageSetItem } from '../app/storage';
 import { TranslationProvider } from '../i18n/Provider';
-import type { Locale } from '../types/i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 
-function renderSwitcher(locale: Locale, onLocaleChange = jest.fn()) {
+function renderSwitcher(onLocaleChange = jest.fn()) {
   render(
-    <TranslationProvider locale={locale} onLocaleChange={onLocaleChange}>
+    <TranslationProvider onLocaleChange={onLocaleChange}>
       <LanguageSwitcher />
     </TranslationProvider>,
   );
@@ -13,8 +13,16 @@ function renderSwitcher(locale: Locale, onLocaleChange = jest.fn()) {
 }
 
 describe('LanguageSwitcher', () => {
+  beforeEach(() => {
+    storageRemoveItem('lang');
+  });
+
+  afterEach(() => {
+    storageRemoveItem('lang');
+  });
+
   it('marks the active locale as pressed and requests the other locale on click', () => {
-    const onLocaleChange = renderSwitcher('en');
+    const onLocaleChange = renderSwitcher();
 
     const english = screen.getByRole('button', { name: 'Switch to English' });
     const portuguese = screen.getByRole('button', {
@@ -31,8 +39,9 @@ describe('LanguageSwitcher', () => {
     expect(onLocaleChange).toHaveBeenCalledWith('en');
   });
 
-  it('reflects pt-BR as the active locale', () => {
-    renderSwitcher('pt-BR');
+  it('reflects a stored pt-BR locale as the active one', () => {
+    storageSetItem('lang', 'pt-BR');
+    renderSwitcher();
 
     expect(
       screen.getByRole('button', { name: 'Mudar para português' }),

@@ -26,7 +26,7 @@ const mockGetProject = getProject as jest.MockedFunction<typeof getProject>;
 function renderDetails(entry: string) {
   render(
     <MemoryRouter initialEntries={[entry]}>
-      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+      <TranslationProvider>
         <Routes>
           <Route
             path={routePaths.projectDetails}

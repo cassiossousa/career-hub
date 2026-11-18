@@ -25,7 +25,7 @@ describe('Resume', () => {
 
     render(
       <MemoryRouter initialEntries={[routePaths.resume]}>
-        <TranslationProvider locale="en" onLocaleChange={() => {}}>
+        <TranslationProvider>
           <Routes>
             <Route path={routePaths.resume} element={<Resume />} />
           </Routes>

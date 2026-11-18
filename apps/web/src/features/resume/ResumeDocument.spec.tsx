@@ -27,7 +27,7 @@ describe('ResumeDocument', () => {
     ];
 
     render(
-      <TranslationProvider locale="en" onLocaleChange={() => {}}>
+      <TranslationProvider>
         <ResumeDocument roles={roles} projects={projects} />
       </TranslationProvider>,
     );

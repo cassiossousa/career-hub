@@ -14,15 +14,32 @@ import WorkExperience from './features/work-experience/WorkExperience';
 import { TranslationProvider } from './i18n/provider';
 import type { Locale } from './types/i18n';
 
+function readStoredLocale(): Locale | null {
+  try {
+    const stored = localStorage.getItem('lang');
+    return stored === 'pt-BR' || stored === 'en' ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredLocale(locale: Locale) {
+  try {
+    localStorage.setItem('lang', locale);
+  } catch {
+    // Storage unavailable (private mode, quota, disabled) — locale stays in memory.
+  }
+}
+
 function initialLocale() {
-  return localStorage.getItem('lang') === 'pt-BR' ? 'pt-BR' : 'en';
+  return readStoredLocale() ?? 'en';
 }
 
 function App({ initialLocale: startingLocale }: { initialLocale: Locale }) {
   const [locale, setLocale] = useState<Locale>(startingLocale);
 
   function changeLocale(nextLocale: Locale) {
-    localStorage.setItem('lang', nextLocale);
+    writeStoredLocale(nextLocale);
     setLocale(nextLocale);
   }
 

@@ -1,25 +1,7 @@
-import { existsSync, mkdirSync, readdirSync } from 'node:fs';
-import { homedir } from 'node:os';
+import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import memlabApi from '@memlab/api';
-
-function resolvePlaywrightChromium() {
-  const browsersDir = path.join(homedir(), 'AppData', 'Local', 'ms-playwright');
-  if (!existsSync(browsersDir)) return undefined;
-
-  const candidates = readdirSync(browsersDir)
-    .filter((entry) => entry.startsWith('chromium-'))
-    .toSorted()
-    .toReversed();
-
-  for (const dir of candidates) {
-    for (const sub of ['chrome-win', 'chrome-win64']) {
-      const binary = path.join(browsersDir, dir, sub, 'chrome.exe');
-      if (existsSync(binary)) return binary;
-    }
-  }
-  return undefined;
-}
+import { resolvePlaywrightChromium } from './playwright-chromium.mjs';
 
 async function main() {
   const workDir = path.resolve('.memlab');

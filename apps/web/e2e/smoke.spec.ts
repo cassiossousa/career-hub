@@ -26,6 +26,40 @@ test('project details route renders a real project', async ({ page }) => {
   await expect(page).toHaveURL(/\/projects\/sudoku-next/);
 });
 
+test('keyboard tab order only lands on visible focusable elements', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  const focusedTags = new Set<string>();
+
+  for (let i = 0; i < 15; i++) {
+    await page.keyboard.press('Tab');
+
+    const focusState = await page.evaluate(() => {
+      const active = document.activeElement;
+      if (!(active instanceof HTMLElement)) return null;
+      const rect = active.getBoundingClientRect();
+      const style = window.getComputedStyle(active);
+      return {
+        tag: active.tagName,
+        isVisible:
+          rect.width > 0 &&
+          rect.height > 0 &&
+          style.visibility !== 'hidden' &&
+          style.display !== 'none',
+      };
+    });
+
+    if (focusState) {
+      focusedTags.add(focusState.tag);
+      expect(focusState.isVisible).toBe(true);
+    }
+  }
+
+  expect(focusedTags.size).toBeGreaterThan(1);
+});
+
 test('projects list navigates to project details', async ({ page }) => {
   await page.goto('/projects');
 

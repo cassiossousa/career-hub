@@ -71,9 +71,12 @@ async function main() {
   );
   run('npx playwright test');
 
-  console.log('=== [4/4] Memory leak detection (MemLab, production build) ===');
+  console.log('=== [4/5] Memory leak detection (MemLab, production build) ===');
   run('npm run build');
   await withPreviewServer(() => run('node scripts/memlab-run.mjs'));
+
+  console.log('=== [5/5] Core Web Vitals budgets (Lighthouse CI) ===');
+  run('node scripts/lighthouse-run.mjs');
 
   console.log('\nAll post-generation verification layers cleared.');
 }

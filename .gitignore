@@ -11,6 +11,7 @@
 /.memlab/
 /test-results/
 /playwright-report/
+/.lighthouseci/
 
 # build output
 **/dist/

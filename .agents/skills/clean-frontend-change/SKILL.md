@@ -40,4 +40,4 @@ For changes touching runtime behavior, routing, styling, or dependencies, also r
 npm run audit:deep
 ```
 
-`audit:deep` adds dependency-cruiser arch checks, the Jest boundary spec, Playwright smoke + WCAG AA audits (`apps/web/e2e/`), and a production-build MemLab leak check. CI runs `verify:all`, the e2e job, and incremental mutation testing on PRs; pre-commit runs lint-staged and pre-push runs `npm run verify:push`.
+`audit:deep` adds dependency-cruiser arch checks, the Jest boundary spec, Playwright smoke + WCAG AA audits plus resilience specs (`apps/web/e2e/`: storage faults, offline navigation, 360px/pt-BR overflow), a production-build MemLab leak check, and Lighthouse CI budgets. `verify:all` also enforces gzip bundle budgets via `npm run check:bundle`, and ESLint applies `eslint-plugin-security` rules to `apps/web/src` to reject XSS sinks. CI runs `verify:all`, the e2e job (Playwright + Lighthouse), and incremental mutation testing on PRs; pre-commit runs lint-staged and pre-push runs `npm run verify:push`.

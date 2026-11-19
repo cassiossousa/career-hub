@@ -43,8 +43,6 @@ const en: Translation = {
   resume: {
     title: 'Resume',
     printAction: 'Print / Save as PDF',
-    printInstructions:
-      "Use your browser's print dialog to print or save this resume as PDF.",
     summaryTitle: 'Professional Summary',
     summary: `Senior Software Engineer with ${yearsSince(2016)}+ years of experience building and operating large-scale, high-traffic web applications using React, TypeScript, and modern frontend architectures. Proven track record owning user-facing features end-to-end, from technical design and implementation to performance optimization and production support. Strong background in frontend system design, code health, testing strategies, and observability, with experience collaborating closely with Product, Design, Backend, and Data teams in distributed environments. Fluent in English and experienced mentoring engineers and leading frontend teams.`,
     experienceTitle: 'Work Experience',

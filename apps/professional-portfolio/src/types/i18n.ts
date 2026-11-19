@@ -44,7 +44,6 @@ export interface Translation {
   resume: {
     title: string;
     printAction: string;
-    printInstructions: string;
     summaryTitle: string;
     summary: string;
     experienceTitle: string;

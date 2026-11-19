@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material';
+import BulletList from '../../../components/BulletList';
 import type { WorkRole } from '../../../services/work-experience/workModel';
 import ResumeSection from './ResumeSection';
 
@@ -30,11 +31,11 @@ export default function ResumeExperience({
                 {role.period}
               </Typography>
             </Stack>
-            <Box component="ul">
+            <BulletList paddingInlineStart={2}>
               {role.bullets.map((bullet) => (
                 <li key={bullet.line}>{bullet.line}</li>
               ))}
-            </Box>
+            </BulletList>
           </Box>
         ))}
       </Stack>

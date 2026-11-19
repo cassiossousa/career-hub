@@ -1,4 +1,5 @@
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Paper, Stack, Typography } from '@mui/material';
+import BulletList from '../../components/BulletList';
 import { useTranslation } from '../../i18n/Provider';
 import type { WorkRole } from '../../services/work-experience/workModel';
 import type { Project } from '../../types/project';
@@ -70,11 +71,11 @@ export default function ResumeDocument({
 
         {languages.length > 0 && (
           <ResumeSection title={t.resume.languagesTitle}>
-            <Box component="ul">
+            <BulletList paddingInlineStart={2}>
               {languages.map((language) => (
                 <li key={language}>{language}</li>
               ))}
-            </Box>
+            </BulletList>
           </ResumeSection>
         )}
       </Stack>

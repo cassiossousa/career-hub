@@ -1,4 +1,5 @@
 import { Box, Link, Stack, Typography } from '@mui/material';
+import BulletList from '../../../components/BulletList';
 import type { Translation } from '../../../types/i18n';
 import type { Project } from '../../../types/project';
 import ResumeSection from './ResumeSection';
@@ -77,11 +78,11 @@ export default function ResumeProjects({
               )}
             </Stack>
             {project.summary && (
-              <Box component="ul">
+              <BulletList paddingInlineStart={2}>
                 {project.summary.slice(0, 3).map((summary) => (
                   <li key={summary}>{summary}</li>
                 ))}
-              </Box>
+              </BulletList>
             )}
           </Box>
         ))}

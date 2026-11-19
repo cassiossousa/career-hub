@@ -39,7 +39,11 @@ export function WorkExperienceList({
 
 function AccordionItem({ role }: { role: WorkRole }) {
   return (
-    <Accordion disableGutters elevation={0}>
+    <Accordion
+      disableGutters
+      elevation={0}
+      sx={{ backgroundColor: 'transparent' }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
         <Stack spacing={0.5}>
           <Typography variant="h3" sx={{ color: 'primary.dark' }}>

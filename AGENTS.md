@@ -24,23 +24,22 @@ You are working in a remediated, strictly typed front-end codebase. Your goal is
 - **NO Copy-Paste Sprawl:** Duplicated blocks ≥ 5 lines / 40 tokens fail `npm run check:clones` (jscpd). Extract shared helpers instead.
 - **NO UI/UX CHANGES WITHOUT THE SKILL:** Every UI/UX alteration — screens, components, forms, layouts, styling, empty/loading/error states, i18n strings, navigation — MUST consult `.devin/skills/ui-ux-guidelines/SKILL.md` before implementing and run its §14 pre-ship checklist before finishing. Skill violations are bugs, not taste.
 
-## 3. Mandatory Definition of Done (Run Before Finishing)
+## 3. Targeted Definition of Done
 
-Before concluding ANY task, you MUST execute the repository's deterministic verification suite and fix every single error or warning:
+Default to targeted local checks; CI is the authoritative full gate.
 
-```bash
-npm run verify:all
-```
+Before finishing ANY task:
 
-If you modified business logic, reducers, or utility functions in `domain/` or `hooks/`, you MUST also verify that your tests survive mutation testing:
+1. Stage the files you changed and run `npx lint-staged`; fix failures and re-stage.
+2. Run the narrowest checks that cover the change:
+   - TS/TSX: `npm run check:types` plus the related Jest specs (`npx jest --config apps/professional-portfolio/jest.config.cjs --runInBand <spec paths>`).
+   - UI/styling/i18n: check the affected routes at desktop and 360px when a dev/preview server is already running; update `e2e/visual.spec.ts` baselines only when those routes' pixels change.
+   - Business logic/services/types: keep focused Jest coverage and run `npm run check:mutate:diff` when touching mutation-covered logic.
+3. Do NOT run `verify:all` or `audit:deep` for routine small changes — CI runs them on every push/PR. Run them manually only for broad refactors, dependency/build-system changes, or explicit user request.
 
-```bash
-npm run check:mutate:diff
-```
+### Optional deep gate
 
-### Deep post-generation gate
-
-After any AI-assisted generation or refactor pass, ALSO run the deep audit. It layers runtime checks that `verify:all` intentionally excludes (they need a browser and a built bundle):
+`npm run audit:deep` remains available for high-risk manual validation; it layers runtime checks that `verify:all` intentionally excludes (they need a browser and a built bundle):
 
 ```bash
 npm run audit:deep
@@ -79,12 +78,12 @@ On-demand gates (too slow/networked for `verify:all`):
 - `npm run check:mutate:core` — Stryker mutation score (break < 85, ratchet upward as tests improve) over the pure-logic core (`services/`, `types/`, `i18n/dictionaries.ts`, `app/storage.ts`, `app/routePaths.ts`) with static mutants ignored. Run after touching core logic or periodically.
 - `npm run sync:projects:check` — regenerates `content/projects` into a temp dir and diffs against the committed MDX; fails when GitHub-synced content is stale. Requires `GITHUB_USERNAME`/`GITHUB_TOKEN`.
 
-Do not claim a task is complete until `npm run verify:all` exits with code `0`; run `npm run audit:deep` whenever the change touched runtime behavior, routing, styling, or dependencies.
+Do not claim a task is complete until the targeted checks above pass and `npx lint-staged` is clean; CI `verify:all`/`audit:deep` remains the merge gate.
 
-**Commit-path check:** `verify:all` green does NOT prove the change can be committed. After editing files, stage them and run `npx lint-staged` (or attempt the commit itself) and fix any failure — lint-staged lints the staged content, so re-stage after fixing. Never finish a task leaving `git commit` broken (missing `node_modules`, unstaged fixes, hook failures). If a hook failure is environmental (e.g. command-line length), fix the tooling — do not bypass the hook.
+**Commit-path check:** targeted checks green do NOT prove the change can be committed. After editing files, stage them and run `npx lint-staged` (or attempt the commit itself) and fix any failure — lint-staged lints the staged content, so re-stage after fixing. Never finish a task leaving `git commit` broken (missing `node_modules`, unstaged fixes, hook failures). If a hook failure is environmental (e.g. command-line length), fix the tooling — do not bypass the hook.
 
 ## 4. Green-CI Guarantee and Workflow Integrity
 
-- **Every change must merge green.** Before finishing ANY task, verify that the resulting merge will pass CI — not just `verify:all`. If your change touches render-affecting source, update the linux visual baselines in the same change (or use the documented `no-visual-change` marker only when pixels are provably identical). If it touches business logic, confirm `check:mutate:diff` will pass. A local `verify:all` pass is necessary but not always sufficient — check the PR-scoped CI steps (`check:mutate:diff`, `check:visual-baseline`) against the files you changed.
+- **Every change must merge green.** CI `verify:all`, the PR-scoped mutation/visual-baseline checks, and the `e2e` job are the authoritative gates. For routine changes, targeted local checks plus pre-commit/pre-push hooks are enough; run `verify:all`/`audit:deep` locally only for broad or high-risk changes. If your change touches render-affecting source, update the linux visual baselines in the same change (or use the documented `no-visual-change` marker only when pixels are provably identical). If it touches business logic, confirm `check:mutate:diff` will pass.
 - **Never weaken CI to make it pass.** Do NOT edit `.github/workflows/`, CI scripts, thresholds, baselines, or gate logic to bypass a failure — fix the underlying code instead. The only sanctioned pressure valves are the documented ones (`no-visual-change` commit marker, `--update-baseline` for intentional bundle growth, ratchet comments in Stryker config).
 - **Workflow changes require explicit request.** Only modify CI workflows (`.github/workflows/*.yml`) when the user explicitly asks for it. All other gates — scripts, configs, thresholds in repo tooling — may be adjusted when a change legitimately requires it, but never to mask a regression.

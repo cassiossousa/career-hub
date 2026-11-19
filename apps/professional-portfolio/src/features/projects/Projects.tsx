@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { generatePath, Link } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
+import BulletList from '../../components/BulletList';
 import { useTranslation } from '../../i18n/Provider';
 import { getProjects } from '../../services/projects/getProjects';
 
@@ -47,13 +48,13 @@ export default function Projects() {
                     </MuiLink>
 
                     {project.summary && (
-                      <ul>
+                      <BulletList>
                         {project.summary.slice(0, 3).map((bullet) => (
                           <li key={bullet}>
                             <Typography variant="body2">{bullet}</Typography>
                           </li>
                         ))}
-                      </ul>
+                      </BulletList>
                     )}
 
                     {project.technologies &&

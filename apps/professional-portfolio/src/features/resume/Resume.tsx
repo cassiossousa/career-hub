@@ -30,21 +30,14 @@ export default function Resume() {
       sx={{ py: 6, '@media print': { py: 0, px: 0 } }}
     >
       <Stack spacing={3}>
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            '@media print': { display: 'none' },
-          }}
-        >
+        <Stack spacing={2} sx={{ '@media print': { display: 'none' } }}>
           <Typography variant="h1" component="h1">
             {t.resume.title}
           </Typography>
           <Button
             type="button"
             variant="contained"
+            sx={{ alignSelf: 'flex-start' }}
             onClick={() => {
               window.print();
             }}
@@ -52,12 +45,6 @@ export default function Resume() {
             {t.resume.printAction}
           </Button>
         </Stack>
-        <Typography
-          variant="body2"
-          sx={{ '@media print': { display: 'none' } }}
-        >
-          {t.resume.printInstructions}
-        </Typography>
         <ResumeDocument roles={roles} projects={projects} />
       </Stack>
     </Container>

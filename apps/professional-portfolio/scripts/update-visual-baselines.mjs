@@ -109,7 +109,7 @@ async function regenerateLinuxBaselines() {
     try {
       const remoteDir =
         '/src/apps/professional-portfolio/e2e/visual.spec.ts-snapshots';
-      docker(['cp', `${CONTAINER_NAME}:${remoteDir}`, tmp]);
+      docker(['cp', `${CONTAINER_NAME}:${remoteDir}/.`, tmp]);
       const copied = readdirSync(tmp)
         .filter((f) => f.endsWith('-linux.png'))
         .map((f) => join(tmp, f));

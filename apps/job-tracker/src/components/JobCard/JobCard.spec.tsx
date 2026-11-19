@@ -30,6 +30,26 @@ describe('JobCard', () => {
     expect(screen.getByText(/92%/)).toBeInTheDocument();
   });
 
+  it('never renders duplicate chip labels', () => {
+    // seedJob(0): location "Remote" collides with the remote toggle.
+    // seedJob(2): source "remote" also maps to the "Remote" label.
+    for (const index of [0, 2]) {
+      const { unmount } = renderWithProviders(<JobCard job={seedJob(index)} />);
+      expect(screen.getAllByText('Remote')).toHaveLength(1);
+      unmount();
+    }
+  });
+
+  it('keeps the location chip when it adds information', () => {
+    renderWithProviders(<JobCard job={seedJob(1)} />);
+    expect(screen.getByText('São Paulo')).toBeInTheDocument();
+  });
+
+  it('does not render a remote chip for non-remote jobs', () => {
+    renderWithProviders(<JobCard job={seedJob(1)} />);
+    expect(screen.queryByText('Remote')).not.toBeInTheDocument();
+  });
+
   it('is keyboard-activatable when clickable', async () => {
     const onClick = jest.fn();
     const user = userEvent.setup();

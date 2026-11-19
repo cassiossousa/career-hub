@@ -18,12 +18,47 @@ interface JobCardProps {
 }
 
 function matchScoreColor(
-  score: number | null,
-): 'success' | 'warning' | 'default' {
-  if (score === null) return 'default';
-  if (score >= 80) return 'success';
-  if (score >= 50) return 'warning';
-  return 'default';
+  score: number,
+): 'success.main' | 'warning.main' | 'text.disabled' {
+  if (score >= 80) return 'success.main';
+  if (score >= 50) return 'warning.main';
+  return 'text.disabled';
+}
+
+// Locations that merely restate the remote flag — showing them as a second
+// chip would duplicate the "Remote" tag.
+const REMOTE_LOCATION_VALUES = new Set([
+  'remote',
+  'remoto',
+  'worldwide',
+  'global',
+  'anywhere',
+]);
+
+function isRedundantRemoteLocation(job: Job): boolean {
+  return (
+    job.remote && REMOTE_LOCATION_VALUES.has(job.location.trim().toLowerCase())
+  );
+}
+
+interface ToggleChipProps {
+  label: string;
+  active: boolean;
+  onToggle: () => void;
+}
+
+function ToggleChip({ label, active, onToggle }: ToggleChipProps) {
+  return (
+    <Chip
+      label={label}
+      size="small"
+      variant={active ? 'filled' : 'outlined'}
+      color={active ? 'primary' : 'default'}
+      clickable
+      aria-pressed={active}
+      onClick={onToggle}
+    />
+  );
 }
 
 function JobChips({ job }: { job: Job }) {
@@ -31,55 +66,73 @@ function JobChips({ job }: { job: Job }) {
   const { level, area, remoteOnly, setLevel, setArea, setRemoteOnly } =
     useFilterStore();
 
+  const levelLabel = messages.jobs.levels[job.level];
+  const areaLabel = messages.jobs.areas[job.area];
+  const sourceLabel = messages.jobs.sources[job.source];
+  const remoteLabel = messages.jobs.remote;
   const levelActive = level === job.level;
   const areaActive = area === job.area;
   const remoteActive = job.remote && remoteOnly;
 
+  // No tag may render twice: on a label collision the later entry wins, so
+  // informational chips yield to the remote toggle (always last).
+  const chipEntries: [string, string | null][] = [
+    ['level', levelLabel],
+    ['area', areaLabel],
+    ['source', sourceLabel],
+    ['location', job.location],
+    ['remote', job.remote ? remoteLabel : null],
+  ];
+  const normalized = chipEntries.map(([, label]) =>
+    (label ?? '').trim().toLowerCase(),
+  );
+  const hiddenChips = new Set(
+    chipEntries
+      .filter(
+        (_, index) =>
+          normalized[index] !== '' &&
+          normalized.lastIndexOf(normalized[index] ?? '') !== index,
+      )
+      .map(([key]) => key),
+  );
+
   return (
     <Box sx={{ px: 2, pb: 2 }}>
       <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
-        <Chip
-          label={messages.jobs.levels[job.level]}
-          size="small"
-          variant={levelActive ? 'filled' : 'outlined'}
-          color={levelActive ? 'primary' : 'default'}
-          clickable
-          aria-pressed={levelActive}
-          onClick={() => {
-            setLevel(levelActive ? undefined : job.level);
-          }}
-        />
-        <Chip
-          label={messages.jobs.areas[job.area]}
-          size="small"
-          variant={areaActive ? 'filled' : 'outlined'}
-          color={areaActive ? 'primary' : 'default'}
-          clickable
-          aria-pressed={areaActive}
-          onClick={() => {
-            setArea(areaActive ? undefined : job.area);
-          }}
-        />
-        <Chip
-          label={messages.jobs.sources[job.source]}
-          size="small"
-          variant="outlined"
-        />
-        <Chip
-          label={job.location}
-          size="small"
-          variant="outlined"
-          sx={{ maxWidth: 220 }}
-        />
-        {job.remote && (
+        {!hiddenChips.has('level') && (
+          <ToggleChip
+            label={levelLabel}
+            active={levelActive}
+            onToggle={() => {
+              setLevel(levelActive ? undefined : job.level);
+            }}
+          />
+        )}
+        {!hiddenChips.has('area') && (
+          <ToggleChip
+            label={areaLabel}
+            active={areaActive}
+            onToggle={() => {
+              setArea(areaActive ? undefined : job.area);
+            }}
+          />
+        )}
+        {!hiddenChips.has('source') && (
+          <Chip label={sourceLabel} size="small" variant="outlined" />
+        )}
+        {!hiddenChips.has('location') && !isRedundantRemoteLocation(job) && (
           <Chip
-            label={messages.jobs.remote}
+            label={job.location}
             size="small"
-            variant={remoteActive ? 'filled' : 'outlined'}
-            color={remoteActive ? 'primary' : 'default'}
-            clickable
-            aria-pressed={remoteActive}
-            onClick={() => {
+            variant="outlined"
+            sx={{ maxWidth: 220 }}
+          />
+        )}
+        {job.remote && !hiddenChips.has('remote') && (
+          <ToggleChip
+            label={remoteLabel}
+            active={remoteActive}
+            onToggle={() => {
               setRemoteOnly(!remoteOnly);
             }}
           />
@@ -118,7 +171,7 @@ export function JobCard({ job, onClick }: JobCardProps) {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                bgcolor: `${matchScoreColor(job.matchScore)}.main`,
+                bgcolor: matchScoreColor(job.matchScore),
                 flexShrink: 0,
               }}
             />

@@ -16,7 +16,7 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky || echo 'husky unavailable (e.g. Vercel install) - skipping git hooks setup'",
     "audit:deep": "node apps/professional-portfolio/scripts/audit-runtime.mjs",
     "build": "npm run build --workspace professional-portfolio",
     "check:fast": "oxlint --deny-warnings -D correctness -D suspicious . && biome check .",

@@ -1,3 +1,4 @@
+import { AppErrorBoundary } from '@career-hub/ui/components';
 import { Box, CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -24,50 +25,57 @@ function App() {
         }}
       />
       <TranslationProvider>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'minmax(0, 1fr)',
-              md: 'minmax(0, 1fr) minmax(0, 900px) minmax(0, 1fr)',
-            },
-            gridTemplateRows: 'auto 1fr auto',
-            minHeight: '100vh',
-            '@media print': { minHeight: 0 },
-          }}
-        >
-          <Navbar />
+        <AppErrorBoundary>
           <Box
-            component="main"
             sx={{
-              gridColumn: { xs: '1 / -1', md: '2' },
-              minWidth: 0,
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: 'minmax(0, 1fr)',
+                md: 'minmax(0, 1fr) minmax(0, 900px) minmax(0, 1fr)',
+              },
+              gridTemplateRows: 'auto 1fr auto',
+              minHeight: '100vh',
+              '@media print': { minHeight: 0 },
             }}
           >
-            <Routes>
-              <Route path={routePaths.home} element={<Home />} />
-              <Route path={routePaths.projects} element={<Projects />} />
-              <Route
-                path={routePaths.projectDetails}
-                element={<ProjectDetails />}
-              />
-              <Route
-                path={routePaths.workExperience}
-                element={<WorkExperience />}
-              />
-              <Route path={routePaths.resume} element={<Resume />} />
-              <Route
-                path="*"
-                element={<Navigate to={routePaths.home} replace />}
-              />
-            </Routes>
+            <Navbar />
+            <Box
+              component="main"
+              sx={{
+                gridColumn: { xs: '1 / -1', md: '2' },
+                minWidth: 0,
+              }}
+            >
+              <Routes>
+                <Route path={routePaths.home} element={<Home />} />
+                <Route path={routePaths.projects} element={<Projects />} />
+                <Route
+                  path={routePaths.projectDetails}
+                  element={<ProjectDetails />}
+                />
+                <Route
+                  path={routePaths.workExperience}
+                  element={<WorkExperience />}
+                />
+                <Route path={routePaths.resume} element={<Resume />} />
+                <Route
+                  path="*"
+                  element={<Navigate to={routePaths.home} replace />}
+                />
+              </Routes>
+            </Box>
+            <Footer />
           </Box>
-          <Footer />
-        </Box>
+        </AppErrorBoundary>
       </TranslationProvider>
     </ThemeProvider>
   );
 }
+
+// Stale chunk after a deploy must reload, not white-screen (ChunkLoadError).
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload();
+});
 
 const rootElement = document.getElementById('root');
 

@@ -1,35 +1,23 @@
-import { IconButton, Stack } from '@mui/material';
+import {
+  createLanguageOptions,
+  LanguageSwitcher as SharedLanguageSwitcher,
+} from '@career-hub/ui/components';
 import { useTranslation } from '../i18n/Provider';
+import type { Locale } from '../types/i18n';
 
 export default function LanguageSwitcher() {
   const { locale, messages, onLocaleChange } = useTranslation();
 
+  const options = createLanguageOptions<Locale>([
+    { value: 'en', ariaLabel: messages.navigation.switchToEnglish },
+    { value: 'pt-BR', ariaLabel: messages.navigation.switchToPortuguese },
+  ]);
+
   return (
-    <Stack direction="row" spacing={1}>
-      <IconButton
-        type="button"
-        onClick={() => {
-          onLocaleChange('en');
-        }}
-        aria-label={messages.navigation.switchToEnglish}
-        aria-pressed={locale === 'en'}
-        size="small"
-        color={locale === 'en' ? 'primary' : 'default'}
-      >
-        🇺🇸
-      </IconButton>
-      <IconButton
-        type="button"
-        onClick={() => {
-          onLocaleChange('pt-BR');
-        }}
-        aria-label={messages.navigation.switchToPortuguese}
-        aria-pressed={locale === 'pt-BR'}
-        size="small"
-        color={locale === 'pt-BR' ? 'primary' : 'default'}
-      >
-        🇧🇷
-      </IconButton>
-    </Stack>
+    <SharedLanguageSwitcher
+      locale={locale}
+      options={options}
+      onLocaleChange={onLocaleChange}
+    />
   );
 }

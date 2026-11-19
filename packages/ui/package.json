@@ -1,0 +1,22 @@
+{
+  "name": "@career-hub/ui",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./theme/index.ts",
+  "exports": {
+    "./theme": "./theme/index.ts",
+    "./components": "./components/index.ts",
+    "./i18n": "./i18n/index.ts",
+    "./testkit": "./testkit/index.ts"
+  },
+  "dependencies": {
+    "@mui/material": "9.5.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

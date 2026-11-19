@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./apps/professional-portfolio" },
-    { "path": "./apps/job-tracker" }
+    { "path": "./apps/job-tracker" },
+    { "path": "./packages/ui" }
   ]
 }

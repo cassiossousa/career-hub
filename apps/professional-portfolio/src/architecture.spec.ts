@@ -1,69 +1,21 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
+import {
+  featureOf,
+  findCrossFeatureImports,
+  isInside,
+  listSourceFiles,
+  relativeImports,
+  resolveSpecifier,
+} from '@career-hub/ui/testkit';
 
 const SRC_ROOT = __dirname;
 const FEATURES_ROOT = path.join(SRC_ROOT, 'features');
-const COMPONENTS_ROOT = path.join(SRC_ROOT, 'components');
 const SERVICES_ROOT = path.join(SRC_ROOT, 'services');
-
-const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx']);
-const IMPORT_PATTERN =
-  /(?:import|export)\s[^'"]*?from\s+['"][^'"]+['"]|\bimport\s*['"][^'"]+['"]/g;
-const SPECIFIER_PATTERN = /['"]([^'"]+)['"]/;
-
-function listSourceFiles(dir: string): string[] {
-  return readdirSync(dir).flatMap((entry) => {
-    const fullPath = path.join(dir, entry);
-    if (statSync(fullPath).isDirectory()) return listSourceFiles(fullPath);
-    return SOURCE_EXTENSIONS.has(path.extname(entry)) ? [fullPath] : [];
-  });
-}
-
-function relativeImports(file: string): string[] {
-  const source = readFileSync(file, 'utf8');
-  const specifiers: string[] = [];
-
-  for (const match of source.matchAll(IMPORT_PATTERN)) {
-    const specifier = match[0].match(SPECIFIER_PATTERN)?.[1];
-    if (specifier) specifiers.push(specifier);
-  }
-
-  return specifiers.filter((specifier) => specifier.startsWith('.'));
-}
-
-function resolveSpecifier(file: string, specifier: string): string {
-  return path.resolve(path.dirname(file), specifier);
-}
-
-function featureOf(resolvedPath: string): string | null {
-  const relative = path.relative(FEATURES_ROOT, resolvedPath);
-  if (relative.startsWith('..') || path.isAbsolute(relative)) return null;
-  return relative.split(path.sep)[0] ?? null;
-}
-
-function isInside(root: string, resolvedPath: string): boolean {
-  const relative = path.relative(root, resolvedPath);
-  return (
-    relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative)
-  );
-}
+const COMPONENTS_ROOT = path.join(SRC_ROOT, 'components');
 
 describe('architecture boundaries', () => {
   it('features never import internals from sibling features', () => {
-    const violations = listSourceFiles(FEATURES_ROOT).flatMap((file) => {
-      const sourceFeature = path
-        .relative(FEATURES_ROOT, file)
-        .split(path.sep)[0];
-      return relativeImports(file)
-        .map((specifier) => resolveSpecifier(file, specifier))
-        .filter((resolved) => {
-          const targetFeature = featureOf(resolved);
-          return targetFeature !== null && targetFeature !== sourceFeature;
-        })
-        .map((resolved) => `${file} -> ${resolved}`);
-    });
-
-    expect(violations).toEqual([]);
+    expect(findCrossFeatureImports(SRC_ROOT)).toEqual([]);
   });
 
   it('shared components never import features or services', () => {
@@ -72,7 +24,8 @@ describe('architecture boundaries', () => {
         .map((specifier) => resolveSpecifier(file, specifier))
         .filter(
           (resolved) =>
-            featureOf(resolved) !== null || isInside(SERVICES_ROOT, resolved),
+            featureOf(FEATURES_ROOT, resolved) !== null ||
+            isInside(SERVICES_ROOT, resolved),
         )
         .map((resolved) => `${file} -> ${resolved}`),
     );

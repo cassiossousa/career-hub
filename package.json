@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "author": {
-    "name": "Cássio dos Santos Sousa"
+    "name": "C\u00c3\u0192\u00c2\u00a1ssio dos Santos Sousa"
   },
   "repository": {
     "type": "git",
@@ -18,17 +18,17 @@
   "scripts": {
     "prepare": "husky || echo 'husky unavailable (e.g. Vercel install) - skipping git hooks setup'",
     "audit:deep": "node apps/professional-portfolio/scripts/audit-runtime.mjs",
-    "build": "npm run build --workspace professional-portfolio",
+    "build": "npm run build --workspace professional-portfolio && npm run build --workspace job-tracker",
     "check:fast": "oxlint --deny-warnings -D correctness -D suspicious . && biome check .",
     "fix:fast": "oxlint --fix --deny-warnings -D correctness -D suspicious . && biome check --write .",
     "check:types": "tsc -b",
     "check:dead": "knip",
     "check:bloat": "node apps/professional-portfolio/scripts/audit-react-bloat.mjs",
-    "check:arch": "depcruise apps/professional-portfolio/src -c apps/professional-portfolio/.dependency-cruiser.cjs",
+    "check:arch": "depcruise apps/professional-portfolio/src -c apps/professional-portfolio/.dependency-cruiser.cjs && depcruise apps/job-tracker/src -c apps/job-tracker/.dependency-cruiser.cjs",
     "check:case": "node scripts/check-case-sensitivity.mjs",
     "check:audit": "npm audit --omit=dev --audit-level=high",
     "check:bundle": "node apps/professional-portfolio/scripts/audit-bundle-budget.mjs",
-    "check:clones": "jscpd apps/professional-portfolio/src apps/professional-portfolio/e2e apps/professional-portfolio/scripts apps/job-tracker/src scripts --min-lines 5 --min-tokens 40 --reporters console --exit-code 1",
+    "check:clones": "jscpd apps/professional-portfolio/src apps/professional-portfolio/e2e apps/professional-portfolio/scripts apps/job-tracker/src apps/job-tracker/e2e scripts --min-lines 5 --min-tokens 40 --reporters console --exit-code 1",
     "check:lighthouse": "node apps/professional-portfolio/scripts/lighthouse-run.mjs",
     "check:visual-baseline": "node apps/professional-portfolio/scripts/check-visual-baseline-drift.mjs",
     "check:mutate:diff": "node apps/professional-portfolio/scripts/check-mutation-diff.mjs",
@@ -47,10 +47,11 @@
     "start": "npm run start --workspace professional-portfolio",
     "sync:projects": "node scripts/sync-github-projects.mjs",
     "sync:projects:check": "node scripts/sync-github-projects.mjs --check",
-    "test": "jest --config apps/professional-portfolio/jest.config.cjs",
-    "test:e2e": "playwright test --config apps/professional-portfolio/playwright.config.ts",
-    "test:cov": "jest --config apps/professional-portfolio/jest.config.cjs --coverage",
-    "update:visual-baselines": "node apps/professional-portfolio/scripts/update-visual-baselines.mjs"
+    "test": "npm run test --workspace professional-portfolio && npm run test --workspace job-tracker",
+    "test:e2e": "playwright test --config apps/professional-portfolio/playwright.config.ts && playwright test --config apps/job-tracker/playwright.config.ts",
+    "test:cov": "jest --config apps/professional-portfolio/jest.config.cjs --coverage --runInBand && jest --config apps/job-tracker/jest.config.cjs --coverage --runInBand",
+    "update:visual-baselines": "node apps/professional-portfolio/scripts/update-visual-baselines.mjs",
+    "check:vercel-install": "node scripts/check-workspace-install.mjs"
   },
   "overrides": {
     "@stryker-mutator/core": {
@@ -72,6 +73,7 @@
     "dotenv": "17.3.1",
     "eslint": "9.39.4",
     "eslint-plugin-check-file": "3.3.2",
+    "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-no-barrel-files": "2.3.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-you-might-not-need-an-effect": "1.2.0",

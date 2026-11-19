@@ -104,7 +104,7 @@ export function ApplicationPipeline() {
 
         return (
           <Stack spacing={2}>
-            <Typography variant="h6">
+            <Typography component="h2" variant="h6">
               {messages.dashboard.pipeline.title}
             </Typography>
             <Box
@@ -141,7 +141,11 @@ export function ApplicationPipeline() {
                           color={STATUS_COLORS[status]}
                           size="small"
                         />
-                        <Typography variant="h6" color="text.secondary">
+                        <Typography
+                          component="div"
+                          variant="h6"
+                          color="text.secondary"
+                        >
                           {items.length}
                         </Typography>
                       </Stack>

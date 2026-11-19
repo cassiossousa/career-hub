@@ -13,6 +13,8 @@ import { isApiError } from '../../services/api/client';
 import type { Translation } from '../../types/i18n';
 
 export function LoadingState({ label }: { label?: string }) {
+  const { messages } = useTranslation();
+
   return (
     <Box
       role="status"
@@ -20,7 +22,10 @@ export function LoadingState({ label }: { label?: string }) {
       sx={{ display: 'flex', justifyContent: 'center', p: 3 }}
     >
       <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-        <CircularProgress size={20} />
+        <CircularProgress
+          size={20}
+          aria-label={label ?? messages.common.loading}
+        />
         {label && (
           <Typography variant="body2" color="text.secondary">
             {label}

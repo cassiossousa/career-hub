@@ -127,17 +127,19 @@ export function PortfolioEditor() {
   const portfolioQuery = usePortfolio();
 
   return (
-    <QueryGate
-      query={portfolioQuery}
-      subject={messages.portfolio.title}
-      empty={<EmptyState title={messages.portfolio.notFound} />}
-    >
-      {(portfolio) => (
-        <Stack spacing={3}>
-          <Typography variant="h5">{messages.portfolio.title}</Typography>
+    <Stack spacing={3}>
+      <Typography component="h1" variant="h5">
+        {messages.portfolio.title}
+      </Typography>
+      <QueryGate
+        query={portfolioQuery}
+        subject={messages.portfolio.title}
+        empty={<EmptyState title={messages.portfolio.notFound} />}
+      >
+        {(portfolio) => (
           <PortfolioBasicsForm key={portfolio.id} portfolio={portfolio} />
-        </Stack>
-      )}
-    </QueryGate>
+        )}
+      </QueryGate>
+    </Stack>
   );
 }

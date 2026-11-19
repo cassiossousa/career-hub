@@ -70,11 +70,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   : messages.navigation.switchToDarkMode
               }
             />
-            <LanguageSwitcher
-              locale={locale}
-              options={languageOptions}
-              onLocaleChange={onLocaleChange}
-            />
+            <Box
+              sx={{
+                '& .MuiIconButton-root span': {
+                  fontSize: '0.75rem',
+                  color: 'common.white',
+                  borderColor: 'rgba(255, 255, 255, 0.45)',
+                  bgcolor: 'transparent',
+                },
+                '& .MuiIconButton-root[aria-pressed="true"] span': {
+                  bgcolor: 'rgba(0, 0, 0, 0.3)',
+                  borderColor: 'common.white',
+                },
+              }}
+            >
+              <LanguageSwitcher
+                locale={locale}
+                options={languageOptions}
+                onLocaleChange={onLocaleChange}
+              />
+            </Box>
           </Stack>
         </Toolbar>
       </AppBar>

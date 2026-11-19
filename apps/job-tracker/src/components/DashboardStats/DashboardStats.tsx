@@ -21,7 +21,9 @@ function StatCard({ value, label }: { value: ReactNode; label: string }) {
     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
       <Card>
         <CardContent>
-          <Typography variant="h4">{value}</Typography>
+          <Typography component="div" variant="h4">
+            {value}
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             {label}
           </Typography>

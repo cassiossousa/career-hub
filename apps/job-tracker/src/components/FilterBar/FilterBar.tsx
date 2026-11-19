@@ -9,6 +9,7 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
+import { useId } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import {
   JOB_AREAS,
@@ -43,10 +44,13 @@ function EnumSelect<T extends string>({
   options,
   renderOption,
 }: EnumSelectProps<T>) {
+  const labelId = useId();
+
   return (
     <FormControl size="small" sx={{ minWidth: 150 }}>
-      <InputLabel>{label}</InputLabel>
+      <InputLabel id={labelId}>{label}</InputLabel>
       <Select
+        labelId={labelId}
         value={value}
         label={label}
         onChange={(e) => {
@@ -81,10 +85,13 @@ function NullableNumberSelect({
   options,
   minWidth,
 }: NullableNumberSelectProps) {
+  const labelId = useId();
+
   return (
     <FormControl size="small" sx={{ minWidth }}>
-      <InputLabel>{label}</InputLabel>
+      <InputLabel id={labelId}>{label}</InputLabel>
       <Select<string | number>
+        labelId={labelId}
         value={value ?? ''}
         label={label}
         onChange={(e) => {
@@ -125,6 +132,7 @@ export function FilterBar() {
   } = useFilterStore();
 
   const filterBar = messages.dashboard.filterBar;
+  const sortLabelId = useId();
 
   const sortLabels: Record<JobSortOrder, string> = {
     posted_desc: messages.jobs.sortOptions.postedDesc,
@@ -185,8 +193,9 @@ export function FilterBar() {
       />
 
       <FormControl size="small" sx={{ minWidth: 240 }}>
-        <InputLabel>{filterBar.sortBy}</InputLabel>
+        <InputLabel id={sortLabelId}>{filterBar.sortBy}</InputLabel>
         <Select
+          labelId={sortLabelId}
           value={sort || 'posted_desc'}
           label={filterBar.sortBy}
           onChange={(e) => {

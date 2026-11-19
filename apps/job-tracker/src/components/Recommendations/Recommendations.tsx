@@ -26,7 +26,7 @@ export function Recommendations() {
     >
       {(jobs) => (
         <Stack spacing={2}>
-          <Typography variant="h6">
+          <Typography component="h2" variant="h6">
             {messages.dashboard.recommendations.title}
           </Typography>
           <Stack spacing={2}>

@@ -81,12 +81,16 @@ export function JobDetail() {
                       gap: 1,
                     }}
                   >
-                    <Typography variant="h4" sx={{ overflowWrap: 'anywhere' }}>
+                    <Typography
+                      component="h1"
+                      variant="h4"
+                      sx={{ overflowWrap: 'anywhere' }}
+                    >
                       {job.title}
                     </Typography>
                     <JobAgeBadge job={job} />
                   </Stack>
-                  <Typography variant="h6" color="text.secondary">
+                  <Typography component="p" variant="h6" color="text.secondary">
                     {job.company}
                   </Typography>
                   <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
@@ -115,7 +119,7 @@ export function JobDetail() {
                     )}
                   </Stack>
                   {job.matchScore !== null && (
-                    <Typography variant="h6" color="primary">
+                    <Typography component="p" variant="h6" color="primary">
                       {messages.jobs.matchScore}: {job.matchScore}%
                     </Typography>
                   )}
@@ -161,7 +165,7 @@ export function JobDetail() {
             </Card>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography component="h2" variant="h6" gutterBottom>
                   {messages.jobs.matched} / {messages.jobs.missing}
                 </Typography>
                 <MatchAnalysis requirements={job.requirements} />

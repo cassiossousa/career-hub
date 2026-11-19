@@ -23,50 +23,57 @@ export function ApplicationList() {
   );
 
   return (
-    <QueryGate
-      query={applicationsQuery}
-      subject={messages.applications.title}
-      isEmpty={(list) => list.length === 0}
-      empty={emptyState}
-    >
-      {(applications) => {
-        return (
-          <Stack spacing={2}>
-            <Typography variant="h5">
-              {messages.applications.title} ({applications.length})
-            </Typography>
-            <Grid container spacing={2}>
-              {applications.map((app) => (
-                <Grid size={{ xs: 12, md: 6 }} key={app.id}>
-                  <Card>
-                    <CardContent>
-                      <Stack spacing={1}>
-                        <Typography variant="h6">
-                          {jobTitleById.get(app.jobId) ?? `Job #${app.jobId}`}
-                        </Typography>
-                        <Chip
-                          label={messages.applications.status[app.status]}
-                          size="small"
-                          color="primary"
-                        />
-                        {app.appliedAt && (
-                          <Typography variant="body2" color="text.secondary">
-                            {messages.applications.appliedAt}:{' '}
-                            {new Date(app.appliedAt).toLocaleDateString(locale)}
+    <Stack spacing={2}>
+      <Typography component="h1" variant="h5">
+        {messages.applications.title}
+      </Typography>
+      <QueryGate
+        query={applicationsQuery}
+        subject={messages.applications.title}
+        isEmpty={(list) => list.length === 0}
+        empty={emptyState}
+      >
+        {(applications) => {
+          return (
+            <Stack spacing={2}>
+              <Typography component="h2" variant="h6">
+                {messages.applications.title} ({applications.length})
+              </Typography>
+              <Grid container spacing={2}>
+                {applications.map((app) => (
+                  <Grid size={{ xs: 12, md: 6 }} key={app.id}>
+                    <Card>
+                      <CardContent>
+                        <Stack spacing={1}>
+                          <Typography component="h3" variant="h6">
+                            {jobTitleById.get(app.jobId) ?? `Job #${app.jobId}`}
                           </Typography>
-                        )}
-                        {app.notes && (
-                          <Typography variant="body2">{app.notes}</Typography>
-                        )}
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Stack>
-        );
-      }}
-    </QueryGate>
+                          <Chip
+                            label={messages.applications.status[app.status]}
+                            size="small"
+                            color="primary"
+                          />
+                          {app.appliedAt && (
+                            <Typography variant="body2" color="text.secondary">
+                              {messages.applications.appliedAt}:{' '}
+                              {new Date(app.appliedAt).toLocaleDateString(
+                                locale,
+                              )}
+                            </Typography>
+                          )}
+                          {app.notes && (
+                            <Typography variant="body2">{app.notes}</Typography>
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Stack>
+          );
+        }}
+      </QueryGate>
+    </Stack>
   );
 }

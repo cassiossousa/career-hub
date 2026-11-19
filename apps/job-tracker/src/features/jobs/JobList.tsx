@@ -60,31 +60,36 @@ export function JobList() {
   );
 
   return (
-    <QueryGate
-      query={jobsQuery}
-      subject={messages.jobs.title}
-      isEmpty={(jobs) => jobs.length === 0}
-      empty={emptyState}
-    >
-      {(jobs) => (
-        <Stack spacing={2}>
-          <Typography variant="h5">
-            {messages.jobs.title} ({jobs.length})
-          </Typography>
-          <Grid container spacing={2}>
-            {jobs.map((job) => (
-              <Grid size={{ xs: 12, md: 6 }} key={job.id}>
-                <JobCard
-                  job={job}
-                  onClick={() => {
-                    void navigate(routePaths.jobDetail(job.id.toString()));
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Stack>
-      )}
-    </QueryGate>
+    <Stack spacing={2}>
+      <Typography component="h1" variant="h5">
+        {messages.jobs.title}
+      </Typography>
+      <QueryGate
+        query={jobsQuery}
+        subject={messages.jobs.title}
+        isEmpty={(jobs) => jobs.length === 0}
+        empty={emptyState}
+      >
+        {(jobs) => (
+          <Stack spacing={2}>
+            <Typography component="h2" variant="h6">
+              {messages.jobs.title} ({jobs.length})
+            </Typography>
+            <Grid container spacing={2}>
+              {jobs.map((job) => (
+                <Grid size={{ xs: 12, md: 6 }} key={job.id}>
+                  <JobCard
+                    job={job}
+                    onClick={() => {
+                      void navigate(routePaths.jobDetail(job.id.toString()));
+                    }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Stack>
+        )}
+      </QueryGate>
+    </Stack>
   );
 }

@@ -69,8 +69,8 @@ Prerequisite (one-time per machine): `npx playwright install chromium`. The MemL
 ### CI, hooks, and local gates
 
 - **CI** (`.github/workflows/ci.yml`): `verify:all` on every push/PR, `check:mutate:diff` + `check:visual-baseline` (fails PRs that change render-affecting source without updated linux baselines) on PRs, and a dedicated `e2e` job that runs `npm run test:e2e` + `npm run check:lighthouse` in the Playwright container. Deploys are per-app Vercel projects (Root Directory = `apps/<app>`); there is no Pages deploy job. Each app must declare in its own `package.json` every dependency its build touches (`tsc -b`, `vite`, type packages, test-only imports like `fast-check`) — Vercel installs per-workspace, so root devDependencies are invisible to app builds. Verify with `npm install --workspace <app> && npm run build --workspace <app>` in a clean copy.
-- **Pre-commit** (`.husky/pre-commit`): `lint-staged` — oxlint, biome, prettier on staged files (chunked via `lint-staged.config.mjs` to stay under the Windows command-line limit).
-- **Pre-push** (`.husky/pre-push`): `npm run verify:push` (types + case check + build + knip + bloat + arch + clones; browser gates stay out of the push path).
+- **Pre-commit** (`.husky/pre-commit`): `lint-staged` — oxlint, eslint, biome, prettier autofix on staged files (chunked via `lint-staged.config.mjs` to stay under the Windows command-line limit).
+- **Pre-push** (`.husky/pre-push`): fast sanity only — `check:types` + `check:case` (~30s). The full `verify:push` suite (knip, bloat, arch, clones, build) still exists for manual runs, but CI's `verify:all` on every push is the authoritative gate — same model as Vercel/Meta repos: hooks autofix or sanity-check, CI enforces. Escape hatch for emergencies: `HUSKY=0 git push` or `git push --no-verify`.
 - **Gitignored audit artifacts:** `apps/professional-portfolio/.memlab/`, `apps/professional-portfolio/.lighthouseci/`, `apps/professional-portfolio/test-results/`, `apps/professional-portfolio/playwright-report/`, `dist/`.
 
 On-demand gates (too slow/networked for `verify:all`):

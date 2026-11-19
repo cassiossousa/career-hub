@@ -29,6 +29,7 @@ export default {
       (chunk) =>
         `oxlint --fix --deny-warnings -D correctness -D suspicious ${chunk.join(' ')}`,
     ),
+    ...chunkFiles(files).map((chunk) => `eslint --fix ${chunk.join(' ')}`),
     ...chunkFiles(files).map(
       (chunk) => `biome check --write ${chunk.join(' ')}`,
     ),

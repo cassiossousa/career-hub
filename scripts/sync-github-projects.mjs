@@ -4,11 +4,14 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
 
-import { getRepoReadme, getRepos } from '../apps/web/src/services/github.ts';
-import { normalizeGithubRepo } from '../apps/web/src/services/projects/githubMapper.ts';
+import {
+  getRepoReadme,
+  getRepos,
+} from '../apps/professional-portfolio/src/services/github.ts';
+import { normalizeGithubRepo } from '../apps/professional-portfolio/src/services/projects/githubMapper.ts';
 
 /**
- * @typedef {import('../apps/web/src/types/github').GitHubRepo} GitHubRepo
+ * @typedef {import('../apps/professional-portfolio/src/types/github').GitHubRepo} GitHubRepo
  */
 
 function clean(obj) {

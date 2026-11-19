@@ -1,5 +1,5 @@
 {
-  "name": "professional-portfolio",
+  "name": "career-hub",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cassiossousa/professional-portfolio.git"
+    "url": "https://github.com/cassiossousa/career-hub.git"
   },
   "homepage": "https://professional-portfolio-mu-gray.vercel.app/",
   "workspaces": [
@@ -17,49 +17,39 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "audit:deep": "node apps/web/scripts/audit-runtime.mjs",
-    "build": "npm run build --workspace @portfolio/web",
+    "audit:deep": "node apps/professional-portfolio/scripts/audit-runtime.mjs",
+    "build": "npm run build --workspace professional-portfolio",
     "check:fast": "oxlint --deny-warnings -D correctness -D suspicious . && biome check .",
     "fix:fast": "oxlint --fix --deny-warnings -D correctness -D suspicious . && biome check --write .",
     "check:types": "tsc -b",
     "check:dead": "knip",
-    "check:bloat": "node apps/web/scripts/audit-react-bloat.mjs",
-    "check:arch": "depcruise apps/web/src -c apps/web/.dependency-cruiser.cjs",
+    "check:bloat": "node apps/professional-portfolio/scripts/audit-react-bloat.mjs",
+    "check:arch": "depcruise apps/professional-portfolio/src -c apps/professional-portfolio/.dependency-cruiser.cjs",
     "check:case": "node scripts/check-case-sensitivity.mjs",
     "check:audit": "npm audit --omit=dev --audit-level=high",
-    "check:bundle": "node apps/web/scripts/audit-bundle-budget.mjs",
-    "check:clones": "jscpd apps/web/src apps/web/e2e apps/web/scripts scripts --min-lines 5 --min-tokens 40 --reporters console --exit-code 1",
-    "check:lighthouse": "node apps/web/scripts/lighthouse-run.mjs",
-    "check:visual-baseline": "node apps/web/scripts/check-visual-baseline-drift.mjs",
-    "check:mutate:diff": "node apps/web/scripts/check-mutation-diff.mjs",
-    "check:mutate:core": "node apps/web/scripts/check-mutation-core.mjs",
+    "check:bundle": "node apps/professional-portfolio/scripts/audit-bundle-budget.mjs",
+    "check:clones": "jscpd apps/professional-portfolio/src apps/professional-portfolio/e2e apps/professional-portfolio/scripts apps/job-tracker/src scripts --min-lines 5 --min-tokens 40 --reporters console --exit-code 1",
+    "check:lighthouse": "node apps/professional-portfolio/scripts/lighthouse-run.mjs",
+    "check:visual-baseline": "node apps/professional-portfolio/scripts/check-visual-baseline-drift.mjs",
+    "check:mutate:diff": "node apps/professional-portfolio/scripts/check-mutation-diff.mjs",
+    "check:mutate:core": "node apps/professional-portfolio/scripts/check-mutation-core.mjs",
     "fix:all": "npm run fix:fast && npm run lint:fix && npm run prettier && npm run verify:all",
     "verify:push": "npm run check:types && npm run check:case && npm run check:dead && npm run check:bloat && npm run check:arch && npm run check:clones && npm run build",
     "verify:all": "npm run check:fast && npm run prettier:check && npm run check:types && npm run lint && npm run check:case && npm run test:cov -- --runInBand && npm run build && npm run check:bundle && npm run check:dead && npm run check:bloat && npm run check:arch && npm run check:clones && npm run check:audit",
-    "dev": "npm run dev --workspace @portfolio/web",
+    "dev": "npm run dev --workspace professional-portfolio",
+    "dev:job-tracker": "npm run dev --workspace job-tracker",
+    "build:job-tracker": "npm run build --workspace job-tracker",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:staged": "lint-staged",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "start": "npm run start --workspace @portfolio/web",
+    "start": "npm run start --workspace professional-portfolio",
     "sync:projects": "node scripts/sync-github-projects.mjs",
     "sync:projects:check": "node scripts/sync-github-projects.mjs --check",
-    "test": "jest --config apps/web/jest.config.cjs",
-    "test:e2e": "playwright test --config apps/web/playwright.config.ts",
-    "test:cov": "jest --config apps/web/jest.config.cjs --coverage"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": [
-      "oxlint --fix --deny-warnings -D correctness -D suspicious",
-      "biome check --write",
-      "prettier --write"
-    ],
-    "*.css": [
-      "biome check --write",
-      "prettier --write"
-    ],
-    "*.{json,jsonc,html,md,mdx,yml,yaml}": "prettier --write"
+    "test": "jest --config apps/professional-portfolio/jest.config.cjs",
+    "test:e2e": "playwright test --config apps/professional-portfolio/playwright.config.ts",
+    "test:cov": "jest --config apps/professional-portfolio/jest.config.cjs --coverage"
   },
   "overrides": {
     "@stryker-mutator/core": {

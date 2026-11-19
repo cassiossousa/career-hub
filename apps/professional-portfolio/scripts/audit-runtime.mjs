@@ -43,7 +43,7 @@ async function withPreviewServer(fn) {
       'run',
       'start',
       '--workspace',
-      '@portfolio/web',
+      'professional-portfolio',
       '--',
       '--port',
       String(PORT),
@@ -68,13 +68,15 @@ async function main() {
 
   console.log('=== [2/5] Architecture guardrail specs (Jest) ===');
   run(
-    'npx jest --config apps/web/jest.config.cjs src/architecture.spec.ts --runInBand',
+    'npx jest --config apps/professional-portfolio/jest.config.cjs src/architecture.spec.ts --runInBand',
   );
 
   console.log(
     '=== [3/5] Browser smoke & accessibility checks (Playwright + Axe) ===',
   );
-  run('npx playwright test --config apps/web/playwright.config.ts');
+  run(
+    'npx playwright test --config apps/professional-portfolio/playwright.config.ts',
+  );
 
   console.log('=== [4/5] Memory leak detection (MemLab, production build) ===');
   // --skip-build reuses an existing dist/ (e.g. right after `npm run build` or
@@ -84,11 +86,15 @@ async function main() {
   } else {
     run('npm run build');
   }
-  await withPreviewServer(() => run('node apps/web/scripts/memlab-run.mjs'));
+  await withPreviewServer(() =>
+    run('node apps/professional-portfolio/scripts/memlab-run.mjs'),
+  );
 
   console.log('=== [5/5] Core Web Vitals budgets (Lighthouse CI) ===');
   // dist/ was already built for the MemLab step — skip the duplicate build.
-  run('node apps/web/scripts/lighthouse-run.mjs --skip-build');
+  run(
+    'node apps/professional-portfolio/scripts/lighthouse-run.mjs --skip-build',
+  );
 
   console.log('\nAll post-generation verification layers cleared.');
 }

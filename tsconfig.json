@@ -1,4 +1,7 @@
 {
   "files": [],
-  "references": [{ "path": "./apps/web" }]
+  "references": [
+    { "path": "./apps/professional-portfolio" },
+    { "path": "./apps/job-tracker" }
+  ]
 }

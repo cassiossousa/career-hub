@@ -14,7 +14,7 @@ const STORAGE_MESSAGE =
 const eslintConfig = defineConfig([
   ...tseslint.configs.recommended,
   {
-    files: ['apps/web/src/**/*.{ts,tsx}'],
+    files: ['apps/professional-portfolio/src/**/*.{ts,tsx}'],
     extends: [tseslint.configs.strictTypeChecked],
     languageOptions: {
       parserOptions: {
@@ -24,8 +24,11 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ['apps/web/src/**/*.{ts,tsx}'],
-    ignores: ['apps/web/src/services/**', 'apps/web/src/**/*.spec.ts'],
+    files: ['apps/professional-portfolio/src/**/*.{ts,tsx}'],
+    ignores: [
+      'apps/professional-portfolio/src/services/**',
+      'apps/professional-portfolio/src/**/*.spec.ts',
+    ],
     plugins: { security },
     rules: {
       ...security.configs.recommended.rules,
@@ -33,15 +36,15 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ['apps/web/src/**/*.{ts,tsx}'],
+    files: ['apps/professional-portfolio/src/**/*.{ts,tsx}'],
     ...eslintReact.configs['recommended-type-checked'],
   },
   {
-    files: ['apps/web/src/**/*.{ts,tsx}'],
+    files: ['apps/professional-portfolio/src/**/*.{ts,tsx}'],
     ...reactYouMightNotNeedAnEffect.configs.recommended,
   },
   {
-    files: ['apps/web/src/**/*.{ts,tsx}'],
+    files: ['apps/professional-portfolio/src/**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
       sonarjs,
@@ -67,8 +70,8 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ['apps/web/src/**/*.{ts,tsx}'],
-    ignores: ['apps/web/src/app/storage.ts'],
+    files: ['apps/professional-portfolio/src/**/*.{ts,tsx}'],
+    ignores: ['apps/professional-portfolio/src/app/storage.ts'],
     rules: {
       'no-restricted-syntax': [
         'error',
@@ -88,15 +91,15 @@ const eslintConfig = defineConfig([
   {
     // The storage spec must touch raw Web Storage to simulate disabled/quota
     // storage — that failure path is untestable through the wrapper itself.
-    files: ['apps/web/src/app/storage.spec.ts'],
+    files: ['apps/professional-portfolio/src/app/storage.spec.ts'],
     rules: { 'no-restricted-syntax': 'off' },
   },
   {
-    files: ['apps/web/src/i18n/locales/*.ts'],
+    files: ['apps/professional-portfolio/src/i18n/locales/*.ts'],
     rules: { 'check-file/filename-naming-convention': 'off' },
   },
   {
-    files: ['apps/web/src/main.tsx'],
+    files: ['apps/professional-portfolio/src/main.tsx'],
     rules: { 'check-file/filename-naming-convention': 'off' },
   },
   globalIgnores([

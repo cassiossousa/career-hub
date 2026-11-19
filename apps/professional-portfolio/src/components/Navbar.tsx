@@ -2,6 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
+  Box,
   Container,
   IconButton,
   Link as MuiLink,
@@ -48,12 +49,11 @@ export default function Navbar() {
             }}
           >
             <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
-              <Stack
-                direction="row"
-                spacing={1}
+              <Box
                 sx={{
                   display: { xs: 'flex', md: 'none' },
                   alignItems: 'center',
+                  gap: 1,
                 }}
               >
                 <IconButton
@@ -62,6 +62,7 @@ export default function Navbar() {
                   }}
                   aria-label={t.navigation.toggleMenu}
                   aria-expanded={mobileOpen}
+                  sx={{ ml: -1 }}
                 >
                   {mobileOpen ? <CloseIcon /> : <MenuIcon />}
                 </IconButton>
@@ -78,12 +79,13 @@ export default function Navbar() {
                 >
                   {t.home.name}
                 </MuiLink>
-              </Stack>
+              </Box>
 
-              <Stack
-                direction="row"
-                spacing={3}
-                sx={{ display: { xs: 'none', md: 'flex' } }}
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  gap: 3,
+                }}
               >
                 {links.map((link) => (
                   <MuiLink
@@ -96,7 +98,7 @@ export default function Navbar() {
                     {link.label}
                   </MuiLink>
                 ))}
-              </Stack>
+              </Box>
             </Stack>
 
             <LanguageSwitcher />

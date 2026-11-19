@@ -1,7 +1,7 @@
 ---
 
 title: professional-portfolio
-repo: https://github.com/cassiossousa/professional-portfolio
+repo: https://github.com/cassiossousa/career-hub
 demo: https://professional-portfolio-mu-gray.vercel.app
 featured: true
 category: fullstack
@@ -59,15 +59,17 @@ Developer portfolio built with React, TypeScript, and Vite. Project and work exp
 
 ## Workspace Structure
 
-- `apps/web` contains the React/Vite website.
-- `content` contains the MDX data bundled into the website at build time.
+- `apps/professional-portfolio` contains the React/Vite portfolio website.
+- `apps/job-tracker` contains the React/Vite job tracker app (work in progress).
+- `content` contains the MDX data bundled into the portfolio at build time.
 - `scripts` contains repository maintenance tools such as GitHub project sync.
 - `apps/*` and `packages/*` are npm workspace boundaries for future API,
   background-worker, and shared packages.
 
-The website remains a static frontend. GitHub Pages deploys only `apps/web`;
-database access, job-application submissions, and scheduled jobs will require
-server-capable hosting and should live outside the web bundle.
+Each app is a static frontend deployed as its own Vercel project (Root
+Directory = `apps/<app>`). Database access, job-application submissions, and
+scheduled jobs will require server-capable hosting and should live outside
+the web bundles.
 
 ## Key Features
 
@@ -93,13 +95,14 @@ https://professional-portfolio-mu-gray.vercel.app
 
 ## Repository
 
-https://github.com/cassiossousa/professional-portfolio
+https://github.com/cassiossousa/career-hub
 
 ## Development
 
 ```bash
 npm install
 npm run dev
+npm run dev:job-tracker
 ```
 
 Project metadata is bundled from `content/` during the Vite build. To refresh

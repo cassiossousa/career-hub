@@ -13,7 +13,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      'npm run dev --workspace @portfolio/web -- --port 4173 --strictPort',
+      'npm run dev --workspace professional-portfolio -- --port 4173 --strictPort',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

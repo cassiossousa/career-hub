@@ -86,7 +86,7 @@ function skillTagNames(content: string): string[] {
 }
 
 describe('work-experience content skill tags', () => {
-  // apps/web/src/services -> repo root is four levels up.
+  // apps/professional-portfolio/src/services -> repo root is four levels up.
   const CONTENT_DIR = path.resolve(
     __dirname,
     '../../../..',

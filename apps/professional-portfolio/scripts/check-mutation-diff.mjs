@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { runStryker } from './run-stryker.mjs';
 
-const WEB_SRC_PREFIX = 'apps/web/src/';
+const WEB_SRC_PREFIX = 'apps/professional-portfolio/src/';
 
 const changedFiles = execFileSync(
   'git',
@@ -15,9 +15,9 @@ const changedFiles = execFileSync(
       /\.(ts|tsx)$/.test(file) &&
       !/\.(test|spec)\.(ts|tsx)$/.test(file),
   )
-  // Stryker runs with apps/web as its working directory — strip the
+  // Stryker runs with apps/professional-portfolio as its working directory — strip the
   // repo-root-relative prefix git reports.
-  .map((file) => file.slice('apps/web/'.length));
+  .map((file) => file.slice('apps/professional-portfolio/'.length));
 
 if (changedFiles.length === 0) {
   console.log('No changed TypeScript source files to mutation-test.');

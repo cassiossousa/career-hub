@@ -5,13 +5,14 @@ import { execFileSync } from 'node:child_process';
 // Docker image — see AGENTS.md §3 for the update ritual.
 
 const VISUAL_SOURCES = [
-  /^apps\/web\/src\/.*\.tsx$/,
-  /^apps\/web\/src\/app\/theme\.ts$/,
-  /^apps\/web\/src\/i18n\//,
-  /^apps\/web\/e2e\/visual\.spec\.ts$/,
-  /^apps\/web\/playwright\.config\.ts$/,
+  /^apps\/professional-portfolio\/src\/.*\.tsx$/,
+  /^apps\/professional-portfolio\/src\/app\/theme\.ts$/,
+  /^apps\/professional-portfolio\/src\/i18n\//,
+  /^apps\/professional-portfolio\/e2e\/visual\.spec\.ts$/,
+  /^apps\/professional-portfolio\/playwright\.config\.ts$/,
 ];
-const SNAPSHOT_DIR = 'apps/web/e2e/visual.spec.ts-snapshots/';
+const SNAPSHOT_DIR =
+  'apps/professional-portfolio/e2e/visual.spec.ts-snapshots/';
 const isSpec = /\.(spec|test)\.tsx?$/;
 
 function changedFiles() {
@@ -35,7 +36,9 @@ const files = changedFiles();
 const visualChanges = files.filter((file) => {
   if (!VISUAL_SOURCES.some((pattern) => pattern.test(file))) return false;
   // Spec files under src/ are tests, not render output; e2e/config files count.
-  return file.startsWith('apps/web/src/') ? !isSpec.test(file) : true;
+  return file.startsWith('apps/professional-portfolio/src/')
+    ? !isSpec.test(file)
+    : true;
 });
 const snapshotChanges = files.filter((file) => file.startsWith(SNAPSHOT_DIR));
 

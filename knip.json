@@ -4,7 +4,7 @@
     ".": {
       "ignoreDependencies": ["@lhci/cli"]
     },
-    "apps/web": {
+    "apps/professional-portfolio": {
       "entry": [
         "scripts/memlab-run.mjs",
         "scripts/memlab-portfolio.cjs",

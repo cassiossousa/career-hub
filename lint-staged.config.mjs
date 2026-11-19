@@ -29,7 +29,9 @@ export default {
       (chunk) =>
         `oxlint --fix --deny-warnings -D correctness -D suspicious ${chunk.join(' ')}`,
     ),
-    ...chunkFiles(files).map((chunk) => `eslint --fix ${chunk.join(' ')}`),
+    // Typed ESLint (strictTypeChecked) costs ~30s per invocation — it stays in
+    // `npm run lint` / CI. Pre-commit keeps only fast tools (industry-standard
+    // hooks-autofix, CI-enforces model).
     ...chunkFiles(files).map(
       (chunk) => `biome check --write ${chunk.join(' ')}`,
     ),

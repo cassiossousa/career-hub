@@ -1,11 +1,10 @@
 import { AppErrorBoundary } from '@career-hub/ui/components';
-import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { env } from './app/env';
-import { appTheme } from './app/theme';
+import { isMockApiEnabled } from './app/mockApi';
 import { TranslationProvider } from './i18n/Provider';
 import { worker } from './mocks/browser';
 
@@ -23,7 +22,7 @@ window.addEventListener('vite:preloadError', () => {
   window.location.reload();
 });
 
-if (env.isDev && env.mockApi) {
+if (isMockApiEnabled(env)) {
   void worker.start({ onUnhandledRequest: 'bypass' });
 }
 
@@ -36,13 +35,11 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={appTheme}>
-        <TranslationProvider>
-          <AppErrorBoundary>
-            <App />
-          </AppErrorBoundary>
-        </TranslationProvider>
-      </ThemeProvider>
+      <TranslationProvider>
+        <AppErrorBoundary>
+          <App />
+        </AppErrorBoundary>
+      </TranslationProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

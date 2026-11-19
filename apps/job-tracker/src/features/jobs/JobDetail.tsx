@@ -46,6 +46,7 @@ export function JobDetail() {
   return (
     <QueryGate
       query={jobQuery}
+      subject={messages.jobs.title}
       empty={<EmptyState title={messages.jobs.notFound} />}
     >
       {(job) => {

@@ -8,7 +8,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import type { SxProps, Theme } from '@mui/material/styles';
 import { useTranslation } from '../../i18n/Provider';
 import {
   useApplications,
@@ -52,12 +51,12 @@ const STATUS_COLORS: Record<
   withdrawn: 'default',
 };
 
-function columnSx(status: ApplicationStatus): SxProps<Theme> {
+function columnSx(status: ApplicationStatus) {
   return {
     borderTop: 3,
     borderTopColor: `${STATUS_COLORS[status]}.main`,
     borderColor: 'divider',
-  };
+  } as const;
 }
 
 function interpolate(template: string, values: Record<string, string>): string {
@@ -90,6 +89,7 @@ export function ApplicationPipeline() {
   return (
     <QueryGate
       query={applicationsQuery}
+      subject={messages.dashboard.pipeline.title}
       isEmpty={(apps) => apps.length === 0}
       empty={<EmptyState title={messages.dashboard.pipeline.noApplications} />}
     >
@@ -109,9 +109,10 @@ export function ApplicationPipeline() {
             </Typography>
             <Box
               sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                display: 'flex',
+                flexWrap: 'wrap',
                 gap: 2,
+                alignItems: 'flex-start',
               }}
             >
               {STATUSES.map((status) => {
@@ -120,8 +121,11 @@ export function ApplicationPipeline() {
                   <Card
                     key={status}
                     variant="outlined"
-                    elevation={1}
-                    sx={columnSx(status)}
+                    sx={{
+                      ...columnSx(status),
+                      flex: '1 1 200px',
+                      minWidth: 0,
+                    }}
                   >
                     <CardContent sx={{ pb: items.length > 0 ? 1 : undefined }}>
                       <Stack

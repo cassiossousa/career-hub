@@ -27,7 +27,7 @@
     "check:arch": "depcruise apps/professional-portfolio/src -c apps/professional-portfolio/.dependency-cruiser.cjs && depcruise apps/job-tracker/src -c apps/job-tracker/.dependency-cruiser.cjs",
     "check:case": "node scripts/check-case-sensitivity.mjs",
     "check:audit": "npm audit --omit=dev --audit-level=high",
-    "check:bundle": "node apps/professional-portfolio/scripts/audit-bundle-budget.mjs",
+    "check:bundle": "node scripts/audit-bundle-budget.mjs apps/professional-portfolio && node scripts/audit-bundle-budget.mjs apps/job-tracker --js-limit-kb 400",
     "check:clones": "jscpd apps/professional-portfolio/src apps/professional-portfolio/e2e apps/professional-portfolio/scripts apps/job-tracker/src apps/job-tracker/e2e scripts --min-lines 5 --min-tokens 40 --reporters console --exit-code 1",
     "check:lighthouse": "node apps/professional-portfolio/scripts/lighthouse-run.mjs",
     "check:visual-baseline": "node apps/professional-portfolio/scripts/check-visual-baseline-drift.mjs",

@@ -1,10 +1,12 @@
 import { AppErrorBoundary } from '@career-hub/ui/components';
+import type { ThemeMode } from '@career-hub/ui/theme';
 import { Box, CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { routePaths } from './app/routePaths';
-import { appTheme } from './app/theme';
+import { storageSetItem } from './app/storage';
+import { appThemes, initialThemeMode, THEME_STORAGE_KEY } from './app/theme';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import Home from './features/home/Home';
@@ -15,8 +17,16 @@ import WorkExperience from './features/work-experience/WorkExperience';
 import { TranslationProvider } from './i18n/Provider';
 
 function App() {
+  const [themeMode, setThemeMode] = useState<ThemeMode>(initialThemeMode);
+
+  const toggleThemeMode = () => {
+    const next: ThemeMode = themeMode === 'dark' ? 'light' : 'dark';
+    storageSetItem(THEME_STORAGE_KEY, next);
+    setThemeMode(next);
+  };
+
   return (
-    <ThemeProvider theme={appTheme}>
+    <ThemeProvider theme={appThemes[themeMode]}>
       <CssBaseline />
       <GlobalStyles
         styles={{
@@ -38,7 +48,7 @@ function App() {
               '@media print': { minHeight: 0 },
             }}
           >
-            <Navbar />
+            <Navbar themeMode={themeMode} onToggleTheme={toggleThemeMode} />
             <Box
               component="main"
               sx={{

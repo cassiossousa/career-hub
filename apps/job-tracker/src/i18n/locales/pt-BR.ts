@@ -11,6 +11,11 @@ const ptBR: Translation = {
     addJob: 'Adicionar Vaga',
     menu: 'Abrir menu de navegação',
     mainNav: 'Navegação principal',
+    mockData: 'Dados simulados',
+    mockDataOn: 'Ativado — dados falsos',
+    mockDataOff: 'Desativado — API real',
+    switchToDarkMode: 'Mudar para modo escuro',
+    switchToLightMode: 'Mudar para modo claro',
   },
 
   dashboard: {
@@ -214,6 +219,12 @@ const ptBR: Translation = {
     back: 'Voltar',
     next: 'Próximo',
     previous: 'Anterior',
+    errors: {
+      unauthorized:
+        'A API rejeitou a requisição — a chave de API está ausente ou é inválida. Verifique a configuração de ambiente local.',
+      unreachable:
+        'Não foi possível alcançar o servidor da API. Verifique se ele está em execução.',
+    },
   },
 };
 

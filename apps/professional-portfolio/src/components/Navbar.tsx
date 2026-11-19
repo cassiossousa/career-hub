@@ -1,3 +1,5 @@
+import { ThemeModeToggle } from '@career-hub/ui/components';
+import type { ThemeMode } from '@career-hub/ui/theme';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
@@ -16,7 +18,12 @@ import { navigationItems, routePaths } from '../app/routePaths';
 import { useTranslation } from '../i18n/Provider';
 import LanguageSwitcher from './LanguageSwitcher';
 
-export default function Navbar() {
+interface NavbarProps {
+  themeMode?: ThemeMode;
+  onToggleTheme?: () => void;
+}
+
+export default function Navbar({ themeMode, onToggleTheme }: NavbarProps) {
   const { messages: t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const links = navigationItems.map(({ to, label }) => ({
@@ -101,7 +108,20 @@ export default function Navbar() {
               </Box>
             </Stack>
 
-            <LanguageSwitcher />
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              {themeMode !== undefined && onToggleTheme !== undefined && (
+                <ThemeModeToggle
+                  mode={themeMode}
+                  onToggle={onToggleTheme}
+                  ariaLabel={
+                    themeMode === 'dark'
+                      ? t.navigation.switchToLightMode
+                      : t.navigation.switchToDarkMode
+                  }
+                />
+              )}
+              <LanguageSwitcher />
+            </Stack>
           </Stack>
         </Container>
       </Toolbar>

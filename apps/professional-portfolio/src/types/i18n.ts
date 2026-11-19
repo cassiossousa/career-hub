@@ -8,6 +8,8 @@ export interface Translation {
     toggleMenu: string;
     switchToEnglish: string;
     switchToPortuguese: string;
+    switchToDarkMode: string;
+    switchToLightMode: string;
   };
 
   links: {

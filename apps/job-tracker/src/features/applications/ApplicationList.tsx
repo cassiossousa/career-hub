@@ -25,6 +25,7 @@ export function ApplicationList() {
   return (
     <QueryGate
       query={applicationsQuery}
+      subject={messages.applications.title}
       isEmpty={(list) => list.length === 0}
       empty={emptyState}
     >

@@ -49,3 +49,22 @@ export const brandedTokens: ThemeOptions = {
     body1: { lineHeight: 1.75 },
   },
 };
+
+// Dark variant is a first-class theme, not an inversion: its own surface,
+// text and divider tokens (shadows barely read on dark, so borders carry
+// the separation — see AGENTS.md ui-ux skill §3.4/§4.2).
+export const brandedTokensDark: ThemeOptions = {
+  ...brandedTokens,
+  palette: {
+    mode: 'dark',
+    primary: { main: '#3b82f6' },
+    secondary: { main: '#94a3b8' },
+    background: { default: '#0b1120', paper: '#111a2e' },
+    text: { primary: '#e2e8f0', secondary: '#94a3b8' },
+    divider: '#26324a',
+    success: { main: '#22c55e' },
+    warning: { main: '#f97316' },
+    error: { main: '#ef4444' },
+    info: { main: '#38bdf8' },
+  },
+};

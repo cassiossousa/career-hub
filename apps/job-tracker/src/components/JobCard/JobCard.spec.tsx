@@ -1,6 +1,8 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { storageRemoveItem } from '../../app/storage';
 import { seedJobs } from '../../mocks/data';
+import { useFilterStore } from '../../store/filterStore';
 import { renderWithProviders } from '../../test/TestUtils';
 import { JobCard } from './JobCard';
 
@@ -11,6 +13,15 @@ function seedJob(index: number) {
 }
 
 describe('JobCard', () => {
+  beforeEach(() => {
+    storageRemoveItem('job-tracker-filters');
+    useFilterStore.setState({
+      level: undefined,
+      area: undefined,
+      remoteOnly: false,
+    });
+  });
+
   it('renders job title, company and chips', () => {
     renderWithProviders(<JobCard job={seedJob(0)} />);
     expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
@@ -23,7 +34,10 @@ describe('JobCard', () => {
     const onClick = jest.fn();
     const user = userEvent.setup();
     renderWithProviders(<JobCard job={seedJob(0)} onClick={onClick} />);
-    const action = screen.getByRole('button');
+    const action = document.querySelector('.MuiCardActionArea-root');
+    if (!(action instanceof HTMLElement)) {
+      throw new Error('expected card action area');
+    }
     action.focus();
     await user.keyboard('{Enter}');
     expect(onClick).toHaveBeenCalledTimes(1);
@@ -31,6 +45,36 @@ describe('JobCard', () => {
 
   it('renders without action area when not clickable', () => {
     renderWithProviders(<JobCard job={seedJob(1)} />);
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(
+      document.querySelector('.MuiCardActionArea-root'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('toggles the level filter from the level chip', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<JobCard job={seedJob(1)} />);
+
+    const chip = screen.getByRole('button', { name: 'Senior' });
+    await user.click(chip);
+    expect(useFilterStore.getState().level).toBe('senior');
+
+    await user.click(chip);
+    expect(useFilterStore.getState().level).toBeUndefined();
+  });
+
+  it('toggles the area filter from the area chip', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<JobCard job={seedJob(1)} />);
+
+    await user.click(screen.getByRole('button', { name: 'Fullstack' }));
+    expect(useFilterStore.getState().area).toBe('fullstack');
+  });
+
+  it('toggles the remote-only filter from the remote chip', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<JobCard job={seedJob(0)} />);
+
+    await user.click(screen.getByRole('button', { name: 'Remote' }));
+    expect(useFilterStore.getState().remoteOnly).toBe(true);
   });
 });

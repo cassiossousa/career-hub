@@ -6,8 +6,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { isAxiosError } from 'axios';
 import type { ReactNode } from 'react';
 import { useTranslation } from '../../i18n/Provider';
+import { isApiError } from '../../services/api/client';
+import type { Translation } from '../../types/i18n';
 
 export function LoadingState({ label }: { label?: string }) {
   return (
@@ -30,11 +33,19 @@ export function LoadingState({ label }: { label?: string }) {
 
 interface ErrorStateProps {
   message: string;
-  onRetry?: () => void;
-  retryLabel?: string;
+  subject?: string | undefined;
+  detail?: string | undefined;
+  onRetry?: (() => void) | undefined;
+  retryLabel?: string | undefined;
 }
 
-export function ErrorState({ message, onRetry, retryLabel }: ErrorStateProps) {
+export function ErrorState({
+  message,
+  subject,
+  detail,
+  onRetry,
+  retryLabel,
+}: ErrorStateProps) {
   return (
     <Alert
       severity="error"
@@ -46,7 +57,25 @@ export function ErrorState({ message, onRetry, retryLabel }: ErrorStateProps) {
         ) : undefined
       }
     >
-      {message}
+      <Stack spacing={0.5}>
+        {subject !== undefined && (
+          <Typography variant="subtitle2" component="div">
+            {subject}
+          </Typography>
+        )}
+        <Typography variant="body2" component="div">
+          {message}
+        </Typography>
+        {detail !== undefined && detail !== message && (
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ opacity: 0.8, overflowWrap: 'anywhere' }}
+          >
+            {detail}
+          </Typography>
+        )}
+      </Stack>
     </Alert>
   );
 }
@@ -79,6 +108,45 @@ export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function describeQueryError(
+  error: unknown,
+  messages: Translation,
+): { message: string; detail?: string } {
+  const detail = errorMessage(error);
+  if (isApiError(error) && error.code.toLowerCase() === 'unauthorized') {
+    return { message: messages.common.errors.unauthorized, detail };
+  }
+  if (isAxiosError(error) && error.response === undefined) {
+    return { message: messages.common.errors.unreachable, detail };
+  }
+  return { message: detail };
+}
+
+interface QueryErrorAlertProps {
+  error: unknown;
+  subject?: string | undefined;
+  onRetry?: (() => void) | undefined;
+}
+
+export function QueryErrorAlert({
+  error,
+  subject,
+  onRetry,
+}: QueryErrorAlertProps) {
+  const { messages } = useTranslation();
+  const { message, detail } = describeQueryError(error, messages);
+
+  return (
+    <ErrorState
+      subject={subject}
+      message={message}
+      detail={detail}
+      retryLabel={messages.common.retry}
+      onRetry={onRetry}
+    />
+  );
+}
+
 interface QueryLike<T> {
   data: T | undefined;
   isLoading: boolean;
@@ -89,6 +157,7 @@ interface QueryLike<T> {
 
 interface QueryGateProps<T> {
   query: QueryLike<T>;
+  subject?: string;
   isEmpty?: (data: T) => boolean;
   empty: ReactNode;
   children: (data: T) => ReactNode;
@@ -96,6 +165,7 @@ interface QueryGateProps<T> {
 
 export function QueryGate<T>({
   query,
+  subject,
   isEmpty,
   empty,
   children,
@@ -108,9 +178,9 @@ export function QueryGate<T>({
 
   if (query.isError) {
     return (
-      <ErrorState
-        message={errorMessage(query.error)}
-        retryLabel={messages.common.retry}
+      <QueryErrorAlert
+        error={query.error}
+        subject={subject}
         onRetry={() => void query.refetch()}
       />
     );

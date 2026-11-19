@@ -129,6 +129,7 @@ export function PortfolioEditor() {
   return (
     <QueryGate
       query={portfolioQuery}
+      subject={messages.portfolio.title}
       empty={<EmptyState title={messages.portfolio.notFound} />}
     >
       {(portfolio) => (

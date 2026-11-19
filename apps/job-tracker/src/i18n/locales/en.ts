@@ -11,6 +11,11 @@ const en: Translation = {
     addJob: 'Add Job',
     menu: 'Open navigation menu',
     mainNav: 'Main navigation',
+    mockData: 'Mock data',
+    mockDataOn: 'On — fake data',
+    mockDataOff: 'Off — real API',
+    switchToDarkMode: 'Switch to dark mode',
+    switchToLightMode: 'Switch to light mode',
   },
 
   dashboard: {
@@ -214,6 +219,11 @@ const en: Translation = {
     back: 'Back',
     next: 'Next',
     previous: 'Previous',
+    errors: {
+      unauthorized:
+        'The API rejected the request — the API key is missing or invalid. Check your local environment configuration.',
+      unreachable: 'Could not reach the API server. Make sure it is running.',
+    },
   },
 };
 

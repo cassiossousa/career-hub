@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from '../../i18n/Provider';
 import type { Job } from '../../services/types/job';
+import { useFilterStore } from '../../store/filterStore';
 import { JobAgeBadge } from '../JobAgeBadge/JobAgeBadge';
 
 interface JobCardProps {
@@ -16,16 +17,82 @@ interface JobCardProps {
   onClick?: () => void;
 }
 
+function matchScoreColor(
+  score: number | null,
+): 'success' | 'warning' | 'default' {
+  if (score === null) return 'default';
+  if (score >= 80) return 'success';
+  if (score >= 50) return 'warning';
+  return 'default';
+}
+
+function JobChips({ job }: { job: Job }) {
+  const { messages } = useTranslation();
+  const { level, area, remoteOnly, setLevel, setArea, setRemoteOnly } =
+    useFilterStore();
+
+  const levelActive = level === job.level;
+  const areaActive = area === job.area;
+  const remoteActive = job.remote && remoteOnly;
+
+  return (
+    <Box sx={{ px: 2, pb: 2 }}>
+      <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
+        <Chip
+          label={messages.jobs.levels[job.level]}
+          size="small"
+          variant={levelActive ? 'filled' : 'outlined'}
+          color={levelActive ? 'primary' : 'default'}
+          clickable
+          aria-pressed={levelActive}
+          onClick={() => {
+            setLevel(levelActive ? undefined : job.level);
+          }}
+        />
+        <Chip
+          label={messages.jobs.areas[job.area]}
+          size="small"
+          variant={areaActive ? 'filled' : 'outlined'}
+          color={areaActive ? 'primary' : 'default'}
+          clickable
+          aria-pressed={areaActive}
+          onClick={() => {
+            setArea(areaActive ? undefined : job.area);
+          }}
+        />
+        <Chip
+          label={messages.jobs.sources[job.source]}
+          size="small"
+          variant="outlined"
+        />
+        <Chip
+          label={job.location}
+          size="small"
+          variant="outlined"
+          sx={{ maxWidth: 220 }}
+        />
+        {job.remote && (
+          <Chip
+            label={messages.jobs.remote}
+            size="small"
+            variant={remoteActive ? 'filled' : 'outlined'}
+            color={remoteActive ? 'primary' : 'default'}
+            clickable
+            aria-pressed={remoteActive}
+            onClick={() => {
+              setRemoteOnly(!remoteOnly);
+            }}
+          />
+        )}
+      </Stack>
+    </Box>
+  );
+}
+
 export function JobCard({ job, onClick }: JobCardProps) {
   const { messages } = useTranslation();
-  const matchScoreColor =
-    job.matchScore !== null && job.matchScore >= 80
-      ? 'success'
-      : job.matchScore !== null && job.matchScore >= 50
-        ? 'warning'
-        : 'default';
 
-  const content = (
+  const details = (
     <CardContent>
       <Stack spacing={1}>
         <Box
@@ -43,31 +110,22 @@ export function JobCard({ job, onClick }: JobCardProps) {
         <Typography variant="subtitle1" color="text.secondary">
           {job.company}
         </Typography>
-        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
-          <Chip
-            label={messages.jobs.levels[job.level]}
-            size="small"
-            variant="outlined"
-          />
-          <Chip
-            label={messages.jobs.areas[job.area]}
-            size="small"
-            variant="outlined"
-          />
-          <Chip label={job.location} size="small" variant="outlined" />
-          {job.remote && (
-            <Chip
-              label={messages.jobs.remote}
-              size="small"
-              color="primary"
-              variant="outlined"
-            />
-          )}
-        </Stack>
         {job.matchScore !== null && (
-          <Typography variant="body2" color={`${matchScoreColor}.main`}>
-            {messages.jobs.matchScore}: {job.matchScore}%
-          </Typography>
+          <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
+            <Box
+              aria-hidden="true"
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                bgcolor: `${matchScoreColor(job.matchScore)}.main`,
+                flexShrink: 0,
+              }}
+            />
+            <Typography variant="body2">
+              {messages.jobs.matchScore}: {job.matchScore}%
+            </Typography>
+          </Stack>
         )}
       </Stack>
     </CardContent>
@@ -76,10 +134,11 @@ export function JobCard({ job, onClick }: JobCardProps) {
   return (
     <Card>
       {onClick ? (
-        <CardActionArea onClick={onClick}>{content}</CardActionArea>
+        <CardActionArea onClick={onClick}>{details}</CardActionArea>
       ) : (
-        content
+        details
       )}
+      <JobChips job={job} />
     </Card>
   );
 }

@@ -16,6 +16,7 @@ export function Recommendations() {
   return (
     <QueryGate
       query={jobsQuery}
+      subject={messages.dashboard.recommendations.title}
       isEmpty={(jobs) => jobs.length === 0}
       empty={
         <EmptyState

@@ -42,6 +42,12 @@ try {
       !src.includes('node_modules') &&
       !src.includes(`${path.sep}dist${path.sep}`),
   });
+  // professional-portfolio's vite config reads MDX content from the repo-root
+  // content/ dir at build time — Vercel checks out the full repo, so mirror it.
+  const contentDir = path.join(ROOT, 'content');
+  if (existsSync(contentDir)) {
+    cpSync(contentDir, path.join(tmp, 'content'), { recursive: true });
+  }
 
   const npm = (args) =>
     execFileSync('npm', args, { cwd: tmp, stdio: 'inherit', shell: true });

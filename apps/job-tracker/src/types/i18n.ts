@@ -13,6 +13,11 @@ export interface Translation {
     addJob: string;
     menu: string;
     mainNav: string;
+    mockData: string;
+    mockDataOn: string;
+    mockDataOff: string;
+    switchToDarkMode: string;
+    switchToLightMode: string;
   };
 
   dashboard: {
@@ -206,6 +211,10 @@ export interface Translation {
     back: string;
     next: string;
     previous: string;
+    errors: {
+      unauthorized: string;
+      unreachable: string;
+    };
   };
 }
 

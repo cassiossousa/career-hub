@@ -60,6 +60,31 @@ describe('Layout', () => {
     }
   }, 30000);
 
+  it('marks the active nav item on nested routes', () => {
+    renderWithProviders(
+      <Layout>
+        <div>content</div>
+      </Layout>,
+      { route: '/jobs/42' },
+    );
+    expect(screen.getByRole('link', { name: 'Jobs' })).toHaveClass(
+      'Mui-selected',
+    );
+    expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveClass(
+      'Mui-selected',
+    );
+  });
+
+  it('marks only the dashboard item on the root route', () => {
+    renderLayout();
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveClass(
+      'Mui-selected',
+    );
+    expect(screen.getByRole('link', { name: 'Jobs' })).not.toHaveClass(
+      'Mui-selected',
+    );
+  });
+
   it('switches locale when a flag is clicked', async () => {
     const user = userEvent.setup();
     renderLayout();

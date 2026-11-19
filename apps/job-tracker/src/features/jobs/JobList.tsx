@@ -62,6 +62,7 @@ export function JobList() {
   return (
     <QueryGate
       query={jobsQuery}
+      subject={messages.jobs.title}
       isEmpty={(jobs) => jobs.length === 0}
       empty={emptyState}
     >

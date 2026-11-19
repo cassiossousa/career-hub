@@ -7,6 +7,8 @@ const pt: Translation = {
     toggleMenu: 'Alternar menu',
     switchToEnglish: 'Mudar para inglês',
     switchToPortuguese: 'Mudar para português',
+    switchToDarkMode: 'Mudar para modo escuro',
+    switchToLightMode: 'Mudar para modo claro',
   },
 
   links: {

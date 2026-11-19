@@ -9,15 +9,42 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
-const WEB_ROOT = fileURLToPath(new URL('..', import.meta.url));
-const DIST_ASSETS = path.join(WEB_ROOT, 'dist', 'assets');
-const BASELINE_FILE = path.join(WEB_ROOT, '.bundle-baseline.json');
-const UPDATE_BASELINE = process.argv.includes('--update-baseline');
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
+
+const args = process.argv.slice(2);
+const appDir = args.find((arg) => !arg.startsWith('--'));
+const flagValue = (name, fallback) => {
+  const index = args.indexOf(name);
+  return index === -1 ? fallback : Number(args[index + 1]);
+};
+
+if (!appDir) {
+  console.error(
+    'Usage: node scripts/audit-bundle-budget.mjs <appDir> ' +
+      '[--js-limit-kb N] [--css-limit-kb N] [--update-baseline]',
+  );
+  process.exit(1);
+}
+
+const APP_ROOT = path.resolve(ROOT, appDir);
+const DIST_ASSETS = path.join(APP_ROOT, 'dist', 'assets');
+const BASELINE_FILE = path.join(APP_ROOT, '.bundle-baseline.json');
+const UPDATE_BASELINE = args.includes('--update-baseline');
 
 // Budgets are gzip sizes — what actually ships over the wire.
 const BUDGETS = [
-  { key: 'js', pattern: /\.js$/, limitBytes: 150 * 1024, label: 'JS' },
-  { key: 'css', pattern: /\.css$/, limitBytes: 20 * 1024, label: 'CSS' },
+  {
+    key: 'js',
+    pattern: /\.js$/,
+    limitBytes: flagValue('--js-limit-kb', 150) * 1024,
+    label: 'JS',
+  },
+  {
+    key: 'css',
+    pattern: /\.css$/,
+    limitBytes: flagValue('--css-limit-kb', 20) * 1024,
+    label: 'CSS',
+  },
 ];
 
 // Bundle may shrink freely but may not grow more than this over the recorded
@@ -25,7 +52,7 @@ const BUDGETS = [
 const DELTA_LIMIT_BYTES = 5 * 1024;
 
 if (!statSync(DIST_ASSETS, { throwIfNoEntry: false })?.isDirectory()) {
-  console.error('dist/assets not found — run `npm run build` first.');
+  console.error(`${appDir}: dist/assets not found — run build first.`);
   process.exit(1);
 }
 
@@ -72,8 +99,8 @@ for (const budget of BUDGETS) {
   if (totalBytes > budget.limitBytes) {
     failed = true;
     console.error(
-      `BUDGET EXCEEDED: ${budget.label} bundle is ${totalKb} kB gzipped ` +
-        `(limit ${limitKb} kB).`,
+      `BUDGET EXCEEDED: ${appDir} ${budget.label} bundle is ${totalKb} kB ` +
+        `gzipped (limit ${limitKb} kB).`,
     );
     for (const name of matched) {
       const gz = gzipSync(readFileSync(path.join(DIST_ASSETS, name))).length;
@@ -81,7 +108,8 @@ for (const budget of BUDGETS) {
     }
   } else {
     console.log(
-      `${budget.label} bundle: ${totalKb} kB gzipped (limit ${limitKb} kB) — OK`,
+      `${appDir} ${budget.label} bundle: ${totalKb} kB gzipped ` +
+        `(limit ${limitKb} kB) — OK`,
     );
   }
 }
@@ -94,21 +122,23 @@ if (existsSync(BASELINE_FILE)) {
     if (delta > DELTA_LIMIT_BYTES) {
       failed = true;
       console.error(
-        `BUNDLE GREW: ${budget.label} gzip increased by ` +
+        `BUNDLE GREW: ${appDir} ${budget.label} gzip increased by ` +
           `${(delta / 1024).toFixed(1)} kB over the recorded baseline ` +
           `(limit ${DELTA_LIMIT_BYTES / 1024} kB). If intentional, run ` +
-          '`npm run check:bundle -- --update-baseline` and commit ' +
-          '.bundle-baseline.json.',
+          `node scripts/audit-bundle-budget.mjs ${appDir} --update-baseline ` +
+          'and commit .bundle-baseline.json.',
       );
     } else if (delta > 0) {
       console.log(
-        `${budget.label} bundle grew ${(delta / 1024).toFixed(1)} kB vs baseline — within tolerance.`,
+        `${appDir} ${budget.label} bundle grew ` +
+          `${(delta / 1024).toFixed(1)} kB vs baseline — within tolerance.`,
       );
     }
   }
 } else {
   console.log(
-    'No .bundle-baseline.json — run with --update-baseline to record one.',
+    `${appDir}: no .bundle-baseline.json — record one with ` +
+      `--update-baseline.`,
   );
 }
 

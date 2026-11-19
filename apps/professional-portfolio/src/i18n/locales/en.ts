@@ -7,6 +7,8 @@ const en: Translation = {
     toggleMenu: 'Toggle menu',
     switchToEnglish: 'Switch to English',
     switchToPortuguese: 'Switch to Portuguese',
+    switchToDarkMode: 'Switch to dark mode',
+    switchToLightMode: 'Switch to light mode',
   },
 
   links: {

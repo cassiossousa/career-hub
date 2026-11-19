@@ -1,22 +1,21 @@
-import { IconButton, Stack } from '@mui/material';
+import { Box, IconButton, Stack } from '@mui/material';
 
 export interface LanguageOption<T extends string> {
   value: T;
-  flag: string;
+  label: string;
   ariaLabel: string;
 }
 
-const LOCALE_FLAGS: Record<string, string> = {
-  en: '🇺🇸',
-  'pt-BR': '🇧🇷',
-};
+function localeLabel(value: string): string {
+  return value.slice(0, 2).toUpperCase();
+}
 
 export function createLanguageOptions<T extends string>(
   entries: readonly { value: T; ariaLabel: string }[],
 ): LanguageOption<T>[] {
   return entries.map(({ value, ariaLabel }) => ({
     value,
-    flag: LOCALE_FLAGS[value] ?? value,
+    label: localeLabel(value),
     ariaLabel,
   }));
 }
@@ -34,21 +33,44 @@ export function LanguageSwitcher<T extends string>({
 }: LanguageSwitcherProps<T>) {
   return (
     <Stack direction="row" spacing={1}>
-      {options.map((option) => (
-        <IconButton
-          key={option.value}
-          type="button"
-          onClick={() => {
-            onLocaleChange(option.value);
-          }}
-          aria-label={option.ariaLabel}
-          aria-pressed={locale === option.value}
-          size="small"
-          color={locale === option.value ? 'primary' : 'default'}
-        >
-          {option.flag}
-        </IconButton>
-      ))}
+      {options.map((option) => {
+        const selected = locale === option.value;
+        return (
+          <IconButton
+            key={option.value}
+            type="button"
+            onClick={() => {
+              onLocaleChange(option.value);
+            }}
+            aria-label={option.ariaLabel}
+            aria-pressed={selected}
+            size="small"
+          >
+            <Box
+              component="span"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 24,
+                height: 18,
+                px: 0.5,
+                border: 1,
+                borderColor: selected ? 'action.active' : 'divider',
+                borderRadius: 0.5,
+                color: selected ? 'text.primary' : 'text.secondary',
+                bgcolor: selected ? 'action.selected' : 'transparent',
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                letterSpacing: 0.5,
+                lineHeight: 1,
+              }}
+            >
+              {option.label}
+            </Box>
+          </IconButton>
+        );
+      })}
     </Stack>
   );
 }

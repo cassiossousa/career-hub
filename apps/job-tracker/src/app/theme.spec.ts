@@ -1,12 +1,15 @@
-import { appTheme } from './theme';
+import { appThemes } from './theme';
 
-describe('appTheme', () => {
-  it('uses the dark palette mode', () => {
-    expect(appTheme.palette.mode).toBe('dark');
+describe('appThemes', () => {
+  it('provides light and dark themes with matching palette modes', () => {
+    expect(appThemes.light.palette.mode).toBe('light');
+    expect(appThemes.dark.palette.mode).toBe('dark');
   });
 
-  it('defines readable text and background colors', () => {
-    expect(appTheme.palette.background.default).toBeTruthy();
-    expect(appTheme.palette.text.primary).toBeTruthy();
+  it('defines readable text and background colors in both modes', () => {
+    for (const theme of Object.values(appThemes)) {
+      expect(theme.palette.background.default).toBeTruthy();
+      expect(theme.palette.text.primary).toBeTruthy();
+    }
   });
 });

@@ -48,7 +48,7 @@ export default function Navbar() {
               justifyContent: 'space-between',
             }}
           >
-            <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
+            <Stack direction="row" sx={{ alignItems: 'center' }}>
               <Box
                 sx={{
                   display: { xs: 'flex', md: 'none' },

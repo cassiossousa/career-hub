@@ -63,11 +63,6 @@ export interface Translation {
       savedFor: string;
       open: string;
     };
-    weeklyGoal: {
-      title: string;
-      progress: string;
-      edit: string;
-    };
     insights: {
       title: string;
       responseRate: string;

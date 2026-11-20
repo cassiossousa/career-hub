@@ -57,11 +57,6 @@ const ptBR: Translation = {
       savedFor: 'Salva há {days} dias',
       open: 'Abrir',
     },
-    weeklyGoal: {
-      title: 'Meta semanal',
-      progress: '{count} de {goal} candidaturas esta semana',
-      edit: 'Editar meta',
-    },
     insights: {
       title: 'Insights do pipeline',
       responseRate: 'Taxa de resposta',

@@ -57,11 +57,6 @@ const en: Translation = {
       savedFor: 'Saved {days} days ago',
       open: 'Open',
     },
-    weeklyGoal: {
-      title: 'Weekly goal',
-      progress: '{count} of {goal} applications this week',
-      edit: 'Edit goal',
-    },
     insights: {
       title: 'Pipeline insights',
       responseRate: 'Response rate',

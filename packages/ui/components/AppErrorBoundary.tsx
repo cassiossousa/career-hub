@@ -27,8 +27,26 @@ export class AppErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <div role="alert">
+          <div
+            role="alert"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem',
+              padding: '2rem',
+              fontFamily: 'system-ui, sans-serif',
+            }}
+          >
             <p>Something went wrong. Please reload the page.</p>
+            <button
+              type="button"
+              onClick={() => {
+                window.location.reload();
+              }}
+            >
+              Reload
+            </button>
           </div>
         )
       );

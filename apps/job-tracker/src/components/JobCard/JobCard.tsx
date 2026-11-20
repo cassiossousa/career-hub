@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from '../../i18n/Provider';
+import { formatJobSalary, isJobStale } from '../../services/jobMeta';
 import type { Job } from '../../services/types/job';
 import { useFilterStore } from '../../store/filterStore';
 import { JobAgeBadge } from '../JobAgeBadge/JobAgeBadge';
@@ -129,12 +130,23 @@ function JobChips({ job }: { job: Job }) {
             }}
           />
         )}
+        {isJobStale(job) && (
+          <Chip
+            label={messages.jobs.possiblyExpired}
+            size="small"
+            variant="outlined"
+            color="warning"
+          />
+        )}
       </Stack>
     </Box>
   );
 }
 
 export function JobCard({ job, onClick }: JobCardProps) {
+  const salary = formatJobSalary(job);
+  const meta = [salary, job.contractType].filter(Boolean).join(' · ');
+
   const details = (
     <CardContent>
       <Stack spacing={1}>
@@ -153,6 +165,11 @@ export function JobCard({ job, onClick }: JobCardProps) {
         <Typography variant="subtitle1" color="text.secondary">
           {job.company}
         </Typography>
+        {meta !== '' && (
+          <Typography variant="body2" color="text.secondary">
+            {meta}
+          </Typography>
+        )}
       </Stack>
     </CardContent>
   );

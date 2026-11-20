@@ -17,6 +17,7 @@ module.exports = {
     '^@career-hub/ui/(.*)$': '<rootDir>/../../packages/ui/$1/index.ts',
     '^msw/node$': '<rootDir>/../../node_modules/msw/lib/node/index.js',
     '/app/env$': '<rootDir>/src/test/env.ts',
+    '\\.svg$': '<rootDir>/src/test/svgMock.ts',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

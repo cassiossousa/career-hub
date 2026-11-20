@@ -1,9 +1,11 @@
 import { Box, IconButton, Stack } from '@mui/material';
+import { type FlagCode, FlagIcon } from './FlagIcon';
 
 export interface LanguageOption<T extends string> {
   value: T;
   label: string;
   ariaLabel: string;
+  flag?: FlagCode;
 }
 
 function localeLabel(value: string): string {
@@ -11,12 +13,13 @@ function localeLabel(value: string): string {
 }
 
 export function createLanguageOptions<T extends string>(
-  entries: readonly { value: T; ariaLabel: string }[],
+  entries: readonly { value: T; ariaLabel: string; flag?: FlagCode }[],
 ): LanguageOption<T>[] {
-  return entries.map(({ value, ariaLabel }) => ({
+  return entries.map(({ value, ariaLabel, flag }) => ({
     value,
     label: localeLabel(value),
     ariaLabel,
+    ...(flag === undefined ? {} : { flag }),
   }));
 }
 
@@ -44,30 +47,31 @@ export function LanguageSwitcher<T extends string>({
             }}
             aria-label={option.ariaLabel}
             aria-pressed={selected}
-            size="small"
+            sx={{
+              width: 36,
+              height: 36,
+              p: 0.75,
+              border: 1,
+              borderColor: selected ? 'primary.main' : 'transparent',
+              borderRadius: 1,
+            }}
           >
-            <Box
-              component="span"
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 24,
-                height: 18,
-                px: 0.5,
-                border: 1,
-                borderColor: selected ? 'action.active' : 'divider',
-                borderRadius: 0.5,
-                color: selected ? 'text.primary' : 'text.secondary',
-                bgcolor: selected ? 'action.selected' : 'transparent',
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                letterSpacing: 0.5,
-                lineHeight: 1,
-              }}
-            >
-              {option.label}
-            </Box>
+            {option.flag === undefined ? (
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  letterSpacing: 0.5,
+                  lineHeight: 1,
+                  color: selected ? 'text.primary' : 'text.secondary',
+                }}
+              >
+                {option.label}
+              </Box>
+            ) : (
+              <FlagIcon code={option.flag} />
+            )}
           </IconButton>
         );
       })}

@@ -1,14 +1,27 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
 import {
   EmptyState,
   QueryGate,
+  SkeletonGrid,
 } from '../../components/AsyncStatus/AsyncStatus';
+import { FilterBar } from '../../components/FilterBar/FilterBar';
 import { JobCard } from '../../components/JobCard/JobCard';
 import { useTranslation } from '../../i18n/Provider';
 import { useJobs } from '../../services/api/jobs';
 import { useFilterStore } from '../../store/filterStore';
+
+function matchesSearch(
+  job: { title: string; company: string; location: string },
+  query: string,
+): boolean {
+  if (query === '') return true;
+  return [job.title, job.company, job.location].some((field) =>
+    field.toLowerCase().includes(query),
+  );
+}
 
 export function JobList() {
   const navigate = useNavigate();
@@ -20,6 +33,7 @@ export function JobList() {
     remoteOnly,
     maxAgeDays,
     preset,
+    search,
     resetFilters,
   } = useFilterStore();
 
@@ -30,6 +44,7 @@ export function JobList() {
     remoteOnly,
     maxAgeDays !== undefined,
     preset,
+    search,
   ].some(Boolean);
 
   const jobsQuery = useJobs({
@@ -40,6 +55,12 @@ export function JobList() {
     maxAgeDays,
     preset,
   });
+
+  const query = search?.trim().toLowerCase() ?? '';
+  const visibleJobs = useMemo(
+    () => jobsQuery.data?.jobs.filter((job) => matchesSearch(job, query)),
+    [jobsQuery.data, query],
+  );
 
   const emptyState = hasActiveFilters ? (
     <EmptyState
@@ -59,31 +80,37 @@ export function JobList() {
       <Typography component="h1" variant="h5">
         {messages.jobs.title}
       </Typography>
+      <FilterBar />
       <QueryGate
         query={jobsQuery}
         subject={messages.jobs.title}
         isEmpty={(page) => page.jobs.length === 0}
         empty={emptyState}
+        loading={<SkeletonGrid variant="card" count={6} />}
       >
-        {(page) => (
-          <Stack spacing={2}>
-            <Typography component="h2" variant="h6">
-              {messages.jobs.title} ({page.total})
-            </Typography>
-            <Grid container spacing={2}>
-              {page.jobs.map((job) => (
-                <Grid size={{ xs: 12, md: 6 }} key={job.id}>
-                  <JobCard
-                    job={job}
-                    onClick={() => {
-                      void navigate(routePaths.jobDetail(job.id.toString()));
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Stack>
-        )}
+        {(page) =>
+          visibleJobs !== undefined && visibleJobs.length === 0 ? (
+            emptyState
+          ) : (
+            <Stack spacing={2}>
+              <Typography component="h2" variant="h6">
+                {messages.jobs.title} ({visibleJobs?.length ?? page.total})
+              </Typography>
+              <Grid container spacing={2}>
+                {(visibleJobs ?? page.jobs).map((job) => (
+                  <Grid size={{ xs: 12, md: 6 }} key={job.id}>
+                    <JobCard
+                      job={job}
+                      onClick={() => {
+                        void navigate(routePaths.jobDetail(job.id.toString()));
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Stack>
+          )
+        }
       </QueryGate>
     </Stack>
   );

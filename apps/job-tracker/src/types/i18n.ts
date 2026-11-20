@@ -1,6 +1,11 @@
-import type { JobSource } from '../services/types/job';
+import type {
+  JobSource,
+  RequirementClassification,
+} from '../services/types/job';
+import type { SkillCategory } from '../services/types/portfolio';
 
 export type Locale = 'en' | 'pt-BR';
+type LinkKind = 'github' | 'linkedin' | 'website' | 'email' | 'other';
 
 export interface Translation {
   navigation: {
@@ -33,6 +38,7 @@ export interface Translation {
       area: string;
       remoteOnly: string;
       maxAgeDays: string;
+      search: string;
       reset: string;
       useProfileFilters: string;
       allOption: string;
@@ -49,6 +55,26 @@ export interface Translation {
       viewAll: string;
     };
     filteredCount: string;
+    filteredExplanation: string;
+    needsAttention: {
+      title: string;
+      empty: string;
+      staleIn: string;
+      savedFor: string;
+      open: string;
+    };
+    weeklyGoal: {
+      title: string;
+      progress: string;
+      edit: string;
+    };
+    insights: {
+      title: string;
+      responseRate: string;
+      reachedInterview: string;
+      appliedThisWeek: string;
+      topSource: string;
+    };
     pipeline: {
       title: string;
       noApplications: string;
@@ -96,6 +122,12 @@ export interface Translation {
       other: string;
     };
     sources: Record<JobSource, string>;
+    possiblyExpired: string;
+    saveForLater: string;
+    markApplied: string;
+    appliedConfirmTitle: string;
+    appliedConfirmBody: string;
+    editResume: string;
   };
 
   match: {
@@ -107,6 +139,12 @@ export interface Translation {
     requirements: string;
     requirementMatched: string;
     requirementMissing: string;
+    requirementsMet: string;
+    weight: string;
+    weightShort: string;
+    scoreMeaning: string;
+    moreTerms: string;
+    tiers: Record<RequirementClassification, string>;
     portfolioRequired: string;
     setupPortfolio: string;
     algorithms: {
@@ -135,6 +173,8 @@ export interface Translation {
     source: string;
     submit: string;
     submitting: string;
+    salaryOrder: string;
+    duplicateWarning: string;
   };
 
   applications: {
@@ -150,8 +190,19 @@ export interface Translation {
       withdrawn: string;
     };
     appliedAt: string;
+    statusChangedAt: string;
     notes: string;
     advanceTo: string;
+    advanceConfirmTitle: string;
+    advanceConfirmBody: string;
+    reasonLabel: string;
+    viewList: string;
+    viewBoard: string;
+    selectedCount: string;
+    moveSelected: string;
+    exportCsv: string;
+    exportJson: string;
+    statusLabel: string;
     jobFallback: string;
     resume: string;
   };
@@ -163,6 +214,11 @@ export interface Translation {
     locked: string;
     lockedError: string;
     addItem: string;
+    preview: {
+      title: string;
+      repository: string;
+      demo: string;
+    };
     sections: {
       basics: string;
       summary: string;
@@ -185,6 +241,7 @@ export interface Translation {
       linkUrl: string;
       linkLabel: string;
       addLink: string;
+      linkKinds: Record<LinkKind, string>;
     };
     experience: {
       add: string;
@@ -223,6 +280,7 @@ export interface Translation {
     projects: {
       add: string;
       slug: string;
+      slugHint: string;
       title: string;
       summary: string;
       highlights: string;
@@ -238,12 +296,20 @@ export interface Translation {
       add: string;
       category: string;
       items: string;
+      categories: Record<SkillCategory, string>;
     };
   };
 
   portfolio: {
     title: string;
     noDocumentForLocale: string;
+    locale: string;
+    sections: {
+      basics: string;
+      experience: string;
+      skillGroups: string;
+      projects: string;
+    };
     basics: {
       fullName: string;
       headline: string;
@@ -272,6 +338,13 @@ export interface Translation {
     back: string;
     next: string;
     previous: string;
+    deleteItem: string;
+    undo: string;
+    discardTitle: string;
+    discardBody: string;
+    discardConfirm: string;
+    keepEditing: string;
+    locales: Record<Locale, string>;
     errors: {
       unauthorized: string;
       unreachable: string;

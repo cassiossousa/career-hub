@@ -14,22 +14,53 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { appRoutes } from '../../app/routes';
 import { useTranslation } from '../../i18n/Provider';
 import { useUIStore } from '../../store/uiStore';
-import type { Locale } from '../../types/i18n';
+import type { Locale, Translation } from '../../types/i18n';
 import { DRAWER_WIDTH, Sidebar } from '../Sidebar/Sidebar';
+
+function titleForPath(
+  pathname: string,
+  nav: Translation['navigation'],
+): string {
+  const match = appRoutes
+    .filter(
+      (route) =>
+        route.navLabel !== undefined &&
+        (route.path === '/'
+          ? pathname === '/'
+          : pathname.startsWith(route.path)),
+    )
+    .toSorted((a, b) => b.path.length - a.path.length)[0];
+  return match?.navLabel === undefined ? 'Job Tracker' : match.navLabel(nav);
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { pathname } = useLocation();
   const { themeMode, toggleThemeMode } = useUIStore();
   const { locale, messages, onLocaleChange } = useTranslation();
 
+  useEffect(() => {
+    document.title = `${titleForPath(pathname, messages.navigation)} | Job Tracker`;
+  }, [pathname, messages.navigation]);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   const languageOptions = createLanguageOptions<Locale>([
-    { value: 'en', ariaLabel: messages.navigation.switchToEnglish },
-    { value: 'pt-BR', ariaLabel: messages.navigation.switchToPortuguese },
+    { flag: 'us', value: 'en', ariaLabel: messages.navigation.switchToEnglish },
+    {
+      flag: 'br',
+      value: 'pt-BR',
+      ariaLabel: messages.navigation.switchToPortuguese,
+    },
   ]);
 
   const handleDrawerToggle = () => {
@@ -40,9 +71,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <Box sx={{ display: 'flex' }}>
       <AppBar
         position="fixed"
+        color="inherit"
         sx={{
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          borderBottom: 1,
+          borderColor: 'divider',
           width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          ml: { md: `${DRAWER_WIDTH}px` },
+          marginInlineStart: { md: `${DRAWER_WIDTH}px` },
         }}
       >
         <Toolbar>
@@ -52,7 +88,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               edge="start"
               onClick={handleDrawerToggle}
               aria-label={messages.navigation.menu}
-              sx={{ mr: 2 }}
+              sx={{ marginInlineEnd: 2 }}
             >
               <MenuIcon />
             </IconButton>
@@ -70,26 +106,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   : messages.navigation.switchToDarkMode
               }
             />
-            <Box
-              sx={{
-                '& .MuiIconButton-root span': {
-                  fontSize: '0.75rem',
-                  color: 'common.white',
-                  borderColor: 'rgba(255, 255, 255, 0.45)',
-                  bgcolor: 'transparent',
-                },
-                '& .MuiIconButton-root[aria-pressed="true"] span': {
-                  bgcolor: 'rgba(0, 0, 0, 0.3)',
-                  borderColor: 'common.white',
-                },
-              }}
-            >
-              <LanguageSwitcher
-                locale={locale}
-                options={languageOptions}
-                onLocaleChange={onLocaleChange}
-              />
-            </Box>
+            <LanguageSwitcher
+              locale={locale}
+              options={languageOptions}
+              onLocaleChange={onLocaleChange}
+            />
           </Stack>
         </Toolbar>
       </AppBar>

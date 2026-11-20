@@ -79,6 +79,13 @@ export function DashboardStats() {
                 String(filteredTotal),
               )}
             </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', mb: 1 }}
+            >
+              {messages.dashboard.filteredExplanation}
+            </Typography>
             <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
               {FILTER_RESULTS.map((key) => {
                 const count = stats.filtered[key] ?? 0;

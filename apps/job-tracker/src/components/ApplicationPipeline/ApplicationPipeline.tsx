@@ -3,79 +3,46 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
   Divider,
   Stack,
   Typography,
 } from '@mui/material';
+import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
+import { useApplicationTracker } from '../../services/api/applications';
 import {
-  useApplications,
-  useUpdateApplication,
-} from '../../services/api/applications';
-import { useJobTitleById } from '../../services/api/jobs';
-import type {
-  Application,
-  ApplicationStatus,
+  APPLICATION_STATUS_ORDER,
+  type Application,
+  type ApplicationStatus,
+  NEXT_APPLICATION_STATUS,
 } from '../../services/types/application';
+import {
+  APPLICATION_STATUS_COLORS,
+  ApplicationStatusChip,
+} from '../ApplicationStatusChip/ApplicationStatusChip';
 import { EmptyState, QueryGate } from '../AsyncStatus/AsyncStatus';
 
-const STATUSES: ApplicationStatus[] = [
-  'saved',
-  'applied',
-  'screening',
-  'interview',
-  'offer',
-  'rejected',
-  'withdrawn',
-];
-
-const NEXT_STATUS: Partial<Record<ApplicationStatus, ApplicationStatus>> = {
-  saved: 'applied',
-  applied: 'screening',
-  screening: 'interview',
-  interview: 'offer',
-  offer: 'rejected',
-};
-
-const STATUS_COLORS: Record<
-  ApplicationStatus,
-  'default' | 'info' | 'primary' | 'warning' | 'success' | 'error'
-> = {
-  saved: 'default',
-  applied: 'info',
-  screening: 'primary',
-  interview: 'warning',
-  offer: 'success',
-  rejected: 'error',
-  withdrawn: 'default',
-};
+const STATUSES = APPLICATION_STATUS_ORDER;
+const NEXT_STATUS = NEXT_APPLICATION_STATUS;
 
 function columnSx(status: ApplicationStatus) {
   return {
-    borderTop: 3,
-    borderTopColor: `${STATUS_COLORS[status]}.main`,
     borderColor: 'divider',
+    borderTop: 3,
+    borderTopColor: `${APPLICATION_STATUS_COLORS[status]}.main`,
   } as const;
-}
-
-function interpolate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (acc, [key, value]) => acc.replaceAll(`{${key}}`, value),
-    template,
-  );
 }
 
 export function ApplicationPipeline() {
   const { locale, messages } = useTranslation();
-  const applicationsQuery = useApplications();
-  const { mutate: updateApplication } = useUpdateApplication();
-  const jobTitleById = useJobTitleById();
+  const { applicationsQuery, updateApplication, titleForJob } =
+    useApplicationTracker(messages.applications.jobFallback);
+  const { mutate: updateApp } = updateApplication;
 
   const advance = (app: Application) => {
     const next = NEXT_STATUS[app.status];
     if (!next) return;
-    updateApplication({
+    updateApp({
       id: app.id,
       data: {
         status: next,
@@ -137,11 +104,7 @@ export function ApplicationPipeline() {
                           mb: 1,
                         }}
                       >
-                        <Chip
-                          label={messages.applications.status[status]}
-                          color={STATUS_COLORS[status]}
-                          size="small"
-                        />
+                        <ApplicationStatusChip status={status} />
                         <Typography
                           component="div"
                           variant="h6"
@@ -154,11 +117,7 @@ export function ApplicationPipeline() {
                       <Stack spacing={1}>
                         {items.map((app) => {
                           const nextStatus = NEXT_STATUS[app.status];
-                          const title =
-                            jobTitleById.get(app.jobId) ??
-                            interpolate(messages.applications.jobFallback, {
-                              id: String(app.jobId),
-                            });
+                          const title = titleForJob(app.jobId);
                           return (
                             <Box
                               key={app.id}

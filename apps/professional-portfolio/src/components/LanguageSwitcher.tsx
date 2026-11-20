@@ -9,8 +9,16 @@ export default function LanguageSwitcher() {
   const { locale, messages, onLocaleChange } = useTranslation();
 
   const options = createLanguageOptions<Locale>([
-    { value: 'en', ariaLabel: messages.navigation.switchToEnglish },
-    { value: 'pt-BR', ariaLabel: messages.navigation.switchToPortuguese },
+    {
+      value: 'en',
+      ariaLabel: messages.navigation.switchToEnglish,
+      flag: 'us',
+    },
+    {
+      value: 'pt-BR',
+      ariaLabel: messages.navigation.switchToPortuguese,
+      flag: 'br',
+    },
   ]);
 
   return (

@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Skeleton,
   Stack,
   Typography,
 } from '@mui/material';
@@ -85,15 +86,75 @@ export function ErrorState({
   );
 }
 
+interface SkeletonGridProps {
+  count?: number;
+  variant?: 'card' | 'row';
+}
+
+export function SkeletonGrid({
+  count = 4,
+  variant = 'card',
+}: SkeletonGridProps) {
+  const { messages } = useTranslation();
+  const items = Array.from({ length: count }, (_, i) => i);
+
+  return (
+    <Box
+      role="status"
+      aria-label={messages.common.loading}
+      sx={{
+        display: 'grid',
+        gap: 2,
+        gridTemplateColumns:
+          variant === 'card'
+            ? { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }
+            : '1fr',
+      }}
+    >
+      {items.map((i) =>
+        variant === 'card' ? (
+          <Box key={i} sx={{ p: 2 }}>
+            <Skeleton variant="text" width="60%" />
+            <Skeleton variant="text" width="40%" />
+            <Skeleton variant="text" width="80%" />
+          </Box>
+        ) : (
+          <Stack
+            key={i}
+            direction="row"
+            spacing={2}
+            sx={{ alignItems: 'center', p: 1 }}
+          >
+            <Skeleton variant="circular" width={40} height={40} />
+            <Box sx={{ flex: 1 }}>
+              <Skeleton variant="text" width="50%" />
+              <Skeleton variant="text" width="30%" />
+            </Box>
+          </Stack>
+        ),
+      )}
+    </Box>
+  );
+}
+
 interface EmptyStateProps {
   title: string;
   description?: string;
   action?: ReactNode;
+  icon?: ReactNode;
 }
 
-export function EmptyState({ title, description, action }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  description,
+  action,
+  icon,
+}: EmptyStateProps) {
   return (
     <Box sx={{ textAlign: 'center', py: 4, px: 2 }}>
+      {icon !== undefined && icon !== null && (
+        <Box sx={{ color: 'text.secondary', mb: 1 }}>{icon}</Box>
+      )}
       <Typography variant="subtitle1" gutterBottom>
         {title}
       </Typography>
@@ -165,6 +226,7 @@ interface QueryGateProps<T> {
   subject?: string;
   isEmpty?: (data: T) => boolean;
   empty: ReactNode;
+  loading?: ReactNode;
   children: (data: T) => ReactNode;
 }
 
@@ -173,12 +235,13 @@ export function QueryGate<T>({
   subject,
   isEmpty,
   empty,
+  loading,
   children,
 }: QueryGateProps<T>) {
   const { messages } = useTranslation();
 
   if (query.isLoading) {
-    return <LoadingState label={messages.common.loading} />;
+    return <>{loading ?? <LoadingState label={messages.common.loading} />}</>;
   }
 
   if (query.isError) {

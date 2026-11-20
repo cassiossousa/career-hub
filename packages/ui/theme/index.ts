@@ -2,6 +2,12 @@ import { createTheme } from '@mui/material/styles';
 import { brandedComponents } from './components';
 import { brandedTokens, brandedTokensDark } from './tokens';
 
+export {
+  CHIP_COLOR_NAMES,
+  type ChipColorName,
+  darkChipLabelColors,
+} from './tokens';
+
 export type ThemeMode = 'light' | 'dark';
 
 export function parseThemeMode(value: string | null): ThemeMode | null {

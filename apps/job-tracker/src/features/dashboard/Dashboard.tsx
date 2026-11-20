@@ -2,7 +2,10 @@ import { Stack, Typography } from '@mui/material';
 import { ApplicationPipeline } from '../../components/ApplicationPipeline/ApplicationPipeline';
 import { DashboardStats } from '../../components/DashboardStats/DashboardStats';
 import { FilterBar } from '../../components/FilterBar/FilterBar';
+import { NeedsAttention } from '../../components/NeedsAttention/NeedsAttention';
+import { PipelineInsights } from '../../components/PipelineInsights/PipelineInsights';
 import { Recommendations } from '../../components/Recommendations/Recommendations';
+import { WeeklyGoal } from '../../components/WeeklyGoal/WeeklyGoal';
 import { useTranslation } from '../../i18n/Provider';
 
 export function Dashboard() {
@@ -14,9 +17,12 @@ export function Dashboard() {
         {messages.dashboard.title}
       </Typography>
       <DashboardStats />
+      <WeeklyGoal />
       <FilterBar />
       <Recommendations />
+      <NeedsAttention />
       <ApplicationPipeline />
+      <PipelineInsights />
     </Stack>
   );
 }

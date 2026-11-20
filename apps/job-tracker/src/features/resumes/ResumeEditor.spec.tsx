@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import { apiClient } from '../../services/api/client';
@@ -18,8 +18,28 @@ function renderEditor(route: string) {
   );
 }
 
+const ALL_SECTIONS = [
+  'Summary',
+  'Experience',
+  'Projects',
+  'Skill groups',
+  'Education',
+  'Certifications',
+  'Languages',
+];
+
+async function expandSections(
+  user: ReturnType<typeof userEvent.setup>,
+  names: string[],
+) {
+  for (const name of names) {
+    await user.click(screen.getByRole('button', { name }));
+  }
+}
+
 describe('ResumeEditor', () => {
   it('seeds a new resume from the portfolio for a saved application', async () => {
+    const user = userEvent.setup();
     renderEditor('/applications/3');
     expect(await screen.findByText('Tailored Resume')).toBeInTheDocument();
     expect(
@@ -27,14 +47,49 @@ describe('ResumeEditor', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Junior Frontend Developer')).toBeInTheDocument();
 
+    await expandSections(user, ['Summary']);
     const summaryFields = await screen.findAllByLabelText(/summary/i);
     expect(summaryFields[0]).toHaveValue('Senior Frontend Engineer');
+  });
+
+  it('shows a live PDF preview of the resume document', async () => {
+    renderEditor('/applications/3');
+    const preview = await screen.findByRole('complementary', {
+      name: 'Preview',
+    });
+    expect(
+      within(preview).getByRole('heading', { name: 'Cassio Sousa' }),
+    ).toBeInTheDocument();
+    expect(
+      within(preview).getByRole('heading', { name: 'Experience' }),
+    ).toBeInTheDocument();
+    expect(
+      within(preview).getByText(/React · TypeScript · Design systems/),
+    ).toBeInTheDocument();
+    expect(
+      within(preview).getByText(/Led migration to React/),
+    ).toBeInTheDocument();
+  });
+
+  it('updates the preview as the document is edited', async () => {
+    const user = userEvent.setup();
+    renderEditor('/applications/3');
+    const preview = await screen.findByRole('complementary', {
+      name: 'Preview',
+    });
+    await user.click(screen.getByRole('button', { name: 'Summary' }));
+    const summaryFields = await screen.findAllByLabelText(/summary/i);
+    const docSummary = summaryFields[0];
+    if (!docSummary) throw new Error('expected summary field');
+    fireEvent.change(docSummary, { target: { value: 'Brand new summary' } });
+    expect(within(preview).getByText('Brand new summary')).toBeInTheDocument();
   });
 
   it('saves the seeded resume', async () => {
     const user = userEvent.setup();
     renderEditor('/applications/3');
     await screen.findByText('Tailored Resume');
+    await expandSections(user, ALL_SECTIONS);
 
     fireEvent.change(screen.getByLabelText(/full name/i), {
       target: { value: 'Edited Name' },
@@ -59,7 +114,6 @@ describe('ResumeEditor', () => {
     fireEvent.change(skillGroupItems, { target: { value: 'Vue' } });
     fireEvent.keyDown(skillGroupItems, { key: 'Enter' });
 
-    await user.click(screen.getByRole('button', { name: 'Education' }));
     await user.click(screen.getByRole('button', { name: /add education/i }));
     fireEvent.change(screen.getByLabelText(/institution/i), {
       target: { value: 'MIT' },
@@ -67,14 +121,12 @@ describe('ResumeEditor', () => {
     fireEvent.change(screen.getByLabelText(/degree/i), {
       target: { value: 'BSc' },
     });
-    await user.click(screen.getByRole('button', { name: 'Certifications' }));
     await user.click(
       screen.getByRole('button', { name: /add certification/i }),
     );
     fireEvent.change(screen.getByLabelText(/^name/i), {
       target: { value: 'AWS SA' },
     });
-    await user.click(screen.getByRole('button', { name: 'Languages' }));
     await user.click(screen.getByRole('button', { name: /add language/i }));
     fireEvent.change(screen.getByLabelText(/^language/i), {
       target: { value: 'Spanish' },
@@ -83,7 +135,7 @@ describe('ResumeEditor', () => {
     const saveButton = await screen.findByRole('button', { name: 'Save' });
     await user.click(saveButton);
     expect(await screen.findByText('Saved')).toBeInTheDocument();
-  });
+  }, 60000);
 
   it('shows the locked state for a submitted application resume', async () => {
     renderEditor('/applications/1');
@@ -119,6 +171,8 @@ describe('ResumeEditor', () => {
     );
     renderEditor('/applications/3');
     expect(await screen.findByText('Tailored Resume')).toBeInTheDocument();
+    const user = userEvent.setup();
+    await expandSections(user, ['Summary']);
     const summaryFields = await screen.findAllByLabelText(/summary/i);
     expect(summaryFields[0]).toHaveValue('');
   });

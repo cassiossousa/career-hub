@@ -31,6 +31,7 @@ const en: Translation = {
       area: 'Area',
       remoteOnly: 'Remote Only',
       maxAgeDays: 'Max Age (days)',
+      search: 'Search',
       reset: 'Reset',
       useProfileFilters: 'Use Profile Filters',
       allOption: 'All',
@@ -47,6 +48,27 @@ const en: Translation = {
       viewAll: 'View all jobs',
     },
     filteredCount: '{count} filtered',
+    filteredExplanation:
+      'Jobs excluded by your portfolio profile rules — not by the filters above.',
+    needsAttention: {
+      title: 'Needs attention',
+      empty: 'Nothing needs your attention right now.',
+      staleIn: 'No update in {days} days',
+      savedFor: 'Saved {days} days ago',
+      open: 'Open',
+    },
+    weeklyGoal: {
+      title: 'Weekly goal',
+      progress: '{count} of {goal} applications this week',
+      edit: 'Edit goal',
+    },
+    insights: {
+      title: 'Pipeline insights',
+      responseRate: 'Response rate',
+      reachedInterview: 'Reached interview',
+      appliedThisWeek: 'Applied this week',
+      topSource: 'Top source',
+    },
     pipeline: {
       title: 'Application Pipeline',
       noApplications: 'No applications yet',
@@ -104,6 +126,13 @@ const en: Translation = {
       manual: 'Manual',
       other: 'Other',
     },
+    possiblyExpired: 'Possibly expired',
+    saveForLater: 'Save for later',
+    markApplied: 'Mark as applied',
+    appliedConfirmTitle: 'Mark as applied?',
+    appliedConfirmBody:
+      'This records that you applied on the company site and locks the tailored resume for this job. You can still review it, but not edit it.',
+    editResume: 'Edit resume',
   },
 
   match: {
@@ -115,6 +144,18 @@ const en: Translation = {
     requirements: 'Requirements',
     requirementMatched: 'Requirement met',
     requirementMissing: 'Requirement not met',
+    requirementsMet: '{met} of {total} requirements met',
+    weight: 'Weight',
+    weightShort: 'w{weight}',
+    scoreMeaning:
+      "Share of this job's requirements your resume covers — higher is better.",
+    moreTerms: '+{count} more',
+    tiers: {
+      proven: 'Proven',
+      equivalent: 'Equivalent',
+      partial: 'Partial',
+      unproven: 'Not proven',
+    },
     portfolioRequired:
       'Match scores need a portfolio document. Set one up to see how this job fits your profile.',
     setupPortfolio: 'Set up portfolio',
@@ -148,6 +189,9 @@ const en: Translation = {
     source: 'Source',
     submit: 'Add Job',
     submitting: 'Adding...',
+    salaryOrder: 'Minimum salary must not exceed maximum salary.',
+    duplicateWarning:
+      'A job with this company and title already exists — check for duplicates before adding.',
   },
 
   applications: {
@@ -163,8 +207,20 @@ const en: Translation = {
       withdrawn: 'Withdrawn',
     },
     appliedAt: 'Applied At',
+    statusChangedAt: 'Status changed',
     notes: 'Notes',
     advanceTo: 'Advance {title} to {status}',
+    advanceConfirmTitle: 'Advance application?',
+    advanceConfirmBody:
+      'Move "{title}" to {status}? This updates your pipeline and cannot be undone here.',
+    reasonLabel: 'Reason (optional)',
+    viewList: 'List',
+    viewBoard: 'Board',
+    selectedCount: '{count} selected',
+    moveSelected: 'Move selected',
+    exportCsv: 'Export CSV',
+    exportJson: 'Export JSON',
+    statusLabel: 'Status',
     jobFallback: 'Job #{id}',
     resume: 'Resume',
   },
@@ -179,6 +235,11 @@ const en: Translation = {
     lockedError:
       'This resume can no longer be edited — the application was already submitted.',
     addItem: 'Add item',
+    preview: {
+      title: 'Preview',
+      repository: 'Repository',
+      demo: 'Demo',
+    },
     sections: {
       basics: 'Basics',
       summary: 'Summary',
@@ -201,6 +262,13 @@ const en: Translation = {
       linkUrl: 'URL',
       linkLabel: 'Label',
       addLink: 'Add link',
+      linkKinds: {
+        github: 'GitHub',
+        linkedin: 'LinkedIn',
+        website: 'Website',
+        email: 'Email',
+        other: 'Other',
+      },
     },
     experience: {
       add: 'Add experience',
@@ -239,6 +307,7 @@ const en: Translation = {
     projects: {
       add: 'Add project',
       slug: 'Slug',
+      slugHint: 'URL-safe identifier, e.g. my-project',
       title: 'Title',
       summary: 'Summary',
       highlights: 'Highlights',
@@ -254,6 +323,14 @@ const en: Translation = {
       add: 'Add skill group',
       category: 'Category',
       items: 'Items',
+      categories: {
+        frontend: 'Frontend',
+        backend: 'Backend',
+        databases: 'Databases',
+        distributed: 'Distributed systems',
+        cloud: 'Cloud',
+        testing: 'Testing',
+      },
     },
   },
 
@@ -261,6 +338,13 @@ const en: Translation = {
     title: 'Portfolio',
     noDocumentForLocale:
       'No {locale} document yet — fill in the basics below to create it.',
+    locale: 'Document locale',
+    sections: {
+      basics: 'Basics',
+      experience: 'Experience',
+      skillGroups: 'Skills',
+      projects: 'Projects',
+    },
     basics: {
       fullName: 'Full Name',
       headline: 'Headline',
@@ -289,6 +373,17 @@ const en: Translation = {
     back: 'Back',
     next: 'Next',
     previous: 'Previous',
+    deleteItem: 'Delete {item}',
+    undo: 'Undo',
+    discardTitle: 'Discard changes?',
+    discardBody:
+      'You have unsaved changes. If you leave now, they will be lost.',
+    discardConfirm: 'Discard',
+    keepEditing: 'Keep editing',
+    locales: {
+      en: 'English',
+      'pt-BR': 'Português',
+    },
     errors: {
       unauthorized:
         'The API rejected the request — the API key is missing or invalid. Check your local environment configuration.',

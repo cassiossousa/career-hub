@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
 import { Route, Routes } from 'react-router-dom';
@@ -29,10 +29,13 @@ describe('JobDetail', () => {
     expect(screen.getByText('Job not found.')).toBeInTheDocument();
   });
 
-  it('shows an existing application chip for tracked jobs', async () => {
+  it('shows the existing application status for tracked jobs', async () => {
     renderDetail('/jobs/1');
     expect(
-      await screen.findByText(/Applied · #/, {}, { timeout: 8000 }),
+      await screen.findByText('Applied', {}, { timeout: 8000 }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /edit resume/i }),
     ).toBeInTheDocument();
   });
 
@@ -51,13 +54,19 @@ describe('JobDetail', () => {
 
   it('creates an application via mark-as-applied', async () => {
     const user = userEvent.setup();
-    // job 4 has no seeded application, so the action button is shown
+    // job 4 has no seeded application, so the action buttons are shown
     renderDetail('/jobs/4');
-    const button = await screen.findByRole('button', { name: 'Applied' });
+    const button = await screen.findByRole('button', {
+      name: 'Mark as applied',
+    });
     await user.click(button);
+    const dialog = await screen.findByRole('dialog');
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Mark as applied' }),
+    );
     await waitFor(
       () => {
-        expect(screen.getByText(/Applied · #/)).toBeInTheDocument();
+        expect(screen.getByText('Applied')).toBeInTheDocument();
       },
       { timeout: 5000 },
     );

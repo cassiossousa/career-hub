@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   FormControl,
   FormControlLabel,
   InputLabel,
@@ -13,6 +14,7 @@ import { useId } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import { JOB_AREAS, JOB_LEVELS } from '../../services/jobOptions';
 import { useFilterStore } from '../../store/filterStore';
+import { useUrlSyncedFilters } from './useUrlSyncedFilters';
 
 const ageOptions = [
   { value: 1, key: 'oneDay' },
@@ -112,16 +114,28 @@ export function FilterBar() {
     remoteOnly,
     maxAgeDays,
     preset,
+    search,
     setLevel,
     setLocation,
     setArea,
     setRemoteOnly,
     setMaxAgeDays,
     setPreset,
+    setSearch,
     resetFilters,
   } = useFilterStore();
+  useUrlSyncedFilters();
 
   const filterBar = messages.dashboard.filterBar;
+  const activeCount = [
+    level,
+    location,
+    area,
+    remoteOnly,
+    maxAgeDays !== undefined,
+    preset,
+    search,
+  ].filter(Boolean).length;
 
   const ageLabels = {
     oneDay: filterBar.ageOptions.oneDay,
@@ -135,6 +149,26 @@ export function FilterBar() {
       direction="row"
       sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'center' }}
     >
+      {activeCount > 0 && (
+        <Chip
+          label={String(activeCount)}
+          size="small"
+          color="primary"
+          variant="outlined"
+          aria-label={`${activeCount} active filters`}
+        />
+      )}
+
+      <TextField
+        size="small"
+        label={filterBar.search}
+        value={search ?? ''}
+        onChange={(e) => {
+          setSearch(e.target.value || undefined);
+        }}
+        sx={{ minWidth: 180 }}
+      />
+
       <EnumSelect
         label={filterBar.level}
         allLabel={filterBar.allOption}
@@ -203,7 +237,7 @@ export function FilterBar() {
         onClick={resetFilters}
         variant="text"
         size="small"
-        sx={{ ml: { sm: 'auto' } }}
+        sx={{ marginInlineStart: { sm: 'auto' } }}
       >
         {filterBar.reset}
       </Button>

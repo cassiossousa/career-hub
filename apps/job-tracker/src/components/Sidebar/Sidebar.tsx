@@ -75,6 +75,9 @@ export function Sidebar({
                 component={Link}
                 to={item.path}
                 selected={isActivePath(pathname, item.path)}
+                aria-current={
+                  isActivePath(pathname, item.path) ? 'page' : undefined
+                }
                 onClick={onClose}
               >
                 <ListItemText primary={item.label} />

@@ -11,6 +11,7 @@ const persistedFilterStateSchema = z.object({
   remoteOnly: z.boolean().optional(),
   maxAgeDays: z.number().optional(),
   preset: z.enum(['profile']).nullable().optional(),
+  search: z.string().optional(),
 });
 
 interface FilterState {
@@ -20,12 +21,14 @@ interface FilterState {
   remoteOnly: boolean;
   maxAgeDays?: number | undefined;
   preset: 'profile' | null;
+  search?: string | undefined;
   setLevel: (level?: JobLevel) => void;
   setLocation: (location?: string) => void;
   setArea: (area?: JobArea) => void;
   setRemoteOnly: (remoteOnly: boolean) => void;
   setMaxAgeDays: (days?: number) => void;
   setPreset: (preset: 'profile' | null) => void;
+  setSearch: (search?: string) => void;
   resetFilters: () => void;
 }
 
@@ -50,6 +53,7 @@ export const useFilterStore = create<FilterState>((set, get) => {
     remoteOnly: initialState.remoteOnly ?? false,
     maxAgeDays: initialState.maxAgeDays,
     preset: initialState.preset ?? null,
+    search: initialState.search,
     setLevel: (level) => {
       set({ level });
       saveState(get());
@@ -74,6 +78,10 @@ export const useFilterStore = create<FilterState>((set, get) => {
       set({ preset });
       saveState(get());
     },
+    setSearch: (search) => {
+      set({ search });
+      saveState(get());
+    },
     resetFilters: () => {
       const newState: PersistedFilterState = {
         level: undefined,
@@ -82,6 +90,7 @@ export const useFilterStore = create<FilterState>((set, get) => {
         remoteOnly: false,
         maxAgeDays: undefined,
         preset: null,
+        search: undefined,
       };
       set({ ...newState, remoteOnly: false, preset: newState.preset ?? null });
       saveState(newState);

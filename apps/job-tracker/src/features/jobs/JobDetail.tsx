@@ -6,24 +6,30 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
+import { ApplicationStatusChip } from '../../components/ApplicationStatusChip/ApplicationStatusChip';
 import {
   EmptyState,
   QueryGate,
 } from '../../components/AsyncStatus/AsyncStatus';
+import { ConfirmDialog } from '../../components/ConfirmDialog/ConfirmDialog';
 import { JobAgeBadge } from '../../components/JobAgeBadge/JobAgeBadge';
 import { MatchPanel } from '../../components/MatchPanel/MatchPanel';
 import { useTranslation } from '../../i18n/Provider';
 import {
   useApplications,
   useCreateApplication,
+  useUpdateApplication,
 } from '../../services/api/applications';
 import { useJob } from '../../services/api/jobs';
 import {
   filterResultLabelKey,
   isFilteredResult,
 } from '../../services/filterResult';
+import { formatJobSalary, isJobStale } from '../../services/jobMeta';
+import type { Application } from '../../services/types/application';
 
 export function JobDetail() {
   const { id } = useParams<{ id: string }>();
@@ -34,10 +40,14 @@ export function JobDetail() {
   const jobQuery = useJob(jobId ?? 0, {
     enabled: jobId !== null,
   });
-  const { data: applications } = useApplications({
+  const applicationsQuery = useApplications({
     jobId: jobId ?? undefined,
   });
-  const { mutate: createApplication, isPending } = useCreateApplication();
+  const { mutate: createApplication, isPending: isCreating } =
+    useCreateApplication();
+  const { mutate: updateApplication, isPending: isUpdating } =
+    useUpdateApplication();
+  const [confirmApplied, setConfirmApplied] = useState(false);
 
   if (jobId === null) {
     return <EmptyState title={messages.jobs.notFound} />;
@@ -50,14 +60,35 @@ export function JobDetail() {
       empty={<EmptyState title={messages.jobs.notFound} />}
     >
       {(job) => {
-        const existingApplication = applications?.applications[0];
+        const existingApplication = applicationsQuery.data?.applications[0];
+        const salary = formatJobSalary(job);
+        const meta = [salary, job.contractType]
+          .filter((part): part is string => part !== null && part !== '')
+          .join(' · ');
+
+        const saveForLater = () => {
+          createApplication({ jobId: job.id, status: 'saved' });
+        };
 
         const markAsApplied = () => {
-          createApplication({
-            jobId: job.id,
-            status: 'applied',
-            appliedAt: new Date().toISOString().slice(0, 10),
-          });
+          setConfirmApplied(false);
+          if (existingApplication === undefined) {
+            createApplication({
+              jobId: job.id,
+              status: 'applied',
+              appliedAt: new Date().toISOString().slice(0, 10),
+            });
+          } else {
+            updateApplication({
+              id: existingApplication.id,
+              data: {
+                status: 'applied',
+                appliedAt:
+                  existingApplication.appliedAt ??
+                  new Date().toISOString().slice(0, 10),
+              },
+            });
+          }
         };
 
         return (
@@ -93,6 +124,11 @@ export function JobDetail() {
                   <Typography component="p" variant="h6" color="text.secondary">
                     {job.company}
                   </Typography>
+                  {meta !== '' && (
+                    <Typography variant="body2" color="text.secondary">
+                      {meta}
+                    </Typography>
+                  )}
                   <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
                     <Chip
                       label={messages.jobs.levels[job.level]}
@@ -114,6 +150,14 @@ export function JobDetail() {
                         label={messages.jobs.remote}
                         size="small"
                         color="primary"
+                        variant="outlined"
+                      />
+                    )}
+                    {isJobStale(job) && (
+                      <Chip
+                        label={messages.jobs.possiblyExpired}
+                        size="small"
+                        color="warning"
                         variant="outlined"
                       />
                     )}
@@ -139,21 +183,35 @@ export function JobDetail() {
                     >
                       {messages.common.view}
                     </Button>
-                    {existingApplication ? (
-                      <Chip
-                        label={`${messages.applications.status[existingApplication.status]} · #${existingApplication.id}`}
-                        color="primary"
-                        variant="outlined"
-                      />
-                    ) : (
-                      <Button
-                        variant="outlined"
-                        onClick={markAsApplied}
-                        disabled={isPending}
-                      >
-                        {messages.applications.status.applied}
-                      </Button>
-                    )}
+                    {!applicationsQuery.isLoading &&
+                      (existingApplication === undefined ? (
+                        <>
+                          <Button
+                            variant="outlined"
+                            onClick={saveForLater}
+                            disabled={isCreating}
+                          >
+                            {messages.jobs.saveForLater}
+                          </Button>
+                          <Button
+                            variant="contained"
+                            onClick={() => {
+                              setConfirmApplied(true);
+                            }}
+                            disabled={isCreating}
+                          >
+                            {messages.jobs.markApplied}
+                          </Button>
+                        </>
+                      ) : (
+                        <ApplicationActionRow
+                          application={existingApplication}
+                          onMarkApplied={() => {
+                            setConfirmApplied(true);
+                          }}
+                          pending={isCreating || isUpdating}
+                        />
+                      ))}
                   </Stack>
                 </Stack>
               </CardContent>
@@ -169,9 +227,49 @@ export function JobDetail() {
                 />
               </CardContent>
             </Card>
+            <ConfirmDialog
+              open={confirmApplied}
+              title={messages.jobs.appliedConfirmTitle}
+              body={messages.jobs.appliedConfirmBody}
+              confirmLabel={messages.jobs.markApplied}
+              cancelLabel={messages.common.cancel}
+              onConfirm={markAsApplied}
+              onCancel={() => {
+                setConfirmApplied(false);
+              }}
+            />
           </Stack>
         );
       }}
     </QueryGate>
+  );
+}
+
+function ApplicationActionRow({
+  application,
+  onMarkApplied,
+  pending,
+}: {
+  application: Application;
+  onMarkApplied: () => void;
+  pending: boolean;
+}) {
+  const { messages } = useTranslation();
+  return (
+    <>
+      <ApplicationStatusChip status={application.status} />
+      {application.status === 'saved' && (
+        <Button variant="contained" onClick={onMarkApplied} disabled={pending}>
+          {messages.jobs.markApplied}
+        </Button>
+      )}
+      <Button
+        component={RouterLink}
+        to={routePaths.applicationDetail(application.id.toString())}
+        variant="outlined"
+      >
+        {messages.jobs.editResume}
+      </Button>
+    </>
   );
 }

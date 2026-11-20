@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
 import type { ReactElement, ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { TranslationProvider } from '../i18n/Provider';
 import { server } from '../mocks/server';
 
@@ -19,10 +19,13 @@ let activeQueryClient: QueryClient;
 let activeRoute = '/';
 
 function TestProviders({ children }: { children: ReactNode }) {
+  const router = createMemoryRouter([{ path: '*', element: <>{children}</> }], {
+    initialEntries: [activeRoute],
+  });
   return (
     <QueryClientProvider client={activeQueryClient}>
       <TranslationProvider>
-        <MemoryRouter initialEntries={[activeRoute]}>{children}</MemoryRouter>
+        <RouterProvider router={router} />
       </TranslationProvider>
     </QueryClientProvider>
   );

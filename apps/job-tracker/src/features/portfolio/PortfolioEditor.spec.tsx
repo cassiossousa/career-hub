@@ -16,6 +16,16 @@ describe('PortfolioEditor', () => {
     expect(screen.getByLabelText(/headline/i)).toBeInTheDocument();
   });
 
+  it('shows the PDF preview in a Preview tab', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<PortfolioEditor />);
+    await screen.findByLabelText(/full name/i);
+    await user.click(screen.getByRole('tab', { name: /preview/i }));
+    expect(
+      await screen.findByRole('heading', { name: 'Cassio Sousa' }),
+    ).toBeInTheDocument();
+  });
+
   it('saves edited basics and shows success feedback', async () => {
     const user = userEvent.setup();
     renderWithProviders(<PortfolioEditor />);

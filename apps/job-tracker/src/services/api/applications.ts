@@ -5,6 +5,8 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { interpolate } from '../../i18n/interpolate';
 import type {
   Application,
   ApplicationCreate,
@@ -12,7 +14,7 @@ import type {
   ApplicationUpdate,
 } from '../types/application';
 import { apiClient } from './client';
-import { JOBS_PAGE_SIZE } from './jobs';
+import { JOBS_PAGE_SIZE, useJobTitleById } from './jobs';
 import {
   applicationResponseSchema,
   applicationsResponseSchema,
@@ -122,4 +124,21 @@ export function useUpdateApplication(
     },
     ...options,
   });
+}
+
+/**
+ * Bundles the applications list query, the update mutation, and job-title
+ * resolution (with a localized fallback) for tracker views.
+ */
+export function useApplicationTracker(fallbackTemplate: string) {
+  const applicationsQuery = useApplications();
+  const updateApplication = useUpdateApplication();
+  const jobTitleById = useJobTitleById();
+  const titleForJob = useCallback(
+    (jobId: number) =>
+      jobTitleById.get(jobId) ??
+      interpolate(fallbackTemplate, { id: String(jobId) }),
+    [jobTitleById, fallbackTemplate],
+  );
+  return { applicationsQuery, updateApplication, jobTitleById, titleForJob };
 }

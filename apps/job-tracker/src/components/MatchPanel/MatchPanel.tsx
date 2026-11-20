@@ -13,8 +13,28 @@ import { routePaths } from '../../app/routePaths';
 import { useTranslation } from '../../i18n/Provider';
 import { isApiError } from '../../services/api/client';
 import { useJobMatchAllAlgorithms } from '../../services/api/match';
+import type { RequirementClassification } from '../../services/types/job';
 import type { MatchAlgorithm, MatchResult } from '../../services/types/match';
+import type { Locale } from '../../types/i18n';
 import { LoadingState, QueryErrorAlert } from '../AsyncStatus/AsyncStatus';
+
+const MAX_TERMS = 12;
+const MAX_REQUIREMENTS = 20;
+
+function tierFor(score: number, matched: boolean): RequirementClassification {
+  if (!matched) return 'unproven';
+  if (score >= 80) return 'proven';
+  if (score >= 50) return 'equivalent';
+  return 'partial';
+}
+
+function localeName(
+  locale: string | null,
+  locales: Record<Locale, string>,
+): string | null {
+  if (locale === null) return null;
+  return locale in locales ? locales[locale as Locale] : locale;
+}
 
 interface MatchPanelProps {
   jobId: number;
@@ -53,6 +73,13 @@ function AlgorithmScoreChip({
 function MatchBreakdown({ result }: { result: MatchResult }) {
   const { messages } = useTranslation();
   const componentEntries = Object.entries(result.components);
+  const matchedTerms = [...new Set(result.matchedTerms)];
+  const missingTerms = [...new Set(result.missingTerms)];
+  const matchedCount = result.requirements.filter((req) => req.matched).length;
+  const baselineLocale = localeName(
+    result.baseline.locale,
+    messages.common.locales,
+  );
 
   return (
     <Stack spacing={2}>
@@ -66,8 +93,15 @@ function MatchBreakdown({ result }: { result: MatchResult }) {
           color={scoreColor(result.score)}
         />
         <Typography variant="caption" color="text.secondary">
+          {messages.match.scoreMeaning}
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'block' }}
+        >
           {messages.match.baseline[result.baseline.kind]}
-          {result.baseline.locale ? ` · ${result.baseline.locale}` : ''}
+          {baselineLocale ? ` · ${baselineLocale}` : ''}
         </Typography>
       </Box>
 
@@ -89,13 +123,13 @@ function MatchBreakdown({ result }: { result: MatchResult }) {
         </Box>
       )}
 
-      {result.matchedTerms.length > 0 && (
+      {matchedTerms.length > 0 && (
         <Box>
           <Typography variant="subtitle2" gutterBottom>
             {messages.match.matchedTerms}
           </Typography>
           <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-            {result.matchedTerms.map((term) => (
+            {matchedTerms.slice(0, MAX_TERMS).map((term) => (
               <Chip
                 key={term}
                 label={term}
@@ -104,17 +138,27 @@ function MatchBreakdown({ result }: { result: MatchResult }) {
                 variant="outlined"
               />
             ))}
+            {matchedTerms.length > MAX_TERMS && (
+              <Chip
+                label={messages.match.moreTerms.replace(
+                  '{count}',
+                  String(matchedTerms.length - MAX_TERMS),
+                )}
+                size="small"
+                variant="outlined"
+              />
+            )}
           </Stack>
         </Box>
       )}
 
-      {result.missingTerms.length > 0 && (
+      {missingTerms.length > 0 && (
         <Box>
           <Typography variant="subtitle2" gutterBottom>
             {messages.match.missingTerms}
           </Typography>
           <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-            {result.missingTerms.map((term) => (
+            {missingTerms.slice(0, MAX_TERMS).map((term) => (
               <Chip
                 key={term}
                 label={term}
@@ -123,6 +167,16 @@ function MatchBreakdown({ result }: { result: MatchResult }) {
                 variant="outlined"
               />
             ))}
+            {missingTerms.length > MAX_TERMS && (
+              <Chip
+                label={messages.match.moreTerms.replace(
+                  '{count}',
+                  String(missingTerms.length - MAX_TERMS),
+                )}
+                size="small"
+                variant="outlined"
+              />
+            )}
           </Stack>
         </Box>
       )}
@@ -130,36 +184,67 @@ function MatchBreakdown({ result }: { result: MatchResult }) {
       {result.requirements.length > 0 && (
         <Box>
           <Typography variant="subtitle2" gutterBottom>
-            {messages.match.requirements}
+            {messages.match.requirements} (
+            {messages.match.requirementsMet
+              .replace('{met}', String(matchedCount))
+              .replace('{total}', String(result.requirements.length))}
+            )
           </Typography>
           <Stack spacing={0.5}>
-            {result.requirements.map((req) => (
-              <Stack
-                key={req.text}
-                direction="row"
-                sx={{ alignItems: 'center', gap: 1 }}
-              >
-                {req.matched ? (
-                  <CheckIcon
-                    fontSize="small"
-                    color="success"
-                    aria-label={messages.match.requirementMatched}
+            {result.requirements.slice(0, MAX_REQUIREMENTS).map((req) => {
+              const tier = tierFor(req.score, req.matched);
+              return (
+                <Stack
+                  key={`${req.text}|${req.score}|${req.weight}`}
+                  direction="row"
+                  sx={{ alignItems: 'center', gap: 1 }}
+                >
+                  {req.matched ? (
+                    <CheckIcon
+                      fontSize="small"
+                      color="success"
+                      aria-label={messages.match.requirementMatched}
+                    />
+                  ) : (
+                    <CloseIcon
+                      fontSize="small"
+                      color="disabled"
+                      aria-label={messages.match.requirementMissing}
+                    />
+                  )}
+                  <Typography variant="body2" sx={{ flex: 1 }}>
+                    {req.text}
+                  </Typography>
+                  <Chip
+                    label={messages.match.tiers[tier]}
+                    size="small"
+                    variant="outlined"
+                    color={
+                      tier === 'proven'
+                        ? 'success'
+                        : tier === 'unproven'
+                          ? 'default'
+                          : 'warning'
+                    }
                   />
-                ) : (
-                  <CloseIcon
-                    fontSize="small"
-                    color="disabled"
-                    aria-label={messages.match.requirementMissing}
-                  />
+                  <Typography variant="caption" color="text.secondary">
+                    {req.score}% ·{' '}
+                    {messages.match.weightShort.replace(
+                      '{weight}',
+                      String(req.weight),
+                    )}
+                  </Typography>
+                </Stack>
+              );
+            })}
+            {result.requirements.length > MAX_REQUIREMENTS && (
+              <Typography variant="caption" color="text.secondary">
+                {messages.match.moreTerms.replace(
+                  '{count}',
+                  String(result.requirements.length - MAX_REQUIREMENTS),
                 )}
-                <Typography variant="body2" sx={{ flex: 1 }}>
-                  {req.text}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {req.score}%
-                </Typography>
-              </Stack>
-            ))}
+              </Typography>
+            )}
           </Stack>
         </Box>
       )}

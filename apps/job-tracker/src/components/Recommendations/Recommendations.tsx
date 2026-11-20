@@ -3,7 +3,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
 import { useTranslation } from '../../i18n/Provider';
 import { useJobs } from '../../services/api/jobs';
-import { EmptyState, QueryGate } from '../AsyncStatus/AsyncStatus';
+import {
+  EmptyState,
+  QueryGate,
+  SkeletonGrid,
+} from '../AsyncStatus/AsyncStatus';
 import { JobCard } from '../JobCard/JobCard';
 
 export function Recommendations() {
@@ -20,6 +24,7 @@ export function Recommendations() {
           title={messages.dashboard.recommendations.noRecommendations}
         />
       }
+      loading={<SkeletonGrid variant="row" count={3} />}
     >
       {(page) => (
         <Stack spacing={2}>

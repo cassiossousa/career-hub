@@ -1,7 +1,7 @@
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { Suspense } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Suspense, useState } from 'react';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { appRoutes } from './app/routes';
 import { appThemes } from './app/theme';
 import { EmptyState, LoadingState } from './components/AsyncStatus/AsyncStatus';
@@ -20,25 +20,42 @@ function RouteFallback() {
   return <LoadingState label={messages.common.loading} />;
 }
 
+function AppShell() {
+  return (
+    <>
+      <Layout>
+        <Suspense fallback={<RouteFallback />}>
+          <Outlet />
+        </Suspense>
+      </Layout>
+      <ManualJobForm />
+    </>
+  );
+}
+
+function createAppRouter() {
+  return createBrowserRouter([
+    {
+      element: <AppShell />,
+      children: [
+        ...appRoutes.map(({ path, Component }) => ({
+          path,
+          element: <Component />,
+        })),
+        { path: '*', element: <NotFound /> },
+      ],
+    },
+  ]);
+}
+
 export default function App() {
   const themeMode = useUIStore((state) => state.themeMode);
+  const [router] = useState(createAppRouter);
 
   return (
     <ThemeProvider theme={appThemes[themeMode]}>
       <CssBaseline />
-      <BrowserRouter>
-        <Layout>
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
-              {appRoutes.map(({ path, Component }) => (
-                <Route key={path} path={path} element={<Component />} />
-              ))}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </Layout>
-        <ManualJobForm />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }

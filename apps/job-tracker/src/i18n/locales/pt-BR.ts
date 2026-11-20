@@ -31,6 +31,7 @@ const ptBR: Translation = {
       area: 'Área',
       remoteOnly: 'Apenas Remoto',
       maxAgeDays: 'Idade Máxima (dias)',
+      search: 'Buscar',
       reset: 'Limpar',
       useProfileFilters: 'Usar Filtros do Perfil',
       allOption: 'Todas',
@@ -47,6 +48,27 @@ const ptBR: Translation = {
       viewAll: 'Ver todas as vagas',
     },
     filteredCount: '{count} filtradas',
+    filteredExplanation:
+      'Vagas excluídas pelas regras do seu perfil de portfólio — não pelos filtros acima.',
+    needsAttention: {
+      title: 'Precisa de atenção',
+      empty: 'Nada precisa da sua atenção agora.',
+      staleIn: 'Sem atualização há {days} dias',
+      savedFor: 'Salva há {days} dias',
+      open: 'Abrir',
+    },
+    weeklyGoal: {
+      title: 'Meta semanal',
+      progress: '{count} de {goal} candidaturas esta semana',
+      edit: 'Editar meta',
+    },
+    insights: {
+      title: 'Insights do pipeline',
+      responseRate: 'Taxa de resposta',
+      reachedInterview: 'Chegaram à entrevista',
+      appliedThisWeek: 'Candidaturas esta semana',
+      topSource: 'Melhor fonte',
+    },
     pipeline: {
       title: 'Pipeline de Candidaturas',
       noApplications: 'Nenhuma candidatura ainda',
@@ -104,6 +126,13 @@ const ptBR: Translation = {
       manual: 'Manual',
       other: 'Outro',
     },
+    possiblyExpired: 'Possivelmente expirada',
+    saveForLater: 'Salvar para depois',
+    markApplied: 'Marcar como aplicada',
+    appliedConfirmTitle: 'Marcar como aplicada?',
+    appliedConfirmBody:
+      'Isso registra que você se candidatou no site da empresa e bloqueia o currículo personalizado desta vaga. Você ainda pode visualizá-lo, mas não editá-lo.',
+    editResume: 'Editar currículo',
   },
 
   match: {
@@ -115,6 +144,18 @@ const ptBR: Translation = {
     requirements: 'Requisitos',
     requirementMatched: 'Requisito atendido',
     requirementMissing: 'Requisito não atendido',
+    requirementsMet: '{met} de {total} requisitos atendidos',
+    weight: 'Peso',
+    weightShort: 'p{weight}',
+    scoreMeaning:
+      'Parcela dos requisitos desta vaga que seu currículo cobre — quanto maior, melhor.',
+    moreTerms: '+{count} a mais',
+    tiers: {
+      proven: 'Comprovado',
+      equivalent: 'Equivalente',
+      partial: 'Parcial',
+      unproven: 'Não comprovado',
+    },
     portfolioRequired:
       'A pontuação de compatibilidade precisa de um documento de portfólio. Configure um para ver o quão bem esta vaga combina com seu perfil.',
     setupPortfolio: 'Configurar portfólio',
@@ -148,6 +189,9 @@ const ptBR: Translation = {
     source: 'Fonte',
     submit: 'Adicionar Vaga',
     submitting: 'Adicionando...',
+    salaryOrder: 'O salário mínimo não pode ser maior que o salário máximo.',
+    duplicateWarning:
+      'Já existe uma vaga com esta empresa e título — verifique duplicatas antes de adicionar.',
   },
 
   applications: {
@@ -163,8 +207,20 @@ const ptBR: Translation = {
       withdrawn: 'Retirada',
     },
     appliedAt: 'Aplicada em',
+    statusChangedAt: 'Status alterado em',
     notes: 'Notas',
     advanceTo: 'Avançar {title} para {status}',
+    advanceConfirmTitle: 'Avançar candidatura?',
+    advanceConfirmBody:
+      'Mover "{title}" para {status}? Isso atualiza seu pipeline e não pode ser desfeito aqui.',
+    reasonLabel: 'Motivo (opcional)',
+    viewList: 'Lista',
+    viewBoard: 'Quadro',
+    selectedCount: '{count} selecionadas',
+    moveSelected: 'Mover selecionadas',
+    exportCsv: 'Exportar CSV',
+    exportJson: 'Exportar JSON',
+    statusLabel: 'Status',
     jobFallback: 'Vaga #{id}',
     resume: 'Currículo',
   },
@@ -179,6 +235,11 @@ const ptBR: Translation = {
     lockedError:
       'Este currículo não pode mais ser editado — a candidatura já foi enviada.',
     addItem: 'Adicionar item',
+    preview: {
+      title: 'Pré-visualização',
+      repository: 'Repositório',
+      demo: 'Demo',
+    },
     sections: {
       basics: 'Dados básicos',
       summary: 'Resumo',
@@ -201,6 +262,13 @@ const ptBR: Translation = {
       linkUrl: 'URL',
       linkLabel: 'Rótulo',
       addLink: 'Adicionar link',
+      linkKinds: {
+        github: 'GitHub',
+        linkedin: 'LinkedIn',
+        website: 'Site',
+        email: 'E-mail',
+        other: 'Outro',
+      },
     },
     experience: {
       add: 'Adicionar experiência',
@@ -239,6 +307,7 @@ const ptBR: Translation = {
     projects: {
       add: 'Adicionar projeto',
       slug: 'Slug',
+      slugHint: 'Identificador para URL, ex.: meu-projeto',
       title: 'Título',
       summary: 'Resumo',
       highlights: 'Destaques',
@@ -254,6 +323,14 @@ const ptBR: Translation = {
       add: 'Adicionar grupo de habilidades',
       category: 'Categoria',
       items: 'Itens',
+      categories: {
+        frontend: 'Frontend',
+        backend: 'Backend',
+        databases: 'Bancos de dados',
+        distributed: 'Sistemas distribuídos',
+        cloud: 'Nuvem',
+        testing: 'Testes',
+      },
     },
   },
 
@@ -261,6 +338,13 @@ const ptBR: Translation = {
     title: 'Portfólio',
     noDocumentForLocale:
       'Ainda não há documento em {locale} — preencha os dados básicos abaixo para criá-lo.',
+    locale: 'Idioma do documento',
+    sections: {
+      basics: 'Dados básicos',
+      experience: 'Experiência',
+      skillGroups: 'Habilidades',
+      projects: 'Projetos',
+    },
     basics: {
       fullName: 'Nome Completo',
       headline: 'Título',
@@ -289,6 +373,17 @@ const ptBR: Translation = {
     back: 'Voltar',
     next: 'Próximo',
     previous: 'Anterior',
+    deleteItem: 'Excluir {item}',
+    undo: 'Desfazer',
+    discardTitle: 'Descartar alterações?',
+    discardBody:
+      'Você tem alterações não salvas. Se sair agora, elas serão perdidas.',
+    discardConfirm: 'Descartar',
+    keepEditing: 'Continuar editando',
+    locales: {
+      en: 'Inglês',
+      'pt-BR': 'Português',
+    },
     errors: {
       unauthorized:
         'A API rejeitou a requisição — a chave de API está ausente ou é inválida. Verifique a configuração de ambiente local.',

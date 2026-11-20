@@ -148,7 +148,10 @@ export function ApplicationCard({
             </>
           )}
 
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
+          >
             <FormControl size="small" sx={{ minWidth: 140 }}>
               <InputLabel>{messages.applications.statusLabel}</InputLabel>
               <Select

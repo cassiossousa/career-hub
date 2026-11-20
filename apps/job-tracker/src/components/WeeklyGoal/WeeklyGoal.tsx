@@ -6,6 +6,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useId } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import { useApplications } from '../../services/api/applications';
 import { appliedThisWeek } from '../../services/applicationStats';
@@ -13,6 +14,7 @@ import { useUIStore } from '../../store/uiStore';
 
 export function WeeklyGoal() {
   const { messages } = useTranslation();
+  const progressLabelId = useId();
   const { weeklyGoal, setWeeklyGoal } = useUIStore();
   const applicationsQuery = useApplications();
   const applied = appliedThisWeek(applicationsQuery.data?.applications ?? []);
@@ -49,8 +51,16 @@ export function WeeklyGoal() {
               sx={{ width: 72 }}
             />
           </Stack>
-          <LinearProgress variant="determinate" value={percent} />
-          <Typography variant="body2" color="text.secondary">
+          <LinearProgress
+            variant="determinate"
+            value={percent}
+            aria-labelledby={progressLabelId}
+          />
+          <Typography
+            id={progressLabelId}
+            variant="body2"
+            color="text.secondary"
+          >
             {messages.dashboard.weeklyGoal.progress
               .replace('{count}', String(applied))
               .replace('{goal}', String(weeklyGoal))}

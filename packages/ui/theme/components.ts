@@ -8,37 +8,53 @@ import {
   CHIP_COLOR_NAMES,
   type ChipColorName,
   darkChipLabelColors,
+  lightChipLabelColors,
 } from './tokens';
 
-// Saturated fills glare on dark surfaces, so dark mode swaps every colored
-// chip for a soft tonal treatment: translucent tint + light label + hairline
-// ring (filled) or tinted border (outlined). Label colors come from
-// darkChipLabelColors, chosen for WCAG AA over the composited tint.
+// Chips get a soft tonal treatment in BOTH modes (Primer/Linear-style):
+// a translucent tint of the palette color behind a high-contrast label,
+// plus a hairline ring (filled) or tinted border (outlined). Label colors
+// are chosen for WCAG AA over the composited tint — verified by
+// apps/job-tracker/src/app/theme.spec.ts.
 function chipTintColor(theme: Theme, color: ChipColorName): string {
   return color === 'default'
     ? theme.palette.text.secondary
     : theme.palette[color].main;
 }
 
-function darkChipOverrides(theme: Theme): CSSInterpolation {
+function chipLabelColor(theme: Theme, color: ChipColorName): string {
+  const labels =
+    theme.palette.mode === 'dark' ? darkChipLabelColors : lightChipLabelColors;
+  return labels[color];
+}
+
+function chipOverrides(theme: Theme): CSSInterpolation {
+  const isDark = theme.palette.mode === 'dark';
+  const tintAlpha = isDark ? 0.14 : 0.12;
+  const hoverAlpha = isDark ? 0.22 : 0.2;
+  const ringAlpha = isDark ? 0.35 : 0.28;
+  const borderAlpha = isDark ? 0.5 : 0.45;
+  const borderHoverAlpha = isDark ? 0.8 : 0.7;
+  const subtleBgAlpha = isDark ? 0.08 : 0.06;
+
   const styles: Record<string, CSSInterpolation> = {};
   for (const color of CHIP_COLOR_NAMES) {
     const tint = chipTintColor(theme, color);
-    const label = darkChipLabelColors[color];
+    const label = chipLabelColor(theme, color);
     const cls = color.charAt(0).toUpperCase() + color.slice(1);
     styles[`&.MuiChip-filled.MuiChip-color${cls}`] = {
       color: label,
-      backgroundColor: alpha(tint, 0.14),
-      boxShadow: `inset 0 0 0 1px ${alpha(tint, 0.35)}`,
-      '&:hover': { backgroundColor: alpha(tint, 0.22) },
+      backgroundColor: alpha(tint, tintAlpha),
+      boxShadow: `inset 0 0 0 1px ${alpha(tint, ringAlpha)}`,
+      '&:hover': { backgroundColor: alpha(tint, hoverAlpha) },
       '&.Mui-disabled': { opacity: theme.palette.action.disabledOpacity },
     };
     styles[`&.MuiChip-outlined.MuiChip-color${cls}`] = {
       color: label,
-      borderColor: alpha(tint, 0.5),
+      borderColor: alpha(tint, borderAlpha),
       '&:hover': {
-        borderColor: alpha(tint, 0.8),
-        backgroundColor: alpha(tint, 0.08),
+        borderColor: alpha(tint, borderHoverAlpha),
+        backgroundColor: alpha(tint, subtleBgAlpha),
       },
     };
   }
@@ -60,8 +76,25 @@ export const brandedComponents: ThemeOptions['components'] = {
   },
   MuiChip: {
     styleOverrides: {
-      root: ({ theme }) =>
-        theme.palette.mode === 'dark' ? darkChipOverrides(theme) : {},
+      root: ({ theme }) => chipOverrides(theme),
+    },
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        // Border colors come from the semantic border roles via palette.divider
+        // (>= 3:1 in both modes) — never MUI's faint default outline.
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: theme.palette.divider,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+          borderColor: theme.palette.text.secondary,
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          borderColor: theme.palette.primary.main,
+          borderWidth: 1,
+        },
+      }),
     },
   },
   MuiCard: {

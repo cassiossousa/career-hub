@@ -2,10 +2,13 @@ import { createTheme } from '@mui/material/styles';
 import { brandedComponents } from './components';
 import { brandedTokens, brandedTokensDark } from './tokens';
 
+export type { SemanticColors } from './semantic';
+export { semanticColors } from './semantic';
 export {
   CHIP_COLOR_NAMES,
   type ChipColorName,
   darkChipLabelColors,
+  lightChipLabelColors,
 } from './tokens';
 
 export type ThemeMode = 'light' | 'dark';

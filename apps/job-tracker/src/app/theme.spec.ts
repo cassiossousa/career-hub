@@ -1,4 +1,8 @@
-import { CHIP_COLOR_NAMES, darkChipLabelColors } from '@career-hub/ui/theme';
+import {
+  CHIP_COLOR_NAMES,
+  darkChipLabelColors,
+  lightChipLabelColors,
+} from '@career-hub/ui/theme';
 import { appThemes } from './theme';
 
 type Rgba = readonly [number, number, number, number];
@@ -58,60 +62,95 @@ function contrastRatio(fg: string, bg: string): number {
   return (Math.max(f, b) + 0.05) / (Math.min(f, b) + 0.05);
 }
 
+const FILLED_COLORS = [
+  'primary',
+  'secondary',
+  'error',
+  'warning',
+  'info',
+  'success',
+] as const;
+
+// Mirrors the alpha values used by chipOverrides in
+// packages/ui/theme/components.ts.
+const CHIP_TINT_ALPHA = { light: 0.12, dark: 0.14 } as const;
+
 describe('appThemes', () => {
   it('provides light and dark themes with matching palette modes', () => {
     expect(appThemes.light.palette.mode).toBe('light');
     expect(appThemes.dark.palette.mode).toBe('dark');
   });
 
-  it('defines readable text and background colors in both modes', () => {
+  it('keeps body text at WCAG AA (4.5:1) on every surface, both modes', () => {
     for (const theme of Object.values(appThemes)) {
-      expect(theme.palette.background.default).toBeTruthy();
-      expect(theme.palette.text.primary).toBeTruthy();
+      const surfaces = [
+        theme.palette.background.default,
+        theme.palette.background.paper,
+      ];
+      for (const surface of surfaces) {
+        expect(
+          contrastRatio(theme.palette.text.primary, surface),
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(theme.palette.text.secondary, surface),
+        ).toBeGreaterThanOrEqual(4.5);
+      }
     }
   });
 
-  it('keeps filled-chip label contrast at WCAG AA (4.5:1) in both modes', () => {
-    const colors = [
-      'primary',
-      'secondary',
-      'error',
-      'warning',
-      'info',
-      'success',
-    ] as const;
+  it('keeps functional borders at WCAG non-text contrast (3:1), both modes', () => {
+    // palette.divider backs card/accordion/input/entry-box boundaries —
+    // #e2e8f0 previously measured ~1.2:1 and was nearly invisible.
     for (const theme of Object.values(appThemes)) {
-      for (const color of colors) {
+      const surfaces = [
+        theme.palette.background.default,
+        theme.palette.background.paper,
+      ];
+      for (const surface of surfaces) {
+        expect(
+          contrastRatio(theme.palette.divider, surface),
+        ).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+
+  it('keeps accent and status contrastText at WCAG AA on their mains', () => {
+    for (const theme of Object.values(appThemes)) {
+      for (const color of FILLED_COLORS) {
         const { main, contrastText } = theme.palette[color];
         expect(contrastRatio(contrastText, main)).toBeGreaterThanOrEqual(4.5);
       }
     }
   });
 
-  it('keeps dark-mode chip label contrast at WCAG AA over tint and paper', () => {
-    const dark = appThemes.dark;
-    const paper = dark.palette.background.paper;
-    for (const color of CHIP_COLOR_NAMES) {
-      const tint =
-        color === 'default'
-          ? dark.palette.text.secondary
-          : dark.palette[color].main;
-      const [r, g, b] = parseColor(tint);
-      const tintedSurface = compositeOver(
-        `rgba(${r}, ${g}, ${b}, 0.14)`,
-        paper,
-      );
-      const labelLuminance = luminance(parseColor(darkChipLabelColors[color]));
-      // Filled chips: label over the 14% tint composited on paper.
-      const filledRatio =
-        (Math.max(labelLuminance, luminance(tintedSurface)) + 0.05) /
-        (Math.min(labelLuminance, luminance(tintedSurface)) + 0.05);
-      expect(filledRatio).toBeGreaterThanOrEqual(4.5);
-      // Outlined chips: label sits directly on the surface.
-      const surfaceRatio =
-        (Math.max(labelLuminance, luminance(parseColor(paper))) + 0.05) /
-        (Math.min(labelLuminance, luminance(parseColor(paper))) + 0.05);
-      expect(surfaceRatio).toBeGreaterThanOrEqual(4.5);
+  it('keeps filled-chip label contrast at WCAG AA (4.5:1) in both modes', () => {
+    for (const theme of Object.values(appThemes)) {
+      const isDark = theme.palette.mode === 'dark';
+      const paper = theme.palette.background.paper;
+      for (const color of CHIP_COLOR_NAMES) {
+        const tint =
+          color === 'default'
+            ? theme.palette.text.secondary
+            : theme.palette[color].main;
+        const [r = 0, g = 0, b = 0] = parseColor(tint);
+        const alpha = CHIP_TINT_ALPHA[isDark ? 'dark' : 'light'];
+        const tintedSurface = compositeOver(
+          `rgba(${r}, ${g}, ${b}, ${alpha})`,
+          paper,
+        );
+        const labels = isDark ? darkChipLabelColors : lightChipLabelColors;
+        const labelLuminance = luminance(parseColor(labels[color]));
+        // Filled chips: label over the tint composited on paper.
+        const filledRatio =
+          (Math.max(labelLuminance, luminance(tintedSurface)) + 0.05) /
+          (Math.min(labelLuminance, luminance(tintedSurface)) + 0.05);
+        expect(filledRatio).toBeGreaterThanOrEqual(4.5);
+        // Outlined chips: label sits directly on the surface.
+        const surfaceRatio =
+          (Math.max(labelLuminance, luminance(parseColor(paper))) + 0.05) /
+          (Math.min(labelLuminance, luminance(parseColor(paper))) + 0.05);
+        expect(surfaceRatio).toBeGreaterThanOrEqual(4.5);
+      }
     }
   });
 });

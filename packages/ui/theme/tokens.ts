@@ -1,8 +1,10 @@
 import type { ThemeOptions } from '@mui/material/styles';
+import { darkSemantic, lightSemantic, type SemanticColors } from './semantic';
 
 // Soft, layered shadows (shadcn/Tailwind-style) instead of MUI's default
 // heavy black elevation. Index 0 is always 'none'; the rest scale with
 // elevation so Cards, Menus, Dialogs and Drawers share one depth language.
+// Dark mode relies on surface steps + borders instead — shadows barely read.
 const softShadows: NonNullable<ThemeOptions['shadows']> = [
   'none',
   '0 1px 2px rgba(15, 23, 42, 0.06)',
@@ -43,36 +45,106 @@ export const CHIP_COLOR_NAMES = [
 
 export type ChipColorName = (typeof CHIP_COLOR_NAMES)[number];
 
-// Dark-mode chip label colors. In dark mode colored chips are restyled as
-// soft tonal chips (see components.ts): a translucent tint of the palette
-// color behind light label text instead of a saturated fill. Every entry
-// keeps >= 4.5:1 contrast against the composited tint over the dark paper
-// surface — verified by apps/job-tracker/src/app/theme.spec.ts.
-export const darkChipLabelColors: Record<ChipColorName, string> = {
-  default: '#cbd5e1',
-  primary: '#93c5fd',
-  secondary: '#e2e8f0',
-  error: '#fca5a5',
-  warning: '#fdba74',
-  info: '#7dd3fc',
-  success: '#4ade80',
+// Chip label colors sit on a translucent tint of the palette color composited
+// over the paper surface — every entry keeps >= 4.5:1, verified by
+// apps/job-tracker/src/app/theme.spec.ts.
+export const lightChipLabelColors: Record<ChipColorName, string> = {
+  default: '#475569',
+  primary: '#4338ca',
+  secondary: '#6d28d9',
+  error: '#b91c1c',
+  warning: '#92400e',
+  info: '#075985',
+  success: '#166534',
 };
 
+export const darkChipLabelColors: Record<ChipColorName, string> = {
+  default: '#cbd5e1',
+  primary: '#c7d2fe',
+  secondary: '#ddd6fe',
+  error: '#fca5a5',
+  warning: '#fde68a',
+  info: '#bae6fd',
+  success: '#86efac',
+};
+
+function statusPalette(
+  status: SemanticColors['status'][keyof SemanticColors['status']],
+) {
+  return {
+    main: status.solid,
+    light: status.light,
+    dark: status.dark,
+    contrastText: status.onSolid,
+  };
+}
+
+// Projects the semantic roles onto every MUI palette key a component can
+// touch — nothing falls back to MUI defaults (Primer/Carbon lesson: assign
+// the whole palette per mode, don't patch a few keys).
+function paletteFrom(mode: 'light' | 'dark'): ThemeOptions['palette'] {
+  const pick = <T>(dark: T, light: T): T => (mode === 'dark' ? dark : light);
+  const s = pick(darkSemantic, lightSemantic);
+  return {
+    mode,
+    primary: {
+      main: s.accent.default,
+      light: s.accent.hover,
+      dark: s.accent.pressed,
+      contrastText: s.accent.onAccent,
+    },
+    secondary: {
+      main: s.secondaryAccent.default,
+      light: s.secondaryAccent.hover,
+      dark: s.secondaryAccent.pressed,
+      contrastText: s.secondaryAccent.onAccent,
+    },
+    error: statusPalette(s.status.error),
+    warning: statusPalette(s.status.warning),
+    info: statusPalette(s.status.info),
+    success: statusPalette(s.status.success),
+    background: {
+      default: s.surfaces.canvas,
+      paper: s.surfaces.surface,
+    },
+    text: {
+      primary: s.text.primary,
+      secondary: s.text.secondary,
+      disabled: s.text.disabled,
+    },
+    divider: s.border.default,
+    action: {
+      // The rgba strings already carry their alpha; the *Opacity fields must
+      // mirror it because some MUI components multiply them via alpha().
+      hover: s.action.hover,
+      hoverOpacity: pick(0.08, 0.06),
+      selected: s.action.selected,
+      selectedOpacity: pick(0.14, 0.1),
+      focus: s.action.focus,
+      focusOpacity: pick(0.2, 0.16),
+      active: s.action.active,
+      activatedOpacity: pick(0.16, 0.12),
+      disabled: s.action.disabled,
+      disabledOpacity: 0.38,
+      disabledBackground: s.action.disabledBackground,
+    },
+    grey: {
+      50: pick('#0b1120', '#f8fafc'),
+      100: pick('#111a2e', '#f1f5f9'),
+      200: pick('#1a2547', '#e2e8f0'),
+      300: pick('#33436b', '#cbd5e1'),
+      400: pick('#5d7099', '#94a3b8'),
+      500: pick('#7c8aa5', '#64748b'),
+      600: pick('#9aa7c7', '#475569'),
+      700: pick('#cbd5e1', '#334155'),
+      800: pick('#e6ebf5', '#1e293b'),
+      900: pick('#f1f5f9', '#0f172a'),
+    },
+  };
+}
+
 export const brandedTokens: ThemeOptions = {
-  palette: {
-    mode: 'light',
-    primary: { main: '#2563eb' },
-    // MUI's default info/warning mains fail WCAG AA contrast (3.86:1 / 3.11:1)
-    // behind the white text of filled Chips; these darker shades pass 4.5:1.
-    info: { main: '#0277bd' },
-    warning: { main: '#c2410c' },
-    background: { default: '#ffffff', paper: '#ffffff' },
-    text: { primary: '#0f172a', secondary: '#475569' },
-    // #e2e8f0 measured ~1.2:1 on white — card/accordion/entry borders were
-    // nearly invisible. #7c8aa5 keeps a muted hairline while clearing the
-    // WCAG 1.4.11 non-text contrast floor (3:1) at ~3.5:1.
-    divider: '#7c8aa5',
-  },
+  palette: paletteFrom('light'),
   shape: { borderRadius: 8 },
   shadows: softShadows,
   typography: {
@@ -84,23 +156,7 @@ export const brandedTokens: ThemeOptions = {
   },
 };
 
-// Dark variant is a first-class theme, not an inversion: its own surface,
-// text and divider tokens (shadows barely read on dark, so borders carry
-// the separation — see AGENTS.md ui-ux skill §3.4/§4.2).
 export const brandedTokensDark: ThemeOptions = {
   ...brandedTokens,
-  palette: {
-    mode: 'dark',
-    // Bright dark-mode mains need dark label text to keep filled chips and
-    // contained buttons at WCAG AA contrast (white fails below 4.5:1).
-    primary: { main: '#3b82f6', contrastText: 'rgba(0, 0, 0, 0.87)' },
-    secondary: { main: '#94a3b8' },
-    background: { default: '#0b1120', paper: '#111a2e' },
-    text: { primary: '#e2e8f0', secondary: '#94a3b8' },
-    divider: '#26324a',
-    success: { main: '#22c55e' },
-    warning: { main: '#f97316' },
-    error: { main: '#ef4444', contrastText: 'rgba(0, 0, 0, 0.87)' },
-    info: { main: '#38bdf8' },
-  },
+  palette: paletteFrom('dark'),
 };

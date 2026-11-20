@@ -91,6 +91,7 @@ function MatchBreakdown({ result }: { result: MatchResult }) {
           variant="determinate"
           value={result.score}
           color={scoreColor(result.score)}
+          aria-label={`${messages.match.score}: ${result.score}%`}
         />
         <Typography variant="caption" color="text.secondary">
           {messages.match.scoreMeaning}

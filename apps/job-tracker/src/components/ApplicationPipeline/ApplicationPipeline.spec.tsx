@@ -9,11 +9,13 @@ import {
 import { ApplicationPipeline } from './ApplicationPipeline';
 
 describe('ApplicationPipeline', () => {
-  it('renders all status columns with counts', async () => {
+  it('renders a tab per status with application counts', async () => {
     renderWithProviders(<ApplicationPipeline />);
     await waitFor(() => {
       expect(screen.getByText('Application Pipeline')).toBeInTheDocument();
     });
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(7);
     for (const label of [
       'Saved',
       'Applied',
@@ -23,7 +25,9 @@ describe('ApplicationPipeline', () => {
       'Rejected',
       'Withdrawn',
     ]) {
-      expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+      expect(
+        screen.getByRole('tab', { name: new RegExp(`^${label} \\(`) }),
+      ).toBeInTheDocument();
     }
     expectJobTitlesRendered();
   });
@@ -58,13 +62,10 @@ describe('ApplicationPipeline', () => {
     const firstAdvance = advanceButtons[0];
     if (!firstAdvance) throw new Error('expected at least one advance button');
     await user.click(firstAdvance);
-    await waitFor(
-      () => {
-        expect(
-          screen.getAllByRole('button', { name: /Advance/i }).length,
-        ).toBeGreaterThan(0);
-      },
-      { timeout: 5000 },
-    );
+    await waitFor(() => {
+      expect(
+        screen.getByRole('tab', { name: 'Applied (2)' }),
+      ).toBeInTheDocument();
+    });
   });
 });

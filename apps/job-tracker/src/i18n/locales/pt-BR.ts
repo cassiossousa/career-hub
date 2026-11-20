@@ -6,6 +6,7 @@ const ptBR: Translation = {
     jobs: 'Vagas',
     applications: 'Candidaturas',
     portfolio: 'Portfólio',
+    skills: 'Habilidades',
     switchToEnglish: 'EN — Mudar para Inglês',
     switchToPortuguese: 'PT — Mudar para Português',
     addJob: 'Adicionar Vaga',
@@ -46,23 +47,6 @@ const ptBR: Translation = {
       title: 'Vagas Recomendadas',
       noRecommendations: 'Nenhuma vaga recomendada no momento.',
       viewAll: 'Ver todas as vagas',
-    },
-    filteredCount: '{count} filtradas',
-    filteredExplanation:
-      'Vagas excluídas pelas regras do seu perfil de portfólio — não pelos filtros acima.',
-    needsAttention: {
-      title: 'Precisa de atenção',
-      empty: 'Nada precisa da sua atenção agora.',
-      staleIn: 'Sem atualização há {days} dias',
-      savedFor: 'Salva há {days} dias',
-      open: 'Abrir',
-    },
-    insights: {
-      title: 'Insights do pipeline',
-      responseRate: 'Taxa de resposta',
-      reachedInterview: 'Chegaram à entrevista',
-      appliedThisWeek: 'Candidaturas esta semana',
-      topSource: 'Melhor fonte',
     },
     pipeline: {
       title: 'Pipeline de Candidaturas',
@@ -209,13 +193,18 @@ const ptBR: Translation = {
     advanceConfirmBody:
       'Mover "{title}" para {status}? Isso atualiza seu pipeline e não pode ser desfeito aqui.',
     reasonLabel: 'Motivo (opcional)',
+    viewTable: 'Tabela',
     viewList: 'Lista',
     viewBoard: 'Quadro',
+    selectAll: 'Selecionar tudo',
+    selectRow: 'Selecionar {title}',
+    moveTo: 'Mover para',
     selectedCount: '{count} selecionadas',
     moveSelected: 'Mover selecionadas',
     exportCsv: 'Exportar CSV',
     exportJson: 'Exportar JSON',
     statusLabel: 'Status',
+    jobColumn: 'Vaga',
     jobFallback: 'Vaga #{id}',
     resume: 'Currículo',
   },
@@ -350,6 +339,17 @@ const ptBR: Translation = {
     },
     save: 'Salvar Portfólio',
     cancel: 'Cancelar',
+  },
+
+  skills: {
+    title: 'Habilidades',
+    skillColumn: 'Habilidade',
+    groupColumn: 'Grupo',
+    addSkill: 'Adicionar habilidade',
+    empty: 'Nenhuma habilidade ainda — adicione a primeira.',
+    nameRequired: 'Toda habilidade salva precisa de um nome.',
+    duplicateName: 'Os nomes das habilidades devem ser únicos.',
+    save: 'Salvar Habilidades',
   },
 
   common: {

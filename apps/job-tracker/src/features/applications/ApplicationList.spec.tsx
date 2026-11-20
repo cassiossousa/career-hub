@@ -15,7 +15,7 @@ async function expandToLoaded() {
 }
 
 describe('ApplicationList', () => {
-  it('renders application cards with status chips', async () => {
+  it('renders application rows with status chips by default', async () => {
     renderWithProviders(<ApplicationList />);
     await expandToLoaded();
     expect(screen.getAllByText('Applied').length).toBeGreaterThan(0);
@@ -39,8 +39,9 @@ describe('ApplicationList', () => {
     renderWithProviders(<ApplicationList />);
     await expandToLoaded();
 
-    // second seeded application is 'screening', so 'applied' is a real move
-    const checkbox = screen.getAllByRole('checkbox')[1];
+    // header checkbox is index 0; second seeded row is 'screening',
+    // so 'applied' is a real move
+    const checkbox = screen.getAllByRole('checkbox')[2];
     if (!checkbox) throw new Error('expected selection checkbox');
     await user.click(checkbox);
     expect(await screen.findByText('1 selected')).toBeInTheDocument();

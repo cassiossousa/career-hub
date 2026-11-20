@@ -13,6 +13,7 @@ export interface Translation {
     jobs: string;
     applications: string;
     portfolio: string;
+    skills: string;
     switchToEnglish: string;
     switchToPortuguese: string;
     addJob: string;
@@ -53,22 +54,6 @@ export interface Translation {
       title: string;
       noRecommendations: string;
       viewAll: string;
-    };
-    filteredCount: string;
-    filteredExplanation: string;
-    needsAttention: {
-      title: string;
-      empty: string;
-      staleIn: string;
-      savedFor: string;
-      open: string;
-    };
-    insights: {
-      title: string;
-      responseRate: string;
-      reachedInterview: string;
-      appliedThisWeek: string;
-      topSource: string;
     };
     pipeline: {
       title: string;
@@ -191,13 +176,18 @@ export interface Translation {
     advanceConfirmTitle: string;
     advanceConfirmBody: string;
     reasonLabel: string;
+    viewTable: string;
     viewList: string;
     viewBoard: string;
+    selectAll: string;
+    selectRow: string;
+    moveTo: string;
     selectedCount: string;
     moveSelected: string;
     exportCsv: string;
     exportJson: string;
     statusLabel: string;
+    jobColumn: string;
     jobFallback: string;
     resume: string;
   };
@@ -315,6 +305,17 @@ export interface Translation {
     };
     save: string;
     cancel: string;
+  };
+
+  skills: {
+    title: string;
+    skillColumn: string;
+    groupColumn: string;
+    addSkill: string;
+    empty: string;
+    nameRequired: string;
+    duplicateName: string;
+    save: string;
   };
 
   common: {

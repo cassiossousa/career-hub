@@ -6,7 +6,13 @@ const VIEWPORTS = [
   { name: 'mobile-360', width: 360, height: 800 },
   { name: 'desktop-1280', width: 1280, height: 800 },
 ] as const;
-const ROUTES = ['/', '/jobs', '/applications', '/portfolio'] as const;
+const ROUTES = [
+  '/',
+  '/jobs',
+  '/applications',
+  '/portfolio',
+  '/skills',
+] as const;
 
 async function setLocale(page: Page, locale: string) {
   await page.addInitScript((value) => {

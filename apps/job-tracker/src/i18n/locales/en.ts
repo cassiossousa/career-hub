@@ -3,9 +3,10 @@ import type { Translation } from '../../types/i18n';
 const en: Translation = {
   navigation: {
     dashboard: 'Dashboard',
-    jobs: 'Jobs',
+    jobs: 'Job openings',
     applications: 'Applications',
     portfolio: 'Portfolio',
+    skills: 'Skills',
     switchToEnglish: 'EN — Switch to English',
     switchToPortuguese: 'PT — Switch to Portuguese',
     addJob: 'Add Job',
@@ -47,23 +48,6 @@ const en: Translation = {
       noRecommendations: 'No recommended jobs at the moment.',
       viewAll: 'View all jobs',
     },
-    filteredCount: '{count} filtered',
-    filteredExplanation:
-      'Jobs excluded by your portfolio profile rules — not by the filters above.',
-    needsAttention: {
-      title: 'Needs attention',
-      empty: 'Nothing needs your attention right now.',
-      staleIn: 'No update in {days} days',
-      savedFor: 'Saved {days} days ago',
-      open: 'Open',
-    },
-    insights: {
-      title: 'Pipeline insights',
-      responseRate: 'Response rate',
-      reachedInterview: 'Reached interview',
-      appliedThisWeek: 'Applied this week',
-      topSource: 'Top source',
-    },
     pipeline: {
       title: 'Application Pipeline',
       noApplications: 'No applications yet',
@@ -71,7 +55,7 @@ const en: Translation = {
   },
 
   jobs: {
-    title: 'Jobs',
+    title: 'Job openings',
     noJobs: 'No jobs found.',
     noJobsMatching: 'No jobs match your filters.',
     clearFilters: 'Clear filters',
@@ -209,13 +193,18 @@ const en: Translation = {
     advanceConfirmBody:
       'Move "{title}" to {status}? This updates your pipeline and cannot be undone here.',
     reasonLabel: 'Reason (optional)',
+    viewTable: 'Table',
     viewList: 'List',
     viewBoard: 'Board',
+    selectAll: 'Select all',
+    selectRow: 'Select {title}',
+    moveTo: 'Move to',
     selectedCount: '{count} selected',
     moveSelected: 'Move selected',
     exportCsv: 'Export CSV',
     exportJson: 'Export JSON',
     statusLabel: 'Status',
+    jobColumn: 'Job',
     jobFallback: 'Job #{id}',
     resume: 'Resume',
   },
@@ -350,6 +339,17 @@ const en: Translation = {
     },
     save: 'Save Portfolio',
     cancel: 'Cancel',
+  },
+
+  skills: {
+    title: 'Skills',
+    skillColumn: 'Skill',
+    groupColumn: 'Group',
+    addSkill: 'Add skill',
+    empty: 'No skills yet — add your first one.',
+    nameRequired: 'Every saved skill needs a name.',
+    duplicateName: 'Skill names must be unique.',
+    save: 'Save Skills',
   },
 
   common: {

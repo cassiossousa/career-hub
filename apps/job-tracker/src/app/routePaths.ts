@@ -5,4 +5,5 @@ export const routePaths = {
   applications: '/applications',
   applicationDetail: (id: string) => `/applications/${id}`,
   portfolio: '/portfolio',
+  skills: '/skills',
 } as const;

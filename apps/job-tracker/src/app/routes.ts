@@ -28,6 +28,11 @@ const ResumeEditor = lazy(() =>
     default: m.ResumeEditor,
   })),
 );
+const SkillsEditor = lazy(() =>
+  import('../features/skills/SkillsEditor').then((m) => ({
+    default: m.SkillsEditor,
+  })),
+);
 
 export interface AppRoute {
   path: string;
@@ -57,6 +62,11 @@ export const appRoutes: AppRoute[] = [
     path: routePaths.portfolio,
     Component: PortfolioEditor,
     navLabel: (nav) => nav.portfolio,
+  },
+  {
+    path: routePaths.skills,
+    Component: SkillsEditor,
+    navLabel: (nav) => nav.skills,
   },
 ];
 

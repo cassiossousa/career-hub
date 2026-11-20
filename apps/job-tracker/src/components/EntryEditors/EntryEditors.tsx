@@ -48,7 +48,7 @@ const fieldFixed: SxProps<Theme> = { minWidth: 140 };
 const fieldNarrow: SxProps<Theme> = { minWidth: 120 };
 const fieldStars: SxProps<Theme> = { minWidth: 110 };
 
-function useListKeys(length: number): string[] {
+export function useListKeys(length: number): string[] {
   const [keys, setKeys] = useState<string[]>(() =>
     Array.from({ length }, () => crypto.randomUUID()),
   );

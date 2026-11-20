@@ -1,4 +1,5 @@
 import { HttpResponse, http } from 'msw';
+import { skillNameKey } from '../services/skills';
 import type {
   Application,
   ApplicationCreate,
@@ -17,11 +18,13 @@ import type {
   PortfolioDocumentWrite,
 } from '../services/types/portfolio';
 import type { Resume, ResumeDocument } from '../services/types/resume';
+import type { Skill, SkillCreate, SkillPatch } from '../services/types/skills';
 import {
   seedApplications,
   seedJobs,
   seedPortfolio,
   seedResume,
+  seedSkills,
   toJob,
 } from './data';
 
@@ -29,18 +32,22 @@ let jobs = [...seedJobs];
 let applications = [...seedApplications];
 let portfolio: Portfolio | null = { ...seedPortfolio };
 let resumes: Resume[] = [seedResume];
+let skills: Skill[] = [...seedSkills];
 let nextJobId = 100;
 let nextApplicationId = 100;
 let nextResumeId = 100;
+let nextSkillId = 100;
 
 export function resetMockData() {
   jobs = [...seedJobs];
   applications = [...seedApplications];
   portfolio = { ...seedPortfolio };
   resumes = [seedResume];
+  skills = [...seedSkills];
   nextJobId = 100;
   nextApplicationId = 100;
   nextResumeId = 100;
+  nextSkillId = 100;
 }
 
 function ageInDays(postedAt: string | null): number {
@@ -564,5 +571,74 @@ export const handlers = [
       updatedAt: now,
     };
     return HttpResponse.json(portfolio);
+  }),
+
+  http.get('/api/skills', ({ request }) => {
+    const params = new URL(request.url).searchParams;
+    const group = params.get('group');
+    let result = [...skills];
+    if (group !== null) result = result.filter((s) => s.group === group);
+    result.sort(
+      (a, b) =>
+        skillNameKey(a.name).localeCompare(skillNameKey(b.name)) || a.id - b.id,
+    );
+    const { items, total } = pageOf(result, params);
+    return HttpResponse.json({ skills: items, total });
+  }),
+
+  http.post('/api/skills', async ({ request }) => {
+    const body = (await request.json()) as SkillCreate;
+    const name = body.name.trim().replace(/\s+/g, ' ');
+    if (skills.some((s) => skillNameKey(s.name) === skillNameKey(name))) {
+      return conflictJson('conflict', `skill '${name}' already exists`);
+    }
+    const now = new Date().toISOString();
+    const skill: Skill = {
+      id: nextSkillId++,
+      name,
+      group: body.group,
+      createdAt: now,
+      updatedAt: now,
+    };
+    skills.push(skill);
+    return HttpResponse.json(skill, { status: 201 });
+  }),
+
+  http.get('/api/skills/:id', ({ params }) => {
+    const skill = skills.find((s) => s.id === Number(params.id));
+    if (!skill) {
+      return notFoundJson('Skill not found');
+    }
+    return HttpResponse.json(skill);
+  }),
+
+  http.patch('/api/skills/:id', async ({ params, request }) => {
+    const skill = skills.find((s) => s.id === Number(params.id));
+    if (!skill) {
+      return notFoundJson('Skill not found');
+    }
+    const body = (await request.json()) as SkillPatch;
+    if (body.name !== undefined) {
+      const name = body.name.trim().replace(/\s+/g, ' ');
+      const clash = skills.some(
+        (s) => s.id !== skill.id && skillNameKey(s.name) === skillNameKey(name),
+      );
+      if (clash) {
+        return conflictJson('conflict', `skill '${name}' already exists`);
+      }
+      skill.name = name;
+    }
+    if (body.group !== undefined) skill.group = body.group;
+    skill.updatedAt = new Date().toISOString();
+    return HttpResponse.json(skill);
+  }),
+
+  http.delete('/api/skills/:id', ({ params }) => {
+    const index = skills.findIndex((s) => s.id === Number(params.id));
+    if (index === -1) {
+      return notFoundJson('Skill not found');
+    }
+    skills.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
   }),
 ];

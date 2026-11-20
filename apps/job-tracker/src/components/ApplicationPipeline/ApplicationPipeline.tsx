@@ -1,12 +1,5 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { useState } from 'react';
 import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
 import { useApplicationTracker } from '../../services/api/applications';
@@ -16,25 +9,14 @@ import {
   type ApplicationStatus,
   NEXT_APPLICATION_STATUS,
 } from '../../services/types/application';
-import {
-  APPLICATION_STATUS_COLORS,
-  ApplicationStatusChip,
-} from '../ApplicationStatusChip/ApplicationStatusChip';
 import { EmptyState, QueryGate } from '../AsyncStatus/AsyncStatus';
 
 const STATUSES = APPLICATION_STATUS_ORDER;
 const NEXT_STATUS = NEXT_APPLICATION_STATUS;
 
-function columnSx(status: ApplicationStatus) {
-  return {
-    borderColor: 'divider',
-    borderTop: 3,
-    borderTopColor: `${APPLICATION_STATUS_COLORS[status]}.main`,
-  } as const;
-}
-
 export function ApplicationPipeline() {
   const { locale, messages } = useTranslation();
+  const [selected, setSelected] = useState(0);
   const { applicationsQuery, updateApplication, titleForJob } =
     useApplicationTracker(messages.applications.jobFallback);
   const { mutate: updateApp } = updateApplication;
@@ -70,112 +52,95 @@ export function ApplicationPipeline() {
           byStatus.get(app.status)?.push(app);
         }
 
+        const activeStatus = STATUSES[selected] ?? 'saved';
+        const items = byStatus.get(activeStatus) ?? [];
+
         return (
           <Stack spacing={2}>
             <Typography component="h2" variant="h6">
               {messages.dashboard.pipeline.title}
             </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 2,
-                alignItems: 'flex-start',
+            <Tabs
+              value={selected}
+              onChange={(_, value: number) => {
+                setSelected(value);
               }}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              aria-label={messages.dashboard.pipeline.title}
             >
-              {STATUSES.map((status) => {
-                const items = byStatus.get(status) ?? [];
-                return (
-                  <Card
-                    key={status}
-                    variant="outlined"
-                    sx={{
-                      ...columnSx(status),
-                      flex: '1 1 200px',
-                      minWidth: 0,
-                    }}
-                  >
-                    <CardContent sx={{ pb: items.length > 0 ? 1 : undefined }}>
-                      <Stack
-                        direction="row"
+              {STATUSES.map((status, index) => (
+                <Tab
+                  key={status}
+                  id={`pipeline-tab-${index}`}
+                  aria-controls={`pipeline-panel-${index}`}
+                  label={`${messages.applications.status[status]} (${(byStatus.get(status) ?? []).length})`}
+                />
+              ))}
+            </Tabs>
+            <Box
+              role="tabpanel"
+              id={`pipeline-panel-${selected}`}
+              aria-labelledby={`pipeline-tab-${selected}`}
+            >
+              {items.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  {messages.applications.noApplications}
+                </Typography>
+              ) : (
+                <Stack spacing={1}>
+                  {items.map((app) => {
+                    const nextStatus = NEXT_STATUS[app.status];
+                    const title = titleForJob(app.jobId);
+                    return (
+                      <Box
+                        key={app.id}
                         sx={{
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          mb: 1,
+                          p: 1.5,
+                          borderRadius: 1,
+                          bgcolor: 'action.hover',
+                          border: 1,
+                          borderColor: 'divider',
                         }}
                       >
-                        <ApplicationStatusChip status={status} />
-                        <Typography
-                          component="div"
-                          variant="h6"
-                          color="text.secondary"
-                        >
-                          {items.length}
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {title}
                         </Typography>
-                      </Stack>
-                      {items.length > 0 && <Divider sx={{ mb: 1 }} />}
-                      <Stack spacing={1}>
-                        {items.map((app) => {
-                          const nextStatus = NEXT_STATUS[app.status];
-                          const title = titleForJob(app.jobId);
-                          return (
-                            <Box
-                              key={app.id}
-                              sx={{
-                                p: 1.5,
-                                borderRadius: 1,
-                                bgcolor: 'action.hover',
-                                border: 1,
-                                borderColor: 'divider',
-                              }}
-                            >
-                              <Typography
-                                variant="body2"
-                                sx={{ fontWeight: 500 }}
-                              >
-                                {title}
-                              </Typography>
-                              {app.appliedAt && (
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                  sx={{ display: 'block' }}
-                                >
-                                  {new Date(app.appliedAt).toLocaleDateString(
-                                    locale,
-                                  )}
-                                </Typography>
-                              )}
-                              {nextStatus && (
-                                <Button
-                                  size="small"
-                                  variant="text"
-                                  onClick={() => {
-                                    advance(app);
-                                  }}
-                                  aria-label={interpolate(
-                                    messages.applications.advanceTo,
-                                    {
-                                      title,
-                                      status:
-                                        messages.applications.status[
-                                          nextStatus
-                                        ],
-                                    },
-                                  )}
-                                  sx={{ mt: 0.5, px: 0, minWidth: 0 }}
-                                >
-                                  → {messages.applications.status[nextStatus]}
-                                </Button>
-                              )}
-                            </Box>
-                          );
-                        })}
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                        {app.appliedAt && (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ display: 'block' }}
+                          >
+                            {new Date(app.appliedAt).toLocaleDateString(locale)}
+                          </Typography>
+                        )}
+                        {nextStatus && (
+                          <Button
+                            size="small"
+                            variant="text"
+                            onClick={() => {
+                              advance(app);
+                            }}
+                            aria-label={interpolate(
+                              messages.applications.advanceTo,
+                              {
+                                title,
+                                status:
+                                  messages.applications.status[nextStatus],
+                              },
+                            )}
+                            sx={{ mt: 0.5, px: 0, minWidth: 0 }}
+                          >
+                            → {messages.applications.status[nextStatus]}
+                          </Button>
+                        )}
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              )}
             </Box>
           </Stack>
         );

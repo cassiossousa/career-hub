@@ -29,6 +29,7 @@ import type {
   LanguageEntry,
   Resume,
 } from '../types/resume';
+import type { Skill } from '../types/skills';
 
 const jobSourceSchema = z.enum([
   'gupy',
@@ -242,6 +243,14 @@ const portfolioSchema = z.object({
   updatedAt: z.string(),
 }) satisfies z.ZodType<Portfolio>;
 
+const skillSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  group: skillCategorySchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}) satisfies z.ZodType<Skill>;
+
 const matchBaselineSchema = z.object({
   kind: z.enum(['resume', 'portfolio']),
   locale: z.string().nullable(),
@@ -299,6 +308,13 @@ export const applicationsResponseSchema = z.object({
 export const applicationResponseSchema = applicationSchema;
 
 export const portfolioResponseSchema = portfolioSchema;
+
+export const skillsResponseSchema = z.object({
+  skills: z.array(skillSchema),
+  total: z.number(),
+});
+
+export const skillResponseSchema = skillSchema;
 
 export const matchResponseSchema = matchResultSchema;
 

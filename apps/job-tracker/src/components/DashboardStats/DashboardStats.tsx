@@ -2,17 +2,7 @@ import { Card, CardContent, Grid, Stack, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import { useJobStats } from '../../services/api/jobs';
-import { filterResultLabelKey } from '../../services/filterResult';
-import type { JobFilterResult } from '../../services/types/job';
 import { LoadingState, QueryErrorAlert } from '../AsyncStatus/AsyncStatus';
-
-const FILTER_RESULTS: JobFilterResult[] = [
-  'filtered_level',
-  'filtered_location',
-  'filtered_area',
-  'filtered_remote',
-  'filtered_age',
-];
 
 const EMPTY_VALUE = '—';
 
@@ -37,10 +27,6 @@ export function DashboardStats() {
   const { messages } = useTranslation();
   const statsQuery = useJobStats();
   const stats = statsQuery.data;
-
-  const filteredTotal = stats
-    ? FILTER_RESULTS.reduce((sum, key) => sum + (stats.filtered[key] ?? 0), 0)
-    : 0;
 
   return (
     <Stack spacing={2}>
@@ -70,37 +56,6 @@ export function DashboardStats() {
           label={messages.dashboard.jobsThisMonth}
         />
       </Grid>
-      {stats !== undefined && filteredTotal > 0 && (
-        <Card>
-          <CardContent>
-            <Typography variant="subtitle1" gutterBottom>
-              {messages.dashboard.filteredCount.replace(
-                '{count}',
-                String(filteredTotal),
-              )}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: 'block', mb: 1 }}
-            >
-              {messages.dashboard.filteredExplanation}
-            </Typography>
-            <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
-              {FILTER_RESULTS.map((key) => {
-                const count = stats.filtered[key] ?? 0;
-                if (count === 0) return null;
-                return (
-                  <Typography key={key} variant="body2" color="text.secondary">
-                    {messages.jobs.filterResult[filterResultLabelKey[key]]}:{' '}
-                    {count}
-                  </Typography>
-                );
-              })}
-            </Stack>
-          </CardContent>
-        </Card>
-      )}
     </Stack>
   );
 }

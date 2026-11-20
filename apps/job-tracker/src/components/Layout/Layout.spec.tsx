@@ -27,7 +27,7 @@ describe('Layout', () => {
   it('closes the drawer when a nav item is clicked', async () => {
     const user = userEvent.setup();
     renderLayout();
-    await user.click(screen.getByRole('link', { name: 'Jobs' }));
+    await user.click(screen.getByRole('link', { name: 'Job openings' }));
   });
 
   it('toggles the mobile drawer via the menu button', async () => {
@@ -67,7 +67,7 @@ describe('Layout', () => {
       </Layout>,
       { route: '/jobs/42' },
     );
-    expect(screen.getByRole('link', { name: 'Jobs' })).toHaveClass(
+    expect(screen.getByRole('link', { name: 'Job openings' })).toHaveClass(
       'Mui-selected',
     );
     expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveClass(
@@ -80,7 +80,7 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveClass(
       'Mui-selected',
     );
-    expect(screen.getByRole('link', { name: 'Jobs' })).not.toHaveClass(
+    expect(screen.getByRole('link', { name: 'Job openings' })).not.toHaveClass(
       'Mui-selected',
     );
   });

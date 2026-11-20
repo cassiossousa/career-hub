@@ -1,7 +1,12 @@
 import type { Application } from '../services/types/application';
 import type { Job, JobCreate } from '../services/types/job';
-import type { Portfolio, PortfolioContent } from '../services/types/portfolio';
+import type {
+  Portfolio,
+  PortfolioContent,
+  SkillCategory,
+} from '../services/types/portfolio';
 import type { Resume } from '../services/types/resume';
+import type { Skill } from '../services/types/skills';
 
 const daysAgo = (days: number) =>
   new Date(Date.now() - days * 86400000).toISOString();
@@ -276,6 +281,62 @@ export const seedResume: Resume = {
   createdAt: daysAgo(2),
   updatedAt: daysAgo(2),
 };
+
+const SEED_SKILL_ENTRIES: readonly (readonly [string, SkillCategory])[] = [
+  ['React', 'frontend'],
+  ['TypeScript', 'frontend'],
+  ['JavaScript', 'frontend'],
+  ['Angular', 'frontend'],
+  ['Next.js', 'frontend'],
+  ['React Native', 'frontend'],
+  ['Material UI', 'frontend'],
+  ['Styled Components', 'frontend'],
+  ['Svelte', 'frontend'],
+  ['ExtJS', 'frontend'],
+  ['Node.js', 'backend'],
+  ['Python', 'backend'],
+  ['Django', 'backend'],
+  ['Flask', 'backend'],
+  ['Pyramid', 'backend'],
+  ['Ruby on Rails', 'backend'],
+  ['Java', 'backend'],
+  ['Spring Boot', 'backend'],
+  ['Scala', 'backend'],
+  ['Play Framework', 'backend'],
+  ['PostgreSQL', 'databases'],
+  ['MongoDB', 'databases'],
+  ['Redis', 'databases'],
+  ['DynamoDB', 'databases'],
+  ['Elasticsearch', 'databases'],
+  ['Kafka', 'distributed'],
+  ['RabbitMQ', 'distributed'],
+  ['GraphQL', 'distributed'],
+  ['Docker', 'cloud'],
+  ['Kubernetes', 'cloud'],
+  ['AWS', 'cloud'],
+  ['GCP', 'cloud'],
+  ['Heroku', 'cloud'],
+  ['CI/CD', 'cloud'],
+  ['Cypress', 'testing'],
+  ['Datadog', 'testing'],
+  ['Grafana', 'testing'],
+  ['Jest', 'testing'],
+  ['Kibana', 'testing'],
+  ['Mocha', 'testing'],
+  ['Pytest', 'testing'],
+  ['Sentry', 'testing'],
+  ['Vitest', 'testing'],
+];
+
+export const seedSkills: Skill[] = SEED_SKILL_ENTRIES.map(
+  ([name, group], index) => ({
+    id: index + 1,
+    name,
+    group,
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  }),
+);
 
 export function toJob(body: JobCreate, id: number): Job {
   const now = new Date().toISOString();

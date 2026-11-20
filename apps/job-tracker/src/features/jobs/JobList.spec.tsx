@@ -16,7 +16,7 @@ describe('JobList', () => {
   it('renders jobs from the API', async () => {
     renderWithProviders(<JobList />);
     await waitFor(() => {
-      expect(screen.getByText(/Jobs \(\d+\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
     });
     expect(screen.getAllByText(/Frontend|Backend/).length).toBeGreaterThan(0);
   });
@@ -32,7 +32,7 @@ describe('JobList', () => {
     });
     await user.click(screen.getByRole('button', { name: /clear filters/i }));
     await waitFor(() => {
-      expect(screen.getByText(/Jobs \(\d+\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
     });
   });
 
@@ -40,7 +40,7 @@ describe('JobList', () => {
     const user = userEvent.setup();
     renderWithProviders(<JobList />);
     await waitFor(() => {
-      expect(screen.getByText(/Jobs \(\d+\)/)).toBeInTheDocument();
+      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
     });
     const cards = screen.getAllByRole('button');
     const jobCard = cards.find((el) => el.textContent.includes('Frontend'));

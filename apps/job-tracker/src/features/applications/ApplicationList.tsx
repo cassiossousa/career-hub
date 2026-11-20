@@ -30,6 +30,7 @@ import {
 import { AdvanceApplicationDialog } from './AdvanceApplicationDialog';
 import { ApplicationBoard } from './ApplicationBoard';
 import { ApplicationCard } from './ApplicationCard';
+import { ApplicationTable } from './ApplicationTable';
 import { buildAdvanceUpdate } from './applicationActions';
 import {
   exportApplicationsCsv,
@@ -64,7 +65,7 @@ export function ApplicationList() {
     useApplicationTracker(messages.applications.jobFallback);
   const { mutateAsync } = updateApplication;
 
-  const [view, setView] = useState<'list' | 'board'>('list');
+  const [view, setView] = useState<'table' | 'list' | 'board'>('table');
   const [selected, setSelected] = useState<ReadonlySet<number>>(
     () => new Set(),
   );
@@ -158,10 +159,13 @@ export function ApplicationList() {
           size="small"
           exclusive
           value={view}
-          onChange={(_, next: 'list' | 'board' | null) => {
+          onChange={(_, next: 'table' | 'list' | 'board' | null) => {
             if (next !== null) setView(next);
           }}
         >
+          <ToggleButton value="table">
+            {messages.applications.viewTable}
+          </ToggleButton>
           <ToggleButton value="list">
             {messages.applications.viewList}
           </ToggleButton>
@@ -206,7 +210,7 @@ export function ApplicationList() {
                   direction="row"
                   sx={{ gap: 1, marginInlineStart: 'auto' }}
                 >
-                  {selectedAppsList.length > 0 && view === 'list' && (
+                  {selectedAppsList.length > 0 && view !== 'board' && (
                     <>
                       <Typography variant="body2" color="text.secondary">
                         {messages.applications.selectedCount.replace(
@@ -269,6 +273,16 @@ export function ApplicationList() {
                   applications={applications}
                   onMove={(app, target) => {
                     requestAdvance([app], target);
+                  }}
+                />
+              ) : view === 'table' ? (
+                <ApplicationTable
+                  applications={applications}
+                  selected={selected}
+                  titleFor={titleFor}
+                  onToggleSelect={toggleSelect}
+                  onRequestAdvance={(application, target) => {
+                    requestAdvance([application], target);
                   }}
                 />
               ) : (

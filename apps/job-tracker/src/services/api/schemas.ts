@@ -10,18 +10,25 @@ import type {
   Requirement,
   RequirementClassification,
 } from '../types/job';
+import type { MatchResult } from '../types/match';
 import type {
   ExperienceBullet,
   ExperienceEntry,
-  LocalizedText,
   Portfolio,
   PortfolioBasics,
+  PortfolioContent,
   PortfolioFilters,
   PortfolioLink,
   ProjectEntry,
   SkillCategory,
   SkillGroup,
 } from '../types/portfolio';
+import type {
+  CertificationEntry,
+  EducationEntry,
+  LanguageEntry,
+  Resume,
+} from '../types/resume';
 
 const jobSourceSchema = z.enum([
   'gupy',
@@ -75,13 +82,8 @@ const requirementClassificationSchema = z.enum([
 const requirementSchema = z.object({
   text: z.string(),
   classification: requirementClassificationSchema,
-  weight: z.number(),
+  weight: z.number().optional(),
 }) satisfies z.ZodType<Requirement>;
-
-const localizedTextSchema = z.record(
-  z.string(),
-  z.string(),
-) satisfies z.ZodType<LocalizedText>;
 
 const jobSchema = z.object({
   id: z.number(),
@@ -101,11 +103,12 @@ const jobSchema = z.object({
   currency: z.string(),
   postedAt: z.string().nullable(),
   lastSeenAt: z.string().nullable(),
-  matchScore: z.number().nullable(),
   requirements: z.array(requirementSchema),
   filterResult: jobFilterResultSchema,
   createdAt: z.string(),
 }) satisfies z.ZodType<Job>;
+
+const jobAgeBucketSchema = z.enum(['unknown', '<1d', '1-7d', '7-30d', '>30d']);
 
 const jobStatsSchema = z.object({
   total: z.number(),
@@ -114,13 +117,7 @@ const jobStatsSchema = z.object({
   byArea: z.record(z.string(), z.number()),
   filtered: z.record(z.string(), z.number()),
   applicationsByStatus: z.record(z.string(), z.number()),
-  avgMatchScore: z.number().nullable(),
-  jobsByAge: z.object({
-    lessThanOneDay: z.number(),
-    oneToSevenDays: z.number(),
-    sevenToThirtyDays: z.number(),
-    overThirtyDays: z.number(),
-  }),
+  jobsByAge: z.partialRecord(jobAgeBucketSchema, z.number()),
 }) satisfies z.ZodType<JobStats>;
 
 const applicationStatusSchema = z.enum([
@@ -147,31 +144,31 @@ const applicationSchema = z.object({
 const portfolioLinkSchema = z.object({
   kind: z.enum(['github', 'linkedin', 'website', 'email', 'other']),
   url: z.string(),
-  label: z.string().optional(),
+  label: z.string().nullish(),
 }) satisfies z.ZodType<PortfolioLink>;
 
 const portfolioBasicsSchema = z.object({
   fullName: z.string(),
-  headline: localizedTextSchema,
-  subtitle: localizedTextSchema,
+  headline: z.string(),
+  subtitle: z.string(),
   username: z.string(),
-  location: localizedTextSchema,
-  avatarUrl: z.string().optional(),
+  location: z.string(),
+  avatarUrl: z.string().nullish(),
   links: z.array(portfolioLinkSchema),
 }) satisfies z.ZodType<PortfolioBasics>;
 
 const experienceBulletSchema = z.object({
-  text: localizedTextSchema,
-  skills: z.array(z.string()),
+  text: z.string(),
+  skills: z.array(z.string()).optional(),
 }) satisfies z.ZodType<ExperienceBullet>;
 
 const experienceEntrySchema = z.object({
   company: z.string(),
-  role: localizedTextSchema,
-  location: localizedTextSchema.optional(),
+  role: z.string(),
+  location: z.string().nullish(),
   start: z.string(),
-  end: z.string().optional(),
-  bullets: z.array(experienceBulletSchema),
+  end: z.string().nullish(),
+  bullets: z.array(experienceBulletSchema).optional(),
 }) satisfies z.ZodType<ExperienceEntry>;
 
 const skillCategorySchema = z.enum([
@@ -185,23 +182,50 @@ const skillCategorySchema = z.enum([
 
 const skillGroupSchema = z.object({
   category: skillCategorySchema,
-  items: z.array(z.string()),
+  items: z.array(z.string()).optional(),
 }) satisfies z.ZodType<SkillGroup>;
 
 const projectEntrySchema = z.object({
   slug: z.string(),
   title: z.string(),
-  description: localizedTextSchema,
-  summary: z.array(localizedTextSchema),
-  highlights: z.array(localizedTextSchema),
-  repo: z.string().optional(),
-  demo: z.string().optional(),
-  featured: z.boolean(),
-  technologies: z.array(z.string()),
-  topics: z.array(z.string()),
-  category: z.string().optional(),
-  stars: z.number().optional(),
+  summary: z.string(),
+  highlights: z.array(z.string()).optional(),
+  repoUrl: z.string().nullish(),
+  demoUrl: z.string().nullish(),
+  featured: z.boolean().optional(),
+  technologies: z.array(z.string()).optional(),
+  topics: z.array(z.string()).optional(),
+  category: z.string().nullish(),
+  stars: z.number().nullish(),
 }) satisfies z.ZodType<ProjectEntry>;
+
+const educationEntrySchema = z.object({
+  institution: z.string(),
+  degree: z.string(),
+  fieldOfStudy: z.string().nullish(),
+  start: z.string().nullish(),
+  end: z.string().nullish(),
+  details: z.string().nullish(),
+}) satisfies z.ZodType<EducationEntry>;
+
+const certificationEntrySchema = z.object({
+  name: z.string(),
+  issuer: z.string().nullish(),
+  url: z.string().nullish(),
+  year: z.number().nullish(),
+}) satisfies z.ZodType<CertificationEntry>;
+
+const languageEntrySchema = z.object({
+  name: z.string(),
+  proficiency: z.string().nullish(),
+}) satisfies z.ZodType<LanguageEntry>;
+
+const portfolioContentSchema = z.object({
+  basics: portfolioBasicsSchema,
+  experience: z.array(experienceEntrySchema).optional(),
+  skillGroups: z.array(skillGroupSchema).optional(),
+  projects: z.array(projectEntrySchema).optional(),
+}) satisfies z.ZodType<PortfolioContent>;
 
 const portfolioFiltersSchema = z.object({
   levels: z.array(jobLevelSchema),
@@ -212,31 +236,75 @@ const portfolioFiltersSchema = z.object({
 
 const portfolioSchema = z.object({
   id: z.number(),
-  basics: portfolioBasicsSchema,
-  experience: z.array(experienceEntrySchema),
-  skillGroups: z.array(skillGroupSchema),
-  projects: z.array(projectEntrySchema),
   filters: portfolioFiltersSchema,
+  documents: z.record(z.string(), portfolioContentSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
 }) satisfies z.ZodType<Portfolio>;
 
-export const jobsResponseSchema = z.object({
-  jobs: z.array(jobSchema),
+const matchBaselineSchema = z.object({
+  kind: z.enum(['resume', 'portfolio']),
+  locale: z.string().nullable(),
+  applicationId: z.number().nullable(),
 });
 
-export const jobResponseSchema = z.object({ job: jobSchema });
+const requirementMatchSchema = z.object({
+  text: z.string(),
+  weight: z.number(),
+  matched: z.boolean(),
+  score: z.number(),
+});
+
+const matchResultSchema = z.object({
+  score: z.number(),
+  algorithm: z.enum(['keyword', 'tfidf', 'hybrid']),
+  baseline: matchBaselineSchema,
+  components: z.record(z.string(), z.number()),
+  matchedTerms: z.array(z.string()),
+  missingTerms: z.array(z.string()),
+  requirements: z.array(requirementMatchSchema),
+}) satisfies z.ZodType<MatchResult>;
+
+const resumeSchema = z.object({
+  id: z.number(),
+  applicationId: z.number(),
+  locale: z.string(),
+  summary: z.string(),
+  basics: portfolioBasicsSchema,
+  experience: z.array(experienceEntrySchema).optional(),
+  education: z.array(educationEntrySchema).optional(),
+  certifications: z.array(certificationEntrySchema).optional(),
+  languages: z.array(languageEntrySchema).optional(),
+  projects: z.array(projectEntrySchema).optional(),
+  skillGroups: z.array(skillGroupSchema).optional(),
+  submittedAt: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}) satisfies z.ZodType<Resume>;
+
+export const jobsResponseSchema = z.object({
+  jobs: z.array(jobSchema),
+  total: z.number(),
+});
+
+export const jobResponseSchema = jobSchema;
 
 export const jobStatsResponseSchema = jobStatsSchema;
 
 export const applicationsResponseSchema = z.object({
   applications: z.array(applicationSchema),
+  total: z.number(),
 });
 
-export const applicationResponseSchema = z.object({
-  application: applicationSchema,
-});
+export const applicationResponseSchema = applicationSchema;
 
-export const portfolioResponseSchema = z.object({
-  portfolio: portfolioSchema,
+export const portfolioResponseSchema = portfolioSchema;
+
+export const matchResponseSchema = matchResultSchema;
+
+export const resumeResponseSchema = resumeSchema;
+
+export const resumesResponseSchema = z.object({
+  resumes: z.array(resumeSchema),
+  total: z.number(),
 });

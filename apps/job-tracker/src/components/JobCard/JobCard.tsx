@@ -17,14 +17,6 @@ interface JobCardProps {
   onClick?: () => void;
 }
 
-function matchScoreColor(
-  score: number,
-): 'success.main' | 'warning.main' | 'text.disabled' {
-  if (score >= 80) return 'success.main';
-  if (score >= 50) return 'warning.main';
-  return 'text.disabled';
-}
-
 // Locations that merely restate the remote flag — showing them as a second
 // chip would duplicate the "Remote" tag.
 const REMOTE_LOCATION_VALUES = new Set([
@@ -143,8 +135,6 @@ function JobChips({ job }: { job: Job }) {
 }
 
 export function JobCard({ job, onClick }: JobCardProps) {
-  const { messages } = useTranslation();
-
   const details = (
     <CardContent>
       <Stack spacing={1}>
@@ -163,23 +153,6 @@ export function JobCard({ job, onClick }: JobCardProps) {
         <Typography variant="subtitle1" color="text.secondary">
           {job.company}
         </Typography>
-        {job.matchScore !== null && (
-          <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
-            <Box
-              aria-hidden="true"
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                bgcolor: matchScoreColor(job.matchScore),
-                flexShrink: 0,
-              }}
-            />
-            <Typography variant="body2">
-              {messages.jobs.matchScore}: {job.matchScore}%
-            </Typography>
-          </Stack>
-        )}
       </Stack>
     </CardContent>
   );

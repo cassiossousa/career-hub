@@ -1,16 +1,18 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { ApiTestWrapper, waitForQuerySuccess } from '../../test/TestUtils';
-import type { Application } from '../types/application';
+import type { Application, ApplicationListPage } from '../types/application';
 import {
   useApplications,
   useCreateApplication,
   useUpdateApplication,
 } from './applications';
 
-function currentApps(result: { data: Application[] | undefined }) {
+function currentApps(result: {
+  data: ApplicationListPage | undefined;
+}): Application[] {
   const data = result.data;
   if (!data) throw new Error('expected applications data');
-  return data;
+  return data.applications;
 }
 
 describe('applications api', () => {
@@ -29,6 +31,7 @@ describe('applications api', () => {
     await waitForQuerySuccess(() => result.current.isSuccess);
     const apps = currentApps(result.current);
     expect(apps.every((a) => a.status === 'saved')).toBe(true);
+    expect(apps.length).toBe(1);
   });
 
   it('creates an application and refetches the list', async () => {
@@ -42,12 +45,12 @@ describe('applications api', () => {
     await waitForQuerySuccess(() => result.current.list.isSuccess);
     const before = currentApps(result.current.list).length;
 
-    result.current.create.mutate({ jobId: 2, status: 'saved' });
+    result.current.create.mutate({ jobId: 4, status: 'saved' });
     await waitForQuerySuccess(() => result.current.create.isSuccess);
 
     await waitFor(() => {
       const apps = result.current.list.data;
-      expect(apps?.length).toBe(before + 1);
+      expect(apps?.applications.length).toBe(before + 1);
     });
   });
 
@@ -67,12 +70,17 @@ describe('applications api', () => {
 
     result.current.update.mutate({
       id: target.id,
-      data: { status: 'applied', appliedAt: new Date().toISOString() },
+      data: {
+        status: 'applied',
+        appliedAt: new Date().toISOString().slice(0, 10),
+      },
     });
     await waitForQuerySuccess(() => result.current.update.isSuccess);
 
     await waitFor(() => {
-      const updated = result.current.list.data?.find((a) => a.id === target.id);
+      const updated = result.current.list.data?.applications.find(
+        (a) => a.id === target.id,
+      );
       expect(updated?.status).toBe('applied');
     });
   });

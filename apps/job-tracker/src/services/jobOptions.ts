@@ -1,4 +1,5 @@
-import type { JobArea, JobLevel, JobSortOrder, JobSource } from './types/job';
+import type { JobArea, JobLevel, JobSource } from './types/job';
+import type { SkillCategory } from './types/portfolio';
 
 export const JOB_LEVELS = [
   'intern',
@@ -32,8 +33,11 @@ export const JOB_SOURCES = [
   'other',
 ] as const satisfies readonly JobSource[];
 
-export const JOB_SORT_ORDERS = [
-  'posted_desc',
-  'match_score_desc',
-  'match_score_asc',
-] as const satisfies readonly JobSortOrder[];
+export const SKILL_CATEGORIES = [
+  'frontend',
+  'backend',
+  'databases',
+  'distributed',
+  'cloud',
+  'testing',
+] as const satisfies readonly SkillCategory[];

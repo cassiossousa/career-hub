@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   Chip,
@@ -6,6 +7,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import {
   EmptyState,
   QueryGate,
@@ -16,6 +19,7 @@ import { useJobTitleById } from '../../services/api/jobs';
 
 export function ApplicationList() {
   const { messages, locale } = useTranslation();
+  const navigate = useNavigate();
   const applicationsQuery = useApplications();
   const jobTitleById = useJobTitleById();
   const emptyState = (
@@ -30,14 +34,15 @@ export function ApplicationList() {
       <QueryGate
         query={applicationsQuery}
         subject={messages.applications.title}
-        isEmpty={(list) => list.length === 0}
+        isEmpty={(page) => page.applications.length === 0}
         empty={emptyState}
       >
-        {(applications) => {
+        {(page) => {
+          const applications = page.applications;
           return (
             <Stack spacing={2}>
               <Typography component="h2" variant="h6">
-                {messages.applications.title} ({applications.length})
+                {messages.applications.title} ({page.total})
               </Typography>
               <Grid container spacing={2}>
                 {applications.map((app) => (
@@ -64,6 +69,18 @@ export function ApplicationList() {
                           {app.notes && (
                             <Typography variant="body2">{app.notes}</Typography>
                           )}
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => {
+                              void navigate(
+                                routePaths.applicationDetail(app.id.toString()),
+                              );
+                            }}
+                            sx={{ alignSelf: 'flex-start' }}
+                          >
+                            {messages.applications.resume}
+                          </Button>
                         </Stack>
                       </CardContent>
                     </Card>

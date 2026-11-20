@@ -5,7 +5,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import type { Job, JobCreate, JobFilter, JobStats } from '../types/job';
+import type {
+  Job,
+  JobCreate,
+  JobFilter,
+  JobListPage,
+  JobStats,
+} from '../types/job';
 import { apiClient } from './client';
 import {
   jobResponseSchema,
@@ -13,36 +19,44 @@ import {
   jobsResponseSchema,
 } from './schemas';
 
+export const JOBS_PAGE_SIZE = 200;
+
 const JOBS_QUERY_KEY = ['jobs'];
 const JOB_STATS_QUERY_KEY = ['jobStats'];
 
+export interface JobsQueryOptions {
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
 export function useJobs(
   filter: JobFilter = {},
-  options?: Omit<UseQueryOptions<Job[]>, 'queryKey' | 'queryFn'>,
+  options?: Omit<UseQueryOptions<JobListPage>, 'queryKey' | 'queryFn'> &
+    JobsQueryOptions,
 ) {
+  const { limit = JOBS_PAGE_SIZE, offset = 0, ...queryOptions } = options ?? {};
   const params = new URLSearchParams();
+  params.set('limit', String(limit));
+  params.set('offset', String(offset));
   if (filter.source) params.set('source', filter.source);
   if (filter.level) params.set('level', filter.level);
   if (filter.location) params.set('location', filter.location);
   if (filter.area) params.set('area', filter.area);
   if (filter.remoteOnly !== undefined)
     params.set('remoteOnly', String(filter.remoteOnly));
-  if (filter.minMatchScore !== undefined)
-    params.set('minMatchScore', String(filter.minMatchScore));
   if (filter.maxAgeDays !== undefined)
     params.set('maxAgeDays', String(filter.maxAgeDays));
-  if (filter.sort) params.set('sort', filter.sort);
   if (filter.preset) params.set('preset', filter.preset);
 
   return useQuery({
-    queryKey: [...JOBS_QUERY_KEY, filter],
+    queryKey: [...JOBS_QUERY_KEY, filter, limit, offset],
     queryFn: async () => {
       const response = await apiClient.get<unknown>(
         `/api/jobs?${params.toString()}`,
       );
-      return jobsResponseSchema.parse(response.data).jobs;
+      return jobsResponseSchema.parse(response.data);
     },
-    ...options,
+    ...queryOptions,
   });
 }
 
@@ -54,7 +68,7 @@ export function useJob(
     queryKey: [...JOBS_QUERY_KEY, id],
     queryFn: async () => {
       const response = await apiClient.get<unknown>(`/api/jobs/${id}`);
-      return jobResponseSchema.parse(response.data).job;
+      return jobResponseSchema.parse(response.data);
     },
     ...options,
   });
@@ -81,7 +95,7 @@ export function useCreateJob(
   return useMutation({
     mutationFn: async (data: JobCreate) => {
       const response = await apiClient.post<unknown>('/api/jobs', data);
-      return jobResponseSchema.parse(response.data).job;
+      return jobResponseSchema.parse(response.data);
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: JOBS_QUERY_KEY });
@@ -92,6 +106,6 @@ export function useCreateJob(
 }
 
 export function useJobTitleById(): Map<number, string> {
-  const { data: jobs } = useJobs();
-  return new Map(jobs?.map((job) => [job.id, job.title]) ?? []);
+  const { data } = useJobs();
+  return new Map(data?.jobs.map((job) => [job.id, job.title]) ?? []);
 }

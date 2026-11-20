@@ -23,18 +23,16 @@ export interface Translation {
   dashboard: {
     title: string;
     totalJobs: string;
-    avgMatchScore: string;
     jobsToday: string;
     jobsThisWeek: string;
+    jobsThisMonth: string;
     filterBar: {
       title: string;
       level: string;
       location: string;
       area: string;
       remoteOnly: string;
-      minMatchScore: string;
       maxAgeDays: string;
-      sortBy: string;
       reset: string;
       useProfileFilters: string;
       allOption: string;
@@ -64,25 +62,12 @@ export interface Translation {
     clearFilters: string;
     remote: string;
     notFound: string;
-    matchScore: string;
     age: {
       today: string;
       daysAgo: string;
       weeksAgo: string;
       monthsAgo: string;
     };
-    requirements: {
-      noRequirements: string;
-      weight: string;
-      classifications: {
-        proven: string;
-        equivalent: string;
-        partial: string;
-        unproven: string;
-      };
-    };
-    matched: string;
-    missing: string;
     filterResult: {
       unevaluated: string;
       passed: string;
@@ -110,12 +95,30 @@ export interface Translation {
       management: string;
       other: string;
     };
-    sortOptions: {
-      postedDesc: string;
-      matchScoreDesc: string;
-      matchScoreAsc: string;
-    };
     sources: Record<JobSource, string>;
+  };
+
+  match: {
+    title: string;
+    score: string;
+    components: string;
+    matchedTerms: string;
+    missingTerms: string;
+    requirements: string;
+    requirementMatched: string;
+    requirementMissing: string;
+    portfolioRequired: string;
+    setupPortfolio: string;
+    algorithms: {
+      keyword: string;
+      tfidf: string;
+      hybrid: string;
+    };
+    baseline: {
+      resume: string;
+      portfolio: string;
+    };
+    componentNames: Record<string, string>;
   };
 
   manualJobForm: {
@@ -150,20 +153,42 @@ export interface Translation {
     notes: string;
     advanceTo: string;
     jobFallback: string;
+    resume: string;
   };
 
-  portfolio: {
+  resumes: {
     title: string;
-    notFound: string;
+    locale: string;
+    seededNotice: string;
+    locked: string;
+    lockedError: string;
+    addItem: string;
+    sections: {
+      basics: string;
+      summary: string;
+      experience: string;
+      projects: string;
+      skillGroups: string;
+      education: string;
+      certifications: string;
+      languages: string;
+    };
     basics: {
       fullName: string;
       headline: string;
       subtitle: string;
+      username: string;
       location: string;
+      avatarUrl: string;
       links: string;
+      linkKind: string;
+      linkUrl: string;
+      linkLabel: string;
+      addLink: string;
     };
     experience: {
-      title: string;
+      add: string;
+      addBullet: string;
       company: string;
       role: string;
       location: string;
@@ -171,26 +196,61 @@ export interface Translation {
       end: string;
       present: string;
       bullets: string;
+      bulletText: string;
       skills: string;
     };
-    skills: {
-      title: string;
-      category: string;
+    education: {
+      add: string;
+      institution: string;
+      degree: string;
+      fieldOfStudy: string;
+      start: string;
+      end: string;
+      details: string;
+    };
+    certifications: {
+      add: string;
+      name: string;
+      issuer: string;
+      url: string;
+      year: string;
+    };
+    languages: {
+      add: string;
+      name: string;
+      proficiency: string;
     };
     projects: {
+      add: string;
+      slug: string;
       title: string;
-      description: string;
       summary: string;
       highlights: string;
+      repoUrl: string;
+      demoUrl: string;
+      category: string;
+      stars: string;
+      featured: string;
       technologies: string;
       topics: string;
     };
-    filters: {
-      title: string;
-      levels: string;
-      locations: string;
-      areas: string;
-      remoteOnly: string;
+    skillGroups: {
+      add: string;
+      category: string;
+      items: string;
+    };
+  };
+
+  portfolio: {
+    title: string;
+    noDocumentForLocale: string;
+    basics: {
+      fullName: string;
+      headline: string;
+      subtitle: string;
+      username: string;
+      location: string;
+      links: string;
     };
     save: string;
     cancel: string;
@@ -206,6 +266,7 @@ export interface Translation {
     save: string;
     cancel: string;
     delete: string;
+    add: string;
     edit: string;
     view: string;
     back: string;

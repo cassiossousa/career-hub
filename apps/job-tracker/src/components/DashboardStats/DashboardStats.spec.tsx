@@ -10,7 +10,7 @@ describe('DashboardStats', () => {
     await waitFor(() => {
       expect(screen.getByText('Total Jobs')).toBeInTheDocument();
     });
-    expect(screen.getByText('Avg Match Score')).toBeInTheDocument();
+    expect(screen.getByText('Jobs This Month')).toBeInTheDocument();
     expect(screen.getByText('Jobs Today')).toBeInTheDocument();
     expect(screen.getByText('Jobs This Week')).toBeInTheDocument();
   });

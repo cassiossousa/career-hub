@@ -11,55 +11,50 @@ export type SkillCategory =
 export interface PortfolioLink {
   kind: 'github' | 'linkedin' | 'website' | 'email' | 'other';
   url: string;
-  label?: string | undefined;
-}
-
-export interface LocalizedText {
-  [locale: string]: string;
+  label?: string | null | undefined;
 }
 
 export interface PortfolioBasics {
   fullName: string;
-  headline: LocalizedText;
-  subtitle: LocalizedText;
+  headline: string;
+  subtitle: string;
   username: string;
-  location: LocalizedText;
-  avatarUrl?: string | undefined;
+  location: string;
+  avatarUrl?: string | null | undefined;
   links: PortfolioLink[];
 }
 
 export interface ExperienceBullet {
-  text: LocalizedText;
-  skills: string[];
+  text: string;
+  skills?: string[] | undefined;
 }
 
 export interface ExperienceEntry {
   company: string;
-  role: LocalizedText;
-  location?: LocalizedText | undefined;
+  role: string;
+  location?: string | null | undefined;
   start: string; // YYYY-MM
-  end?: string | undefined; // YYYY-MM or null for present
-  bullets: ExperienceBullet[];
+  end?: string | null | undefined; // YYYY-MM or null for present
+  bullets?: ExperienceBullet[] | undefined;
 }
 
 export interface SkillGroup {
   category: SkillCategory;
-  items: string[];
+  items?: string[] | undefined;
 }
 
 export interface ProjectEntry {
   slug: string;
   title: string;
-  description: LocalizedText;
-  summary: LocalizedText[];
-  highlights: LocalizedText[];
-  repo?: string | undefined;
-  demo?: string | undefined;
-  featured: boolean;
-  technologies: string[];
-  topics: string[];
-  category?: string | undefined;
-  stars?: number | undefined;
+  summary: string;
+  highlights?: string[] | undefined;
+  repoUrl?: string | null | undefined;
+  demoUrl?: string | null | undefined;
+  featured?: boolean | undefined;
+  technologies?: string[] | undefined;
+  topics?: string[] | undefined;
+  category?: string | null | undefined;
+  stars?: number | null | undefined;
 }
 
 export interface PortfolioFilters {
@@ -69,21 +64,28 @@ export interface PortfolioFilters {
   remoteOnly: boolean;
 }
 
+/** One locale's portfolio content document (no locale tag, no filters). */
+export interface PortfolioContent {
+  basics: PortfolioBasics;
+  experience?: ExperienceEntry[] | undefined;
+  skillGroups?: SkillGroup[] | undefined;
+  projects?: ProjectEntry[] | undefined;
+}
+
 export interface Portfolio {
   id: number;
-  basics: PortfolioBasics;
-  experience: ExperienceEntry[];
-  skillGroups: SkillGroup[];
-  projects: ProjectEntry[];
   filters: PortfolioFilters;
+  documents: Record<string, PortfolioContent>;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface PortfolioCreate {
+/** PUT /api/portfolio body: one locale's document + optional shared filters. */
+export interface PortfolioDocumentWrite {
+  locale: string;
   basics: PortfolioBasics;
-  experience: ExperienceEntry[];
-  skillGroups: SkillGroup[];
-  projects: ProjectEntry[];
-  filters: PortfolioFilters;
+  experience?: ExperienceEntry[] | undefined;
+  skillGroups?: SkillGroup[] | undefined;
+  projects?: ProjectEntry[] | undefined;
+  filters?: PortfolioFilters | undefined;
 }

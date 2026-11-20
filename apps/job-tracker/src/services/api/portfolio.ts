@@ -5,7 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import type { Portfolio, PortfolioCreate } from '../types/portfolio';
+import type { Portfolio, PortfolioDocumentWrite } from '../types/portfolio';
 import { apiClient } from './client';
 import { portfolioResponseSchema } from './schemas';
 
@@ -18,7 +18,7 @@ export function usePortfolio(
     queryKey: PORTFOLIO_QUERY_KEY,
     queryFn: async () => {
       const response = await apiClient.get<unknown>('/api/portfolio');
-      return portfolioResponseSchema.parse(response.data).portfolio;
+      return portfolioResponseSchema.parse(response.data);
     },
     ...options,
   });
@@ -26,16 +26,16 @@ export function usePortfolio(
 
 export function useUpsertPortfolio(
   options?: Omit<
-    UseMutationOptions<Portfolio, Error, PortfolioCreate>,
+    UseMutationOptions<Portfolio, Error, PortfolioDocumentWrite>,
     'mutationFn'
   >,
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: PortfolioCreate) => {
+    mutationFn: async (data: PortfolioDocumentWrite) => {
       const response = await apiClient.put<unknown>('/api/portfolio', data);
-      return portfolioResponseSchema.parse(response.data).portfolio;
+      return portfolioResponseSchema.parse(response.data);
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY });

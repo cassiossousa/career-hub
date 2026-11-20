@@ -40,7 +40,10 @@ describe('ApplicationPipeline', () => {
   });
 
   it('shows an empty state when there are no applications', async () => {
-    mockApiJson('get', '/api/applications', { applications: [] });
+    mockApiJson('get', '/api/applications', {
+      applications: [],
+      total: 0,
+    });
     renderWithProviders(<ApplicationPipeline />);
     expect(await screen.findByText(/no applications/i)).toBeInTheDocument();
   });

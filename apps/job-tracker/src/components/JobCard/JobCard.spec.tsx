@@ -27,7 +27,6 @@ describe('JobCard', () => {
     expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
     expect(screen.getByText('Nubank')).toBeInTheDocument();
     expect(screen.getAllByText('Remote').length).toBeGreaterThan(0);
-    expect(screen.getByText(/92%/)).toBeInTheDocument();
   });
 
   it('never renders duplicate chip labels', () => {

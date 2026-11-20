@@ -1,19 +1,19 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { ApiTestWrapper, waitForQuerySuccess } from '../../test/TestUtils';
-import type { Job, JobStats } from '../types/job';
+import type { Job, JobListPage, JobStats } from '../types/job';
 import { useCreateJob, useJob, useJobStats, useJobs } from './jobs';
 
-function currentJobs(result: { data: Job[] | undefined }) {
+function currentJobs(result: { data: JobListPage | undefined }): Job[] {
   const data = result.data;
   if (!data) throw new Error('expected jobs data to be defined');
-  return data;
+  return data.jobs;
 }
 
 describe('useJobs', () => {
   it('returns all seeded jobs unfiltered', async () => {
     const { result } = renderHook(() => useJobs(), { wrapper: ApiTestWrapper });
     await waitForQuerySuccess(() => result.current.isSuccess);
-    expect(currentJobs(result.current).length).toBeGreaterThanOrEqual(8);
+    expect(currentJobs(result.current).length).toBeGreaterThanOrEqual(4);
   });
 
   it('applies level filter from query params', async () => {
@@ -23,7 +23,7 @@ describe('useJobs', () => {
     await waitForQuerySuccess(() => result.current.isSuccess);
     const jobs = currentJobs(result.current);
     expect(jobs.every((j) => j.level === 'junior')).toBe(true);
-    expect(jobs.length).toBe(2);
+    expect(jobs.length).toBe(1);
   });
 
   it('passes remoteOnly=false and maxAgeDays params', async () => {
@@ -32,25 +32,16 @@ describe('useJobs', () => {
       { wrapper: ApiTestWrapper },
     );
     await waitForQuerySuccess(() => result.current.isSuccess);
-    expect(currentJobs(result.current).length).toBeGreaterThanOrEqual(8);
+    expect(currentJobs(result.current).length).toBeGreaterThanOrEqual(4);
   });
 
-  it('sorts by match score ascending', async () => {
-    const { result } = renderHook(() => useJobs({ sort: 'match_score_asc' }), {
-      wrapper: ApiTestWrapper,
-    });
+  it('returns jobs sorted by most recent posting first', async () => {
+    const { result } = renderHook(() => useJobs(), { wrapper: ApiTestWrapper });
     await waitForQuerySuccess(() => result.current.isSuccess);
-    const scores = currentJobs(result.current).map((j) => j.matchScore ?? 999);
-    expect(scores).toEqual(scores.toSorted((a, b) => a - b));
-  });
-
-  it('sorts by match score descending', async () => {
-    const { result } = renderHook(() => useJobs({ sort: 'match_score_desc' }), {
-      wrapper: ApiTestWrapper,
-    });
-    await waitForQuerySuccess(() => result.current.isSuccess);
-    const scores = currentJobs(result.current).map((j) => j.matchScore ?? -1);
-    expect(scores).toEqual(scores.toSorted((a, b) => b - a));
+    const dates = currentJobs(result.current).map((j) =>
+      j.postedAt ? new Date(j.postedAt).getTime() : 0,
+    );
+    expect(dates).toEqual(dates.toSorted((a, b) => b - a));
   });
 });
 
@@ -81,7 +72,7 @@ describe('useJobStats', () => {
     });
     await waitForQuerySuccess(() => result.current.isSuccess);
     const stats: JobStats | undefined = result.current.data;
-    expect(stats?.total).toBeGreaterThanOrEqual(8);
+    expect(stats?.total).toBeGreaterThanOrEqual(4);
   });
 });
 

@@ -8,29 +8,26 @@ import { JobCard } from '../JobCard/JobCard';
 
 export function Recommendations() {
   const { messages } = useTranslation();
-  const jobsQuery = useJobs({
-    sort: 'match_score_desc',
-    minMatchScore: 70,
-  });
+  const jobsQuery = useJobs({ preset: 'profile' });
 
   return (
     <QueryGate
       query={jobsQuery}
       subject={messages.dashboard.recommendations.title}
-      isEmpty={(jobs) => jobs.length === 0}
+      isEmpty={(page) => page.jobs.length === 0}
       empty={
         <EmptyState
           title={messages.dashboard.recommendations.noRecommendations}
         />
       }
     >
-      {(jobs) => (
+      {(page) => (
         <Stack spacing={2}>
           <Typography component="h2" variant="h6">
             {messages.dashboard.recommendations.title}
           </Typography>
           <Stack spacing={2}>
-            {jobs.slice(0, 5).map((job) => (
+            {page.jobs.slice(0, 5).map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
           </Stack>

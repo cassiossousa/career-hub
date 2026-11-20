@@ -22,11 +22,6 @@ export type JobArea =
   | 'management'
   | 'other';
 
-export type JobSortOrder =
-  | 'posted_desc'
-  | 'match_score_desc'
-  | 'match_score_asc';
-
 export type JobFilterResult =
   | 'unevaluated'
   | 'passed'
@@ -45,7 +40,7 @@ export type RequirementClassification =
 export interface Requirement {
   text: string;
   classification: RequirementClassification;
-  weight: number; // 1-10, default 5
+  weight?: number | undefined; // 1-10, backend default 5
 }
 
 export interface Job {
@@ -66,7 +61,6 @@ export interface Job {
   currency: string;
   postedAt: string | null;
   lastSeenAt: string | null;
-  matchScore: number | null;
   requirements: Requirement[];
   filterResult: JobFilterResult;
   createdAt: string;
@@ -74,26 +68,40 @@ export interface Job {
 
 export interface JobCreate {
   source: JobSource;
-  externalId?: string | undefined;
+  externalId?: string | null | undefined;
   url: string;
   title: string;
   company: string;
   location: string;
   area: JobArea;
   level: JobLevel;
-  contractType?: string | undefined;
-  description: string;
-  remote: boolean;
-  salaryMin?: number | undefined;
-  salaryMax?: number | undefined;
+  contractType?: string | null | undefined;
+  description?: string | undefined;
+  remote?: boolean | undefined;
+  salaryMin?: number | null | undefined;
+  salaryMax?: number | null | undefined;
   currency?: string | undefined;
-  postedAt?: string | undefined;
-  matchScore?: number | undefined;
+  postedAt?: string | null | undefined;
   requirements?: Requirement[] | undefined;
   filterResult?: JobFilterResult | undefined;
 }
 
-export type JobUpdate = Partial<JobCreate>;
+export interface JobPatch {
+  title?: string | null | undefined;
+  company?: string | null | undefined;
+  location?: string | null | undefined;
+  area?: JobArea | null | undefined;
+  level?: JobLevel | null | undefined;
+  contractType?: string | null | undefined;
+  description?: string | null | undefined;
+  remote?: boolean | null | undefined;
+  salaryMin?: number | null | undefined;
+  salaryMax?: number | null | undefined;
+  currency?: string | null | undefined;
+  postedAt?: string | null | undefined;
+  requirements?: Requirement[] | null | undefined;
+  filterResult?: JobFilterResult | null | undefined;
+}
 
 export interface JobFilter {
   source?: JobSource | undefined;
@@ -101,11 +109,16 @@ export interface JobFilter {
   location?: string | undefined;
   area?: JobArea | undefined;
   remoteOnly?: boolean | undefined;
-  minMatchScore?: number | undefined;
   maxAgeDays?: number | undefined;
-  sort?: JobSortOrder | undefined;
   preset?: 'profile' | null | undefined;
 }
+
+export interface JobListPage {
+  jobs: Job[];
+  total: number;
+}
+
+type JobAgeBucket = 'unknown' | '<1d' | '1-7d' | '7-30d' | '>30d';
 
 export interface JobStats {
   total: number;
@@ -114,11 +127,5 @@ export interface JobStats {
   byArea: Partial<Record<JobArea, number>>;
   filtered: Partial<Record<JobFilterResult, number>>;
   applicationsByStatus: Record<string, number>;
-  avgMatchScore: number | null;
-  jobsByAge: {
-    lessThanOneDay: number;
-    oneToSevenDays: number;
-    sevenToThirtyDays: number;
-    overThirtyDays: number;
-  };
+  jobsByAge: Partial<Record<JobAgeBucket, number>>;
 }

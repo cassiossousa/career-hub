@@ -15,7 +15,7 @@ describe('FilterBar', () => {
     expect(screen.getAllByText('Location').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Remote Only').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
-    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(3);
   });
 
   it('toggles remote-only switch and updates the store', async () => {

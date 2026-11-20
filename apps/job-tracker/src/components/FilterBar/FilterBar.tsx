@@ -11,15 +11,9 @@ import {
 } from '@mui/material';
 import { useId } from 'react';
 import { useTranslation } from '../../i18n/Provider';
-import {
-  JOB_AREAS,
-  JOB_LEVELS,
-  JOB_SORT_ORDERS,
-} from '../../services/jobOptions';
-import type { JobSortOrder } from '../../services/types/job';
+import { JOB_AREAS, JOB_LEVELS } from '../../services/jobOptions';
 import { useFilterStore } from '../../store/filterStore';
 
-const matchScoreOptions = [50, 60, 70, 80, 90];
 const ageOptions = [
   { value: 1, key: 'oneDay' },
   { value: 7, key: 'sevenDays' },
@@ -116,29 +110,18 @@ export function FilterBar() {
     location,
     area,
     remoteOnly,
-    minMatchScore,
     maxAgeDays,
-    sort,
     preset,
     setLevel,
     setLocation,
     setArea,
     setRemoteOnly,
-    setMinMatchScore,
     setMaxAgeDays,
-    setSort,
     setPreset,
     resetFilters,
   } = useFilterStore();
 
   const filterBar = messages.dashboard.filterBar;
-  const sortLabelId = useId();
-
-  const sortLabels: Record<JobSortOrder, string> = {
-    posted_desc: messages.jobs.sortOptions.postedDesc,
-    match_score_desc: messages.jobs.sortOptions.matchScoreDesc,
-    match_score_asc: messages.jobs.sortOptions.matchScoreAsc,
-  };
 
   const ageLabels = {
     oneDay: filterBar.ageOptions.oneDay,
@@ -190,36 +173,6 @@ export function FilterBar() {
           />
         }
         label={filterBar.remoteOnly}
-      />
-
-      <FormControl size="small" sx={{ minWidth: 240 }}>
-        <InputLabel id={sortLabelId}>{filterBar.sortBy}</InputLabel>
-        <Select
-          labelId={sortLabelId}
-          value={sort || 'posted_desc'}
-          label={filterBar.sortBy}
-          onChange={(e) => {
-            setSort(e.target.value);
-          }}
-        >
-          {JOB_SORT_ORDERS.map((opt) => (
-            <MenuItem key={opt} value={opt}>
-              {sortLabels[opt]}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <NullableNumberSelect
-        label={filterBar.minMatchScore}
-        allLabel={filterBar.allOption}
-        value={minMatchScore}
-        onChange={setMinMatchScore}
-        minWidth={190}
-        options={matchScoreOptions.map((score) => ({
-          value: score,
-          label: `${score}%+`,
-        }))}
       />
 
       <NullableNumberSelect

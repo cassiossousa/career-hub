@@ -80,7 +80,7 @@ export function ApplicationPipeline() {
       data: {
         status: next,
         ...(next === 'applied' && !app.appliedAt
-          ? { appliedAt: new Date().toISOString() }
+          ? { appliedAt: new Date().toISOString().slice(0, 10) }
           : {}),
       },
     });
@@ -90,10 +90,11 @@ export function ApplicationPipeline() {
     <QueryGate
       query={applicationsQuery}
       subject={messages.dashboard.pipeline.title}
-      isEmpty={(apps) => apps.length === 0}
+      isEmpty={(page) => page.applications.length === 0}
       empty={<EmptyState title={messages.dashboard.pipeline.noApplications} />}
     >
-      {(applications) => {
+      {(page) => {
+        const applications = page.applications;
         const byStatus = new Map<ApplicationStatus, Application[]>();
         for (const status of STATUSES) {
           byStatus.set(status, []);

@@ -31,7 +31,10 @@ describe('ApplicationList', () => {
   });
 
   it('shows an empty state when there are no applications', async () => {
-    mockApiJson('get', '/api/applications', { applications: [] });
+    mockApiJson('get', '/api/applications', {
+      applications: [],
+      total: 0,
+    });
     renderWithProviders(<ApplicationList />);
     expect(
       await screen.findByText('No applications found.'),

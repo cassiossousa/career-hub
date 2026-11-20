@@ -1,43 +1,58 @@
-import {
-  Alert,
-  Button,
-  Card,
-  CardContent,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import {
   EmptyState,
   errorMessage,
-  QueryGate,
+  LoadingState,
+  QueryErrorAlert,
 } from '../../components/AsyncStatus/AsyncStatus';
+import { FormCard } from '../../components/FormCard/FormCard';
 import { useTranslation } from '../../i18n/Provider';
+import { isApiError } from '../../services/api/client';
 import { usePortfolio, useUpsertPortfolio } from '../../services/api/portfolio';
-import type { Portfolio } from '../../services/types/portfolio';
+import type {
+  PortfolioBasics,
+  PortfolioContent,
+} from '../../services/types/portfolio';
 
 interface BasicsFormState {
   fullName: string;
   headline: string;
   subtitle: string;
+  username: string;
   location: string;
 }
 
-function toFormState(portfolio: Portfolio): BasicsFormState {
+const EMPTY_BASICS: PortfolioBasics = {
+  fullName: '',
+  headline: '',
+  subtitle: '',
+  username: '',
+  location: '',
+  links: [],
+};
+
+function toFormState(basics: PortfolioBasics): BasicsFormState {
   return {
-    fullName: portfolio.basics.fullName,
-    headline: portfolio.basics.headline.en ?? '',
-    subtitle: portfolio.basics.subtitle.en ?? '',
-    location: portfolio.basics.location.en ?? '',
+    fullName: basics.fullName,
+    headline: basics.headline,
+    subtitle: basics.subtitle,
+    username: basics.username,
+    location: basics.location,
   };
 }
 
-function PortfolioBasicsForm({ portfolio }: { portfolio: Portfolio }) {
+function PortfolioBasicsForm({
+  locale,
+  content,
+}: {
+  locale: string;
+  content: PortfolioContent | undefined;
+}) {
   const { messages } = useTranslation();
   const { mutate: upsertPortfolio, isPending } = useUpsertPortfolio();
   const [formData, setFormData] = useState<BasicsFormState>(() =>
-    toFormState(portfolio),
+    toFormState(content?.basics ?? EMPTY_BASICS),
   );
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
@@ -47,19 +62,18 @@ function PortfolioBasicsForm({ portfolio }: { portfolio: Portfolio }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
+    const basics: PortfolioBasics = {
+      ...(content?.basics ?? EMPTY_BASICS),
+      ...formData,
+      links: content?.basics.links ?? [],
+    };
     upsertPortfolio(
       {
-        basics: {
-          ...portfolio.basics,
-          fullName: formData.fullName,
-          headline: { ...portfolio.basics.headline, en: formData.headline },
-          subtitle: { ...portfolio.basics.subtitle, en: formData.subtitle },
-          location: { ...portfolio.basics.location, en: formData.location },
-        },
-        experience: portfolio.experience,
-        skillGroups: portfolio.skillGroups,
-        projects: portfolio.projects,
-        filters: portfolio.filters,
+        locale,
+        basics,
+        experience: content?.experience ?? [],
+        skillGroups: content?.skillGroups ?? [],
+        projects: content?.projects ?? [],
       },
       {
         onSuccess: () => {
@@ -79,67 +93,92 @@ function PortfolioBasicsForm({ portfolio }: { portfolio: Portfolio }) {
     };
 
   return (
-    <Card>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            {feedback && (
-              <Alert severity={feedback.type}>{feedback.text}</Alert>
-            )}
-            <TextField
-              label={messages.portfolio.basics.fullName}
-              value={formData.fullName}
-              onChange={update('fullName')}
-              required
-              fullWidth
-            />
-            <TextField
-              label={messages.portfolio.basics.headline}
-              value={formData.headline}
-              onChange={update('headline')}
-              required
-              fullWidth
-            />
-            <TextField
-              label={messages.portfolio.basics.subtitle}
-              value={formData.subtitle}
-              onChange={update('subtitle')}
-              fullWidth
-            />
-            <TextField
-              label={messages.portfolio.basics.location}
-              value={formData.location}
-              onChange={update('location')}
-              fullWidth
-            />
-            <Button type="submit" variant="contained" disabled={isPending}>
-              {isPending ? messages.common.saving : messages.portfolio.save}
-            </Button>
-          </Stack>
-        </form>
-      </CardContent>
-    </Card>
+    <FormCard onSubmit={handleSubmit}>
+      {feedback && <Alert severity={feedback.type}>{feedback.text}</Alert>}
+      <TextField
+        label={messages.portfolio.basics.fullName}
+        value={formData.fullName}
+        onChange={update('fullName')}
+        required
+        fullWidth
+      />
+      <TextField
+        label={messages.portfolio.basics.headline}
+        value={formData.headline}
+        onChange={update('headline')}
+        required
+        fullWidth
+      />
+      <TextField
+        label={messages.portfolio.basics.subtitle}
+        value={formData.subtitle}
+        onChange={update('subtitle')}
+        fullWidth
+      />
+      <TextField
+        label={messages.portfolio.basics.username}
+        value={formData.username}
+        onChange={update('username')}
+        required
+        fullWidth
+      />
+      <TextField
+        label={messages.portfolio.basics.location}
+        value={formData.location}
+        onChange={update('location')}
+        required
+        fullWidth
+      />
+      <Button type="submit" variant="contained" disabled={isPending}>
+        {isPending ? messages.common.saving : messages.portfolio.save}
+      </Button>
+    </FormCard>
   );
 }
 
 export function PortfolioEditor() {
-  const { messages } = useTranslation();
+  const { messages, locale } = useTranslation();
   const portfolioQuery = usePortfolio();
+
+  if (portfolioQuery.isLoading) {
+    return <LoadingState label={messages.common.loading} />;
+  }
+
+  const portfolioMissing =
+    portfolioQuery.isError &&
+    isApiError(portfolioQuery.error) &&
+    portfolioQuery.error.code === 'not_found';
+
+  if (portfolioQuery.isError && !portfolioMissing) {
+    return (
+      <QueryErrorAlert
+        error={portfolioQuery.error}
+        subject={messages.portfolio.title}
+        onRetry={() => void portfolioQuery.refetch()}
+      />
+    );
+  }
+
+  const content = portfolioQuery.data?.documents[locale];
 
   return (
     <Stack spacing={3}>
       <Typography component="h1" variant="h5">
         {messages.portfolio.title}
       </Typography>
-      <QueryGate
-        query={portfolioQuery}
-        subject={messages.portfolio.title}
-        empty={<EmptyState title={messages.portfolio.notFound} />}
-      >
-        {(portfolio) => (
-          <PortfolioBasicsForm key={portfolio.id} portfolio={portfolio} />
-        )}
-      </QueryGate>
+      {content === undefined && !portfolioMissing && (
+        <EmptyState
+          title={messages.portfolio.noDocumentForLocale.replace(
+            '{locale}',
+            locale,
+          )}
+        />
+      )}
+      <PortfolioBasicsForm
+        key={`${locale}-${content === undefined ? 'new' : 'edit'}`}
+        locale={locale}
+        content={content}
+      />
     </Stack>
   );
 }

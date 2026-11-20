@@ -18,6 +18,11 @@ export interface Application {
   createdAt: string;
 }
 
+export interface ApplicationListPage {
+  applications: Application[];
+  total: number;
+}
+
 export interface ApplicationCreate {
   jobId: number;
   status?: ApplicationStatus | undefined;

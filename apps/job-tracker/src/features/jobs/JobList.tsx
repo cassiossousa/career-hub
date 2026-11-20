@@ -18,9 +18,7 @@ export function JobList() {
     location,
     area,
     remoteOnly,
-    minMatchScore,
     maxAgeDays,
-    sort,
     preset,
     resetFilters,
   } = useFilterStore();
@@ -30,7 +28,6 @@ export function JobList() {
     location,
     area,
     remoteOnly,
-    minMatchScore !== undefined,
     maxAgeDays !== undefined,
     preset,
   ].some(Boolean);
@@ -40,9 +37,7 @@ export function JobList() {
     location,
     area,
     remoteOnly: remoteOnly || undefined,
-    minMatchScore,
     maxAgeDays,
-    sort,
     preset,
   });
 
@@ -67,16 +62,16 @@ export function JobList() {
       <QueryGate
         query={jobsQuery}
         subject={messages.jobs.title}
-        isEmpty={(jobs) => jobs.length === 0}
+        isEmpty={(page) => page.jobs.length === 0}
         empty={emptyState}
       >
-        {(jobs) => (
+        {(page) => (
           <Stack spacing={2}>
             <Typography component="h2" variant="h6">
-              {messages.jobs.title} ({jobs.length})
+              {messages.jobs.title} ({page.total})
             </Typography>
             <Grid container spacing={2}>
-              {jobs.map((job) => (
+              {page.jobs.map((job) => (
                 <Grid size={{ xs: 12, md: 6 }} key={job.id}>
                   <JobCard
                     job={job}

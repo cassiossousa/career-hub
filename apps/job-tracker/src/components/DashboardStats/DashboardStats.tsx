@@ -58,16 +58,16 @@ export function DashboardStats() {
           label={messages.dashboard.totalJobs}
         />
         <StatCard
-          value={stats ? `${stats.avgMatchScore ?? 0}%` : EMPTY_VALUE}
-          label={messages.dashboard.avgMatchScore}
-        />
-        <StatCard
-          value={stats?.jobsByAge.lessThanOneDay ?? EMPTY_VALUE}
+          value={stats?.jobsByAge['<1d'] ?? EMPTY_VALUE}
           label={messages.dashboard.jobsToday}
         />
         <StatCard
-          value={stats?.jobsByAge.oneToSevenDays ?? EMPTY_VALUE}
+          value={stats?.jobsByAge['1-7d'] ?? EMPTY_VALUE}
           label={messages.dashboard.jobsThisWeek}
+        />
+        <StatCard
+          value={stats?.jobsByAge['7-30d'] ?? EMPTY_VALUE}
+          label={messages.dashboard.jobsThisMonth}
         />
       </Grid>
       {stats !== undefined && filteredTotal > 0 && (

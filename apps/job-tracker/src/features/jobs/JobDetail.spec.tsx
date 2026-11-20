@@ -51,8 +51,8 @@ describe('JobDetail', () => {
 
   it('creates an application via mark-as-applied', async () => {
     const user = userEvent.setup();
-    // job 3 has no seeded application, so the action button is shown
-    renderDetail('/jobs/3');
+    // job 4 has no seeded application, so the action button is shown
+    renderDetail('/jobs/4');
     const button = await screen.findByRole('button', { name: 'Applied' });
     await user.click(button);
     await waitFor(

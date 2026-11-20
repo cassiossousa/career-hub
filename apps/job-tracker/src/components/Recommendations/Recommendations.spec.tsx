@@ -30,7 +30,7 @@ describe('Recommendations', () => {
   });
 
   it('shows an empty state when there are no matches', async () => {
-    mockApiJson('get', '/api/jobs', { jobs: [] });
+    mockApiJson('get', '/api/jobs', { jobs: [], total: 0 });
     renderWithProviders(<Recommendations />);
     expect(
       await screen.findByText('No recommended jobs at the moment.'),

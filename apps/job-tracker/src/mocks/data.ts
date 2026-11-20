@@ -1,9 +1,13 @@
 import type { Application } from '../services/types/application';
 import type { Job, JobCreate } from '../services/types/job';
-import type { Portfolio, PortfolioCreate } from '../services/types/portfolio';
+import type { Portfolio, PortfolioContent } from '../services/types/portfolio';
+import type { Resume } from '../services/types/resume';
 
 const daysAgo = (days: number) =>
   new Date(Date.now() - days * 86400000).toISOString();
+
+const dateDaysAgo = (days: number) =>
+  new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
 
 export const seedJobs: Job[] = [
   {
@@ -25,7 +29,6 @@ export const seedJobs: Job[] = [
     currency: 'BRL',
     postedAt: daysAgo(1),
     lastSeenAt: daysAgo(0),
-    matchScore: 92,
     requirements: [
       { text: 'React', classification: 'proven', weight: 9 },
       { text: 'TypeScript', classification: 'proven', weight: 8 },
@@ -53,7 +56,6 @@ export const seedJobs: Job[] = [
     currency: 'BRL',
     postedAt: daysAgo(3),
     lastSeenAt: daysAgo(1),
-    matchScore: 78,
     requirements: [
       { text: 'Node.js', classification: 'proven', weight: 8 },
       { text: 'PostgreSQL', classification: 'equivalent', weight: 7 },
@@ -78,149 +80,39 @@ export const seedJobs: Job[] = [
     salaryMin: null,
     salaryMax: null,
     currency: 'USD',
-    postedAt: daysAgo(5),
+    postedAt: daysAgo(10),
     lastSeenAt: daysAgo(2),
-    matchScore: 64,
     requirements: [
-      { text: 'HTML/CSS', classification: 'proven', weight: 9 },
-      { text: 'React', classification: 'proven', weight: 8 },
-      { text: 'PHP', classification: 'unproven', weight: 4 },
+      { text: 'JavaScript', classification: 'proven', weight: 7 },
+      { text: 'CSS', classification: 'proven', weight: 6 },
     ],
     filterResult: 'filtered_level',
-    createdAt: daysAgo(5),
+    createdAt: daysAgo(10),
   },
   {
     id: 4,
-    source: 'empregos_com_br',
-    externalId: 'ecb-4004',
-    url: 'https://jobs.example.com/ecb/4004',
-    title: 'Backend Developer (Python)',
-    company: 'Stone',
-    location: 'Salvador',
-    area: 'backend',
-    level: 'mid',
-    contractType: 'CLT',
-    description: 'Payments infrastructure at scale.',
-    remote: false,
-    salaryMin: 10000,
-    salaryMax: 15000,
-    currency: 'BRL',
-    postedAt: daysAgo(8),
-    lastSeenAt: daysAgo(4),
-    matchScore: 41,
-    requirements: [
-      { text: 'Python', classification: 'unproven', weight: 9 },
-      { text: 'PostgreSQL', classification: 'proven', weight: 7 },
-    ],
-    filterResult: 'passed',
-    createdAt: daysAgo(8),
-  },
-  {
-    id: 5,
-    source: 'google_jobs',
-    externalId: 'gj-5005',
-    url: 'https://jobs.example.com/gj/5005',
-    title: 'DevOps Engineer',
-    company: 'Mercado Livre',
-    location: 'Remote',
-    area: 'devops',
-    level: 'senior',
-    contractType: 'CLT',
-    description: 'Kubernetes, Terraform, observability.',
-    remote: true,
-    salaryMin: 18000,
-    salaryMax: 26000,
-    currency: 'BRL',
-    postedAt: daysAgo(12),
-    lastSeenAt: daysAgo(6),
-    matchScore: 35,
-    requirements: [
-      { text: 'Kubernetes', classification: 'partial', weight: 9 },
-      { text: 'Terraform', classification: 'unproven', weight: 8 },
-      { text: 'CI/CD', classification: 'proven', weight: 7 },
-    ],
-    filterResult: 'filtered_area',
-    createdAt: daysAgo(12),
-  },
-  {
-    id: 6,
-    source: 'sine_bahia',
-    externalId: 'sb-6006',
-    url: 'https://jobs.example.com/sb/6006',
-    title: 'QA Engineer',
-    company: 'Totvs',
-    location: 'Feira de Santana',
-    area: 'qa',
-    level: 'mid',
-    contractType: 'CLT',
-    description: 'Automation and manual testing for ERP products.',
-    remote: false,
-    salaryMin: 6000,
-    salaryMax: 9000,
-    currency: 'BRL',
-    postedAt: daysAgo(20),
-    lastSeenAt: daysAgo(10),
-    matchScore: 52,
-    requirements: [
-      { text: 'Test automation', classification: 'equivalent', weight: 8 },
-      { text: 'Cypress', classification: 'proven', weight: 7 },
-    ],
-    filterResult: 'filtered_location',
-    createdAt: daysAgo(20),
-  },
-  {
-    id: 7,
-    source: 'casa_do_trabalhador',
-    externalId: 'ct-7007',
-    url: 'https://jobs.example.com/ct/7007',
-    title: 'Data Analyst',
-    company: 'CVRD',
-    location: 'Vitória',
-    area: 'data',
-    level: 'junior',
-    contractType: 'CLT',
-    description: 'Dashboards and reporting for operations.',
-    remote: false,
-    salaryMin: 5000,
-    salaryMax: 8000,
-    currency: 'BRL',
-    postedAt: daysAgo(35),
-    lastSeenAt: daysAgo(20),
-    matchScore: 48,
-    requirements: [
-      { text: 'SQL', classification: 'proven', weight: 9 },
-      { text: 'Python', classification: 'partial', weight: 6 },
-      { text: 'Tableau', classification: 'unproven', weight: 5 },
-    ],
-    filterResult: 'passed',
-    createdAt: daysAgo(35),
-  },
-  {
-    id: 8,
     source: 'manual',
     externalId: null,
-    url: 'https://jobs.example.com/manual/8008',
-    title: 'Frontend Tech Lead',
-    company: 'iFood',
+    url: 'https://jobs.example.com/manual/4004',
+    title: 'Backend Engineer',
+    company: 'Stone',
     location: 'Remote',
-    area: 'frontend',
-    level: 'lead',
-    contractType: 'CLT',
-    description: 'Lead a squad building merchant tooling.',
+    area: 'backend',
+    level: 'senior',
+    contractType: 'PJ',
+    description: 'Design payment infrastructure at scale.',
     remote: true,
-    salaryMin: 20000,
-    salaryMax: 30000,
+    salaryMin: null,
+    salaryMax: null,
     currency: 'BRL',
-    postedAt: daysAgo(2),
-    lastSeenAt: daysAgo(1),
-    matchScore: 88,
+    postedAt: daysAgo(45),
+    lastSeenAt: daysAgo(5),
     requirements: [
-      { text: 'React', classification: 'proven', weight: 9 },
-      { text: 'Team leadership', classification: 'equivalent', weight: 8 },
-      { text: 'System design', classification: 'proven', weight: 7 },
+      { text: 'Go', classification: 'unproven', weight: 8 },
+      { text: 'Kubernetes', classification: 'partial', weight: 6 },
     ],
     filterResult: 'passed',
-    createdAt: daysAgo(2),
+    createdAt: daysAgo(45),
   },
 ];
 
@@ -230,87 +122,183 @@ export const seedApplications: Application[] = [
     jobId: 1,
     portfolioId: 1,
     status: 'applied',
-    notes: 'Tailored resume sent',
-    appliedAt: daysAgo(1),
-    statusChangedAt: daysAgo(1),
+    notes: 'Strong React match, tailor resume before interview.',
+    appliedAt: dateDaysAgo(2),
+    statusChangedAt: daysAgo(2),
     createdAt: daysAgo(2),
   },
   {
     id: 2,
-    jobId: 8,
+    jobId: 2,
     portfolioId: 1,
     status: 'screening',
     notes: null,
-    appliedAt: daysAgo(4),
+    appliedAt: dateDaysAgo(5),
     statusChangedAt: daysAgo(1),
     createdAt: daysAgo(5),
   },
   {
     id: 3,
-    jobId: 2,
+    jobId: 3,
     portfolioId: 1,
     status: 'saved',
-    notes: 'Review salary band',
+    notes: null,
     appliedAt: null,
     statusChangedAt: daysAgo(3),
     createdAt: daysAgo(3),
   },
 ];
 
-const seedPortfolioCreate: PortfolioCreate = {
+const enContent: PortfolioContent = {
   basics: {
-    fullName: 'Demo User',
-    headline: {
-      en: 'Senior Frontend Engineer',
-      'pt-BR': 'Engenheiro Frontend Sênior',
-    },
-    subtitle: {
-      en: 'React · TypeScript · Accessibility',
-      'pt-BR': 'React · TypeScript · Acessibilidade',
-    },
-    username: 'demo',
-    location: { en: 'Brazil', 'pt-BR': 'Brasil' },
-    links: [{ kind: 'github', url: 'https://github.com/demo' }],
+    fullName: 'Cassio Sousa',
+    headline: 'Senior Frontend Engineer',
+    subtitle: 'React · TypeScript · Design systems',
+    username: 'cassiossousa',
+    location: 'Remote',
+    avatarUrl: null,
+    links: [
+      { kind: 'github', url: 'https://github.com/cassiossousa', label: null },
+      {
+        kind: 'linkedin',
+        url: 'https://linkedin.com/in/cassiossousa',
+        label: null,
+      },
+    ],
   },
-  experience: [],
-  skillGroups: [
-    { category: 'frontend', items: ['React', 'TypeScript', 'MUI'] },
-    { category: 'testing', items: ['Jest', 'Playwright'] },
+  experience: [
+    {
+      company: 'Acme Corp',
+      role: 'Senior Frontend Engineer',
+      location: 'Remote',
+      start: '2021-03',
+      end: null,
+      bullets: [
+        {
+          text: 'Led migration to React + TypeScript across 3 products',
+          skills: ['React', 'TypeScript'],
+        },
+        {
+          text: 'Built accessible component library used by 40 engineers',
+          skills: ['Accessibility', 'Design systems'],
+        },
+      ],
+    },
   ],
-  projects: [],
-  filters: {
-    levels: ['mid', 'senior', 'lead'],
-    areas: ['frontend', 'fullstack'],
-    locations: ['Remote'],
-    remoteOnly: true,
+  skillGroups: [
+    {
+      category: 'frontend',
+      items: ['React', 'TypeScript', 'JavaScript', 'CSS', 'Accessibility'],
+    },
+    {
+      category: 'backend',
+      items: ['Node.js', 'PostgreSQL', 'REST'],
+    },
+    {
+      category: 'cloud',
+      items: ['AWS', 'Docker'],
+    },
+  ],
+  projects: [
+    {
+      slug: 'career-hub',
+      title: 'Career Hub',
+      summary: 'Job tracker and portfolio monorepo',
+      highlights: ['React', 'TypeScript', 'Vite'],
+      repoUrl: 'https://github.com/cassiossousa/career-hub',
+      demoUrl: null,
+      featured: true,
+      technologies: ['React', 'TypeScript'],
+      topics: ['portfolio', 'job-search'],
+      category: 'fullstack',
+      stars: 12,
+    },
+  ],
+};
+
+const ptBRContent: PortfolioContent = {
+  ...enContent,
+  basics: {
+    ...enContent.basics,
+    headline: 'Engenheiro Frontend Sênior',
+    subtitle: 'React · TypeScript · Design systems',
   },
 };
 
-function toPortfolio(create: PortfolioCreate, id = 1): Portfolio {
-  return {
-    id,
-    ...create,
-    createdAt: daysAgo(30),
-    updatedAt: daysAgo(1),
-  };
-}
+export const seedPortfolio: Portfolio = {
+  id: 1,
+  filters: {
+    levels: ['mid', 'senior'],
+    areas: ['frontend', 'fullstack'],
+    locations: [],
+    remoteOnly: false,
+  },
+  documents: {
+    en: enContent,
+    'pt-BR': ptBRContent,
+  },
+  createdAt: daysAgo(30),
+  updatedAt: daysAgo(1),
+};
 
-export function toJob(create: JobCreate, id: number): Job {
+export const seedResume: Resume = {
+  id: 1,
+  applicationId: 1,
+  locale: 'en',
+  summary: 'Senior Frontend Engineer with 8 years building React products.',
+  basics: enContent.basics,
+  experience: enContent.experience ?? [],
+  education: [
+    {
+      institution: 'Universidade de São Paulo',
+      degree: 'B.Sc. Computer Science',
+      fieldOfStudy: 'Software Engineering',
+      start: '2013-02',
+      end: '2017-12',
+      details: null,
+    },
+  ],
+  certifications: [
+    {
+      name: 'AWS Certified Developer',
+      issuer: 'Amazon',
+      url: null,
+      year: 2022,
+    },
+  ],
+  languages: [
+    { name: 'Portuguese', proficiency: 'Native' },
+    { name: 'English', proficiency: 'C1' },
+  ],
+  projects: enContent.projects ?? [],
+  skillGroups: enContent.skillGroups ?? [],
+  submittedAt: null,
+  createdAt: daysAgo(2),
+  updatedAt: daysAgo(2),
+};
+
+export function toJob(body: JobCreate, id: number): Job {
+  const now = new Date().toISOString();
   return {
     id,
-    ...create,
-    externalId: create.externalId ?? null,
-    contractType: create.contractType ?? null,
-    salaryMin: create.salaryMin ?? null,
-    salaryMax: create.salaryMax ?? null,
-    currency: create.currency ?? 'BRL',
-    postedAt: create.postedAt ?? null,
+    source: body.source,
+    externalId: body.externalId ?? null,
+    url: body.url,
+    title: body.title,
+    company: body.company,
+    location: body.location,
+    area: body.area,
+    level: body.level,
+    contractType: body.contractType ?? null,
+    description: body.description ?? '',
+    remote: body.remote ?? false,
+    salaryMin: body.salaryMin ?? null,
+    salaryMax: body.salaryMax ?? null,
+    currency: body.currency ?? 'BRL',
+    postedAt: body.postedAt ?? null,
     lastSeenAt: null,
-    matchScore: create.matchScore ?? null,
-    requirements: create.requirements ?? [],
-    filterResult: create.filterResult ?? 'unevaluated',
-    createdAt: new Date().toISOString(),
+    requirements: body.requirements ?? [],
+    filterResult: body.filterResult ?? 'unevaluated',
+    createdAt: now,
   };
 }
-
-export const seedPortfolio = toPortfolio(seedPortfolioCreate);

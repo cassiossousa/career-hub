@@ -13,7 +13,7 @@ import {
   QueryGate,
 } from '../../components/AsyncStatus/AsyncStatus';
 import { JobAgeBadge } from '../../components/JobAgeBadge/JobAgeBadge';
-import { MatchAnalysis } from '../../components/MatchAnalysis/MatchAnalysis';
+import { MatchPanel } from '../../components/MatchPanel/MatchPanel';
 import { useTranslation } from '../../i18n/Provider';
 import {
   useApplications,
@@ -50,13 +50,13 @@ export function JobDetail() {
       empty={<EmptyState title={messages.jobs.notFound} />}
     >
       {(job) => {
-        const existingApplication = applications?.[0];
+        const existingApplication = applications?.applications[0];
 
         const markAsApplied = () => {
           createApplication({
             jobId: job.id,
             status: 'applied',
-            appliedAt: new Date().toISOString(),
+            appliedAt: new Date().toISOString().slice(0, 10),
           });
         };
 
@@ -118,11 +118,6 @@ export function JobDetail() {
                       />
                     )}
                   </Stack>
-                  {job.matchScore !== null && (
-                    <Typography component="p" variant="h6" color="primary">
-                      {messages.jobs.matchScore}: {job.matchScore}%
-                    </Typography>
-                  )}
                   {isFilteredResult(job.filterResult) && (
                     <Typography variant="body2" color="warning.main">
                       {
@@ -166,9 +161,12 @@ export function JobDetail() {
             <Card>
               <CardContent>
                 <Typography component="h2" variant="h6" gutterBottom>
-                  {messages.jobs.matched} / {messages.jobs.missing}
+                  {messages.match.title}
                 </Typography>
-                <MatchAnalysis requirements={job.requirements} />
+                <MatchPanel
+                  jobId={job.id}
+                  applicationId={existingApplication?.id}
+                />
               </CardContent>
             </Card>
           </Stack>

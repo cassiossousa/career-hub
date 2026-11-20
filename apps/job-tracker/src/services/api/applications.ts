@@ -8,9 +8,11 @@ import {
 import type {
   Application,
   ApplicationCreate,
+  ApplicationListPage,
   ApplicationUpdate,
 } from '../types/application';
 import { apiClient } from './client';
+import { JOBS_PAGE_SIZE } from './jobs';
 import {
   applicationResponseSchema,
   applicationsResponseSchema,
@@ -18,13 +20,23 @@ import {
 
 const APPLICATIONS_QUERY_KEY = ['applications'];
 
+export interface ApplicationsQueryFilter {
+  status?: string | undefined;
+  jobId?: number | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
 export function useApplications(
-  filter: { status?: string | undefined; jobId?: number | undefined } = {},
-  options?: Omit<UseQueryOptions<Application[]>, 'queryKey' | 'queryFn'>,
+  filter: ApplicationsQueryFilter = {},
+  options?: Omit<UseQueryOptions<ApplicationListPage>, 'queryKey' | 'queryFn'>,
 ) {
+  const { limit = JOBS_PAGE_SIZE, offset = 0, status, jobId } = filter;
   const params = new URLSearchParams();
-  if (filter.status) params.set('status', filter.status);
-  if (filter.jobId) params.set('jobId', String(filter.jobId));
+  params.set('limit', String(limit));
+  params.set('offset', String(offset));
+  if (status) params.set('status', status);
+  if (jobId) params.set('jobId', String(jobId));
 
   return useQuery({
     queryKey: [...APPLICATIONS_QUERY_KEY, filter],
@@ -32,7 +44,21 @@ export function useApplications(
       const response = await apiClient.get<unknown>(
         `/api/applications?${params.toString()}`,
       );
-      return applicationsResponseSchema.parse(response.data).applications;
+      return applicationsResponseSchema.parse(response.data);
+    },
+    ...options,
+  });
+}
+
+export function useApplication(
+  id: number,
+  options?: Omit<UseQueryOptions<Application>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery({
+    queryKey: [...APPLICATIONS_QUERY_KEY, id],
+    queryFn: async () => {
+      const response = await apiClient.get<unknown>(`/api/applications/${id}`);
+      return applicationResponseSchema.parse(response.data);
     },
     ...options,
   });
@@ -49,7 +75,7 @@ export function useCreateApplication(
   return useMutation({
     mutationFn: async (data: ApplicationCreate) => {
       const response = await apiClient.post<unknown>('/api/applications', data);
-      return applicationResponseSchema.parse(response.data).application;
+      return applicationResponseSchema.parse(response.data);
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -84,7 +110,7 @@ export function useUpdateApplication(
         `/api/applications/${id}`,
         data,
       );
-      return applicationResponseSchema.parse(response.data).application;
+      return applicationResponseSchema.parse(response.data);
     },
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({

@@ -8,16 +8,20 @@ import {
 } from '../../test/TestUtils';
 import { JobList } from './JobList';
 
+async function renderJobListLoaded() {
+  renderWithProviders(<JobList />);
+  await waitFor(() => {
+    expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
+  });
+}
+
 describe('JobList', () => {
   beforeEach(() => {
     useFilterStore.getState().resetFilters();
   });
 
   it('renders jobs from the API', async () => {
-    renderWithProviders(<JobList />);
-    await waitFor(() => {
-      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
-    });
+    await renderJobListLoaded();
     expect(screen.getAllByText(/Frontend|Backend/).length).toBeGreaterThan(0);
   });
 
@@ -38,10 +42,7 @@ describe('JobList', () => {
 
   it('filters the list when a job card chip is clicked', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<JobList />);
-    await waitFor(() => {
-      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
-    });
+    await renderJobListLoaded();
     const before = screen.getByText(/Job openings \(\d+\)/).textContent;
 
     const seniorChip = screen.getAllByRole('button', { name: 'Senior' })[0];
@@ -60,10 +61,7 @@ describe('JobList', () => {
 
   it('navigates to job detail when a card is clicked', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<JobList />);
-    await waitFor(() => {
-      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
-    });
+    await renderJobListLoaded();
     const cards = screen.getAllByRole('button');
     const jobCard = cards.find((el) => el.textContent.includes('Frontend'));
     if (!jobCard) throw new Error('expected a job card button');

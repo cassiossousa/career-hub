@@ -5,6 +5,8 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { jobMatchesSearch } from '../jobMeta';
 import type {
   Job,
   JobCreate,
@@ -107,4 +109,16 @@ export function useCreateJob(
 export function useJobTitleById(): Map<number, string> {
   const { data } = useJobs();
   return new Map(data?.jobs.map((job) => [job.id, job.title]) ?? []);
+}
+
+/** Client-side title/company/location search over a fetched job page. */
+export function useVisibleJobs(
+  jobs: JobListPage['jobs'] | undefined,
+  search: string | undefined,
+): Job[] | undefined {
+  const query = search?.trim().toLowerCase() ?? '';
+  return useMemo(
+    () => jobs?.filter((job) => jobMatchesSearch(job, query)),
+    [jobs, query],
+  );
 }

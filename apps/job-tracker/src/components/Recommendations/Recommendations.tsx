@@ -1,10 +1,8 @@
 import { Button, Stack, Typography } from '@mui/material';
-import { useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
 import { useTranslation } from '../../i18n/Provider';
-import { useJobs } from '../../services/api/jobs';
-import { jobMatchesSearch } from '../../services/jobMeta';
+import { useJobs, useVisibleJobs } from '../../services/api/jobs';
 import { useFilterStore } from '../../store/filterStore';
 import {
   EmptyState,
@@ -26,11 +24,7 @@ export function Recommendations() {
     preset: 'profile',
   });
 
-  const query = search?.trim().toLowerCase() ?? '';
-  const visibleJobs = useMemo(
-    () => jobsQuery.data?.jobs.filter((job) => jobMatchesSearch(job, query)),
-    [jobsQuery.data, query],
-  );
+  const visibleJobs = useVisibleJobs(jobsQuery.data?.jobs, search);
 
   return (
     <QueryGate

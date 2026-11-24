@@ -131,6 +131,7 @@ const eslintConfig = defineConfig([
             'expectApiErrorCode',
             'waitForQuerySuccess',
             'saveAndExpectSuccess',
+            'renderJobListLoaded',
             'fc.assert',
           ],
         },

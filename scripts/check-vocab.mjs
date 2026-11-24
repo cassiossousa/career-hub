@@ -84,8 +84,8 @@ function unionLiteralSet(typeNode) {
   return values.length >= 2 ? values : null;
 }
 
-function arrayLiteralSet(initializer) {
-  const expr = initializer && unwrapExpression(initializer);
+function stringArrayLiteralValues(node) {
+  const expr = node && unwrapExpression(node);
   if (!expr || !ts.isArrayLiteralExpression(expr)) return null;
   const values = [];
   for (const element of expr.elements) {
@@ -106,16 +106,7 @@ function zodEnumSet(callExpr) {
     return null;
   }
   const arg = callExpr.arguments[0];
-  if (!arg) return null;
-  const expr = unwrapExpression(arg);
-  if (!expr || !ts.isArrayLiteralExpression(expr)) return null;
-  const values = [];
-  for (const element of expr.elements) {
-    const text = stringLiteralText(element);
-    if (text === null) return null;
-    values.push(text);
-  }
-  return values.length >= 2 ? values : null;
+  return arg ? stringArrayLiteralValues(arg) : null;
 }
 
 function collectDeclarations(sourceFile, relPath) {
@@ -150,7 +141,7 @@ function collectDeclarations(sourceFile, relPath) {
       }
     }
     if (ts.isVariableDeclaration(node) && node.initializer) {
-      const values = arrayLiteralSet(node.initializer);
+      const values = stringArrayLiteralValues(node.initializer);
       if (values && ts.isIdentifier(node.name)) {
         sites.push({
           form: 'array',

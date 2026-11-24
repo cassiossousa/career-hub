@@ -7,6 +7,7 @@ export default {
   mutate: ['src/**/*.{ts,tsx}', '!src/**/*.{test,spec}.{ts,tsx}'],
   reporters: ['clear-text', 'progress'],
   ignorePatterns: [
+    'e2e/**',
     'test-results/**',
     'playwright-report/**',
     'coverage/**',

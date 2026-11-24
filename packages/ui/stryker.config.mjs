@@ -10,7 +10,7 @@ export default {
     '!**/*.d.ts',
   ],
   reporters: ['clear-text', 'progress'],
-  ignorePatterns: ['coverage/**', '**/dist/**'],
+  ignorePatterns: ['e2e/**', 'coverage/**', '**/dist/**'],
   coverageAnalysis: 'perTest',
   thresholds: { high: 80, low: 60, break: 60 },
   tsconfigFile: 'tsconfig.json',

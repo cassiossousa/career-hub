@@ -10,8 +10,8 @@
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:e2e": "playwright test",
-    "check:mutate:diff": "node scripts/check-mutation-diff.mjs",
-    "check:mutate:core": "node scripts/check-mutation-core.mjs",
+    "check:mutate:diff": "node ../../scripts/check-mutation-diff.mjs apps/job-tracker",
+    "check:mutate:core": "node ../../scripts/check-mutation-core.mjs apps/job-tracker",
     "check:bundle": "node ../../scripts/audit-bundle-budget.mjs apps/job-tracker --js-limit-kb 400",
     "sync:api-contract": "node scripts/sync-api-contract.mjs",
     "check:api-contract": "node scripts/sync-api-contract.mjs --check"

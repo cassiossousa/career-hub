@@ -24,4 +24,5 @@ Shared component library consumed by both apps. Every rule in the root `AGENTS.m
 - Own Jest project (`jest.config.cjs`, jsdom, `components/**/*.spec.{ts,tsx}`) run via `npm run test[:cov] --workspace @career-hub/ui` and inside `verify:all`.
 - **Coverage bar is higher than the apps':** every component file carries an explicit per-file floor (currently 80%; `ResumePdfViewer/ResumePdfSections.tsx` 90/70 until branch coverage improves). Raise floors as coverage improves — never lower them to pass.
 - jscpd clone scanning, knip dead-code analysis, same lint-staged/prettier/oxlint/biome fast gates.
+- **Mutation:** `stryker.config.mjs` + `stryker.core.config.mjs`; `check:mutate:diff`/`check:mutate:core` delegate to the root `scripts/check-mutation-*.mjs` via the `scripts/mutation-targets.mjs` registry. Scope is `components/` only — the sole directory with Jest specs; extend the registry globs when `theme/`/`pdf/`/`i18n/`/`testkit/` gain tests.
 - App imports go through the `exports` subpaths above — never deep-import internal files (`@career-hub/ui/components/Foo`).

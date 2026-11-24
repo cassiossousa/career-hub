@@ -6,7 +6,9 @@
   "main": "./theme/index.ts",
   "scripts": {
     "test": "jest",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "check:mutate:diff": "node ../../scripts/check-mutation-diff.mjs packages/ui",
+    "check:mutate:core": "node ../../scripts/check-mutation-core.mjs packages/ui"
   },
   "exports": {
     "./theme": "./theme/index.ts",

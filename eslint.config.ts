@@ -43,7 +43,11 @@ const eslintConfig = defineConfig([
   },
   {
     files: APP_SOURCE_FILES,
-    ignores: ['apps/*/src/services/**', 'apps/*/src/**/*.spec.ts'],
+    ignores: [
+      'apps/*/src/services/**',
+      'apps/*/src/**/*.spec.ts',
+      'apps/*/src/test/**',
+    ],
     plugins: { security },
     rules: {
       ...security.configs.recommended.rules,

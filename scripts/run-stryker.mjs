@@ -26,13 +26,13 @@ function findStrykerCli(dir) {
 export function runStryker(
   appRoot,
   mutate,
-  { ignoreStatic = false, configFile } = {},
+  { ignoreStatic = false, configFile, extraArgs = process.argv.slice(2) } = {},
 ) {
   const args = [findStrykerCli(REPO_ROOT), 'run'];
   if (configFile) args.push(configFile);
   args.push('--mutate', mutate);
   if (ignoreStatic) args.push('--ignoreStatic');
-  args.push(...process.argv.slice(2));
+  args.push(...extraArgs);
 
   const result = spawnSync(process.execPath, args, {
     stdio: 'inherit',

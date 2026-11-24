@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-non-literal-fs-filename -- path segments are joined from __dirname only */
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 

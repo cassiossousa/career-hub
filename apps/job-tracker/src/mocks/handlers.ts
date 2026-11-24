@@ -18,12 +18,18 @@ import type {
   PortfolioDocumentWrite,
 } from '../services/types/portfolio';
 import type { Resume, ResumeDocument } from '../services/types/resume';
-import type { Skill, SkillCreate, SkillPatch } from '../services/types/skills';
+import type {
+  Skill,
+  SkillCreate,
+  SkillGroupLabels,
+  SkillPatch,
+} from '../services/types/skills';
 import {
   seedApplications,
   seedJobs,
   seedPortfolio,
   seedResume,
+  seedSkillGroupLabels,
   seedSkills,
   toJob,
 } from './data';
@@ -33,6 +39,12 @@ let applications = [...seedApplications];
 let portfolio: Portfolio | null = { ...seedPortfolio };
 let resumes: Resume[] = [seedResume];
 let skills: Skill[] = [...seedSkills];
+let skillGroupLabels: SkillGroupLabels[] = seedSkillGroupLabels.map(
+  (entry) => ({
+    ...entry,
+    labels: { ...entry.labels },
+  }),
+);
 let nextJobId = 100;
 let nextApplicationId = 100;
 let nextResumeId = 100;
@@ -44,6 +56,10 @@ export function resetMockData() {
   portfolio = { ...seedPortfolio };
   resumes = [seedResume];
   skills = [...seedSkills];
+  skillGroupLabels = seedSkillGroupLabels.map((entry) => ({
+    ...entry,
+    labels: { ...entry.labels },
+  }));
   nextJobId = 100;
   nextApplicationId = 100;
   nextResumeId = 100;
@@ -597,6 +613,7 @@ export const handlers = [
       id: nextSkillId++,
       name,
       group: body.group,
+      labels: body.labels ?? {},
       createdAt: now,
       updatedAt: now,
     };
@@ -629,6 +646,7 @@ export const handlers = [
       skill.name = name;
     }
     if (body.group !== undefined) skill.group = body.group;
+    if (body.labels !== undefined) skill.labels = { ...body.labels };
     skill.updatedAt = new Date().toISOString();
     return HttpResponse.json(skill);
   }),
@@ -640,5 +658,28 @@ export const handlers = [
     }
     skills.splice(index, 1);
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get('/api/skill-group-labels', () => {
+    return HttpResponse.json({
+      groups: skillGroupLabels.map((entry) => ({
+        ...entry,
+        labels: { ...entry.labels },
+      })),
+    });
+  }),
+
+  http.put('/api/skill-group-labels/:group', async ({ params, request }) => {
+    const group = String(params.group);
+    const entry = skillGroupLabels.find((e) => e.group === group);
+    if (!entry) {
+      return notFoundJson('Skill group not found');
+    }
+    const body = (await request.json()) as { labels: Record<string, string> };
+    entry.labels = { ...body.labels };
+    return HttpResponse.json({
+      group: entry.group,
+      labels: { ...entry.labels },
+    });
   }),
 ];

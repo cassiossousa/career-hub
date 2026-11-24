@@ -1,7 +1,9 @@
 import { createTheme } from '@mui/material/styles';
 import { brandedComponents } from './components';
+import type { ThemeMode } from './mode';
 import { brandedTokens, brandedTokensDark } from './tokens';
 
+export type { ThemeMode } from './mode';
 export type { SemanticColors } from './semantic';
 export { semanticColors } from './semantic';
 export {
@@ -10,8 +12,6 @@ export {
   darkChipLabelColors,
   lightChipLabelColors,
 } from './tokens';
-
-export type ThemeMode = 'light' | 'dark';
 
 export function parseThemeMode(value: string | null): ThemeMode | null {
   return value === 'light' || value === 'dark' ? value : null;

@@ -29,7 +29,11 @@ import type {
   LanguageEntry,
   Resume,
 } from '../types/resume';
-import type { Skill } from '../types/skills';
+import type {
+  Skill,
+  SkillGroupLabels,
+  SkillGroupLabelsList,
+} from '../types/skills';
 
 const jobSourceSchema = z.enum([
   'gupy',
@@ -243,10 +247,13 @@ const portfolioSchema = z.object({
   updatedAt: z.string(),
 }) satisfies z.ZodType<Portfolio>;
 
+const skillLabelsSchema = z.record(z.string(), z.string());
+
 const skillSchema = z.object({
   id: z.number(),
   name: z.string(),
   group: skillCategorySchema,
+  labels: skillLabelsSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
 }) satisfies z.ZodType<Skill>;
@@ -315,6 +322,17 @@ export const skillsResponseSchema = z.object({
 });
 
 export const skillResponseSchema = skillSchema;
+
+const skillGroupLabelsSchema = z.object({
+  group: skillCategorySchema,
+  labels: skillLabelsSchema,
+}) satisfies z.ZodType<SkillGroupLabels>;
+
+export const skillGroupLabelsListSchema = z.object({
+  groups: z.array(skillGroupLabelsSchema),
+}) satisfies z.ZodType<SkillGroupLabelsList>;
+
+export const skillGroupLabelsResponseSchema = skillGroupLabelsSchema;
 
 export const matchResponseSchema = matchResultSchema;
 

@@ -350,6 +350,13 @@ const en: Translation = {
     nameRequired: 'Every saved skill needs a name.',
     duplicateName: 'Skill names must be unique.',
     save: 'Save Skills',
+    labelsTitle: 'Labels & localization',
+    labelsDescription:
+      'Optional display names per language. Empty fields fall back to the canonical name.',
+    entityColumn: 'Skill / Group',
+    kindSkill: 'Skill',
+    kindGroup: 'Group',
+    saveLabels: 'Save Labels',
   },
 
   common: {

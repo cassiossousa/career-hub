@@ -8,13 +8,21 @@ import {
 import type {
   Skill,
   SkillCreate,
+  SkillGroupLabels,
+  SkillGroupLabelsList,
   SkillListPage,
   SkillPatch,
 } from '../types/skills';
 import { apiClient } from './client';
-import { skillResponseSchema, skillsResponseSchema } from './schemas';
+import {
+  skillGroupLabelsListSchema,
+  skillGroupLabelsResponseSchema,
+  skillResponseSchema,
+  skillsResponseSchema,
+} from './schemas';
 
 export const SKILLS_QUERY_KEY = ['skills'];
+export const SKILL_GROUP_LABELS_QUERY_KEY = ['skill-group-labels'];
 
 const SKILLS_PAGE_SIZE = 200;
 
@@ -98,6 +106,43 @@ export function useDeleteSkill(
       await apiClient.delete(`/api/skills/${id}`);
     },
     onSuccess: invalidate,
+    ...options,
+  });
+}
+
+export function useSkillGroupLabels(
+  options?: Omit<UseQueryOptions<SkillGroupLabelsList>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery({
+    queryKey: SKILL_GROUP_LABELS_QUERY_KEY,
+    queryFn: async () => {
+      const response = await apiClient.get<unknown>('/api/skill-group-labels');
+      return skillGroupLabelsListSchema.parse(response.data);
+    },
+    ...options,
+  });
+}
+
+export function useReplaceSkillGroupLabels(
+  options?: Omit<
+    UseMutationOptions<SkillGroupLabels, Error, SkillGroupLabels>,
+    'mutationFn'
+  >,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ group, labels }: SkillGroupLabels) => {
+      const response = await apiClient.put<unknown>(
+        `/api/skill-group-labels/${group}`,
+        { labels },
+      );
+      return skillGroupLabelsResponseSchema.parse(response.data);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: SKILL_GROUP_LABELS_QUERY_KEY,
+      });
+    },
     ...options,
   });
 }

@@ -350,6 +350,13 @@ const ptBR: Translation = {
     nameRequired: 'Toda habilidade salva precisa de um nome.',
     duplicateName: 'Os nomes das habilidades devem ser únicos.',
     save: 'Salvar Habilidades',
+    labelsTitle: 'Rótulos e localização',
+    labelsDescription:
+      'Nomes de exibição opcionais por idioma. Campos vazios usam o nome canônico.',
+    entityColumn: 'Habilidade / Grupo',
+    kindSkill: 'Habilidade',
+    kindGroup: 'Grupo',
+    saveLabels: 'Salvar Rótulos',
   },
 
   common: {

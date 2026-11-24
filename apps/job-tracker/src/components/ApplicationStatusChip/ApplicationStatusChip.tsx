@@ -2,7 +2,7 @@ import { Chip } from '@mui/material';
 import { useTranslation } from '../../i18n/Provider';
 import type { ApplicationStatus } from '../../services/types/application';
 
-export const APPLICATION_STATUS_COLORS: Record<
+const APPLICATION_STATUS_COLORS: Record<
   ApplicationStatus,
   'default' | 'info' | 'primary' | 'warning' | 'success' | 'error'
 > = {

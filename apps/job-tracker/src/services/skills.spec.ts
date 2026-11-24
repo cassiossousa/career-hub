@@ -1,17 +1,24 @@
 import {
+  applyLabelEdits,
+  cleanLabelMap,
+  diffLabelEdits,
   diffSkillRows,
   findDuplicateSkillName,
+  type LabelEdits,
+  type LabelEntry,
   type SkillRowDraft,
   skillNameKey,
+  toLabelEntries,
   toRowDrafts,
 } from './skills';
-import type { Skill } from './types/skills';
+import type { Skill, SkillGroupLabels } from './types/skills';
 
 function makeSkill(overrides: Partial<Skill> = {}): Skill {
   return {
     id: 1,
     name: 'React',
     group: 'frontend',
+    labels: {},
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
     ...overrides,
@@ -110,5 +117,93 @@ describe('findDuplicateSkillName', () => {
       { id: null, name: '   ', group: 'backend' },
     ];
     expect(findDuplicateSkillName(rows)).toBeNull();
+  });
+});
+
+describe('cleanLabelMap', () => {
+  it('trims values and drops blank locales', () => {
+    expect(
+      cleanLabelMap({ en: '  React ', 'pt-BR': '   ', fr: 'React.js' }),
+    ).toEqual({ en: 'React', fr: 'React.js' });
+  });
+});
+
+describe('toLabelEntries', () => {
+  it('builds skill rows plus one row per category', () => {
+    const skills = [makeSkill({ id: 7, labels: { en: 'React' } })];
+    const groupLabels: SkillGroupLabels[] = [
+      { group: 'frontend', labels: { 'pt-BR': 'Front-end' } },
+    ];
+    const entries = toLabelEntries(skills, groupLabels);
+    expect(entries).toHaveLength(7);
+    expect(entries[0]).toEqual({
+      kind: 'skill',
+      skillId: 7,
+      name: 'React',
+      group: 'frontend',
+      labels: { en: 'React' },
+    });
+    const frontend = entries.find(
+      (entry) => entry.kind === 'group' && entry.group === 'frontend',
+    );
+    expect(frontend?.labels).toEqual({ 'pt-BR': 'Front-end' });
+    const backend = entries.find(
+      (entry) => entry.kind === 'group' && entry.group === 'backend',
+    );
+    expect(backend?.labels).toEqual({});
+  });
+});
+
+describe('applyLabelEdits', () => {
+  it('overlays edits on server entries without mutating them', () => {
+    const entries = toLabelEntries([makeSkill()], []);
+    const skill = entries[0];
+    if (skill?.kind !== 'skill') throw new Error('expected skill row');
+    const rows = applyLabelEdits(entries, {
+      'skill:1': { en: 'React.js' },
+    });
+    expect(rows[0]?.labels).toEqual({ en: 'React.js' });
+    expect(skill.labels).toEqual({});
+  });
+});
+
+describe('diffLabelEdits', () => {
+  const entries: LabelEntry[] = [
+    {
+      kind: 'skill',
+      skillId: 1,
+      name: 'React',
+      group: 'frontend',
+      labels: { en: 'React', 'pt-BR': 'React' },
+    },
+    { kind: 'group', group: 'frontend', labels: {} },
+    { kind: 'group', group: 'backend', labels: { en: 'Backend' } },
+  ];
+
+  it('returns no changes for empty or reverted edits', () => {
+    expect(diffLabelEdits(entries, {})).toEqual({
+      skillUpdates: [],
+      groupUpdates: [],
+    });
+    const edits: LabelEdits = {
+      'skill:1': { en: ' React ', 'pt-BR': 'React' },
+      'group:backend': { en: 'Backend' },
+    };
+    expect(diffLabelEdits(entries, edits)).toEqual({
+      skillUpdates: [],
+      groupUpdates: [],
+    });
+  });
+
+  it('detects skill and group changes with cleaned maps', () => {
+    const edits: LabelEdits = {
+      'skill:1': { en: '  React.js ', 'pt-BR': '  ' },
+      'group:frontend': { en: 'Front-end' },
+      'group:missing': { en: 'Ignored' },
+    };
+    expect(diffLabelEdits(entries, edits)).toEqual({
+      skillUpdates: [{ id: 1, labels: { en: 'React.js' } }],
+      groupUpdates: [{ group: 'frontend', labels: { en: 'Front-end' } }],
+    });
   });
 });

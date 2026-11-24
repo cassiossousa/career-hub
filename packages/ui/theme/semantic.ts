@@ -1,4 +1,4 @@
-import type { ThemeMode } from './index';
+import type { ThemeMode } from './mode';
 import {
   brand,
   error as errorRamp,
@@ -15,7 +15,7 @@ import {
 // WCAG contrast by apps/job-tracker/src/app/theme.spec.ts. Dark mode is a
 // separately designed ramp set, not an inversion of light.
 
-export interface SemanticStatus {
+interface SemanticStatus {
   /** Text-safe color on surface backgrounds (>= 4.5:1). */
   fg: string;
   /** Subtle tinted surface for alerts/accents. */

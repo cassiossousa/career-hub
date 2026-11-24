@@ -105,6 +105,30 @@ describe('SkillsEditor', () => {
     expect(await screen.findByText('Save failed')).toBeInTheDocument();
   }, 30000);
 
+  it('edits skill and group labels and saves them', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<SkillsEditor />);
+    await screen.findByLabelText('Skill: React English');
+
+    await user.clear(screen.getByLabelText('Skill: React English'));
+    await user.type(screen.getByLabelText('Skill: React English'), 'React.js');
+    const groupLabel = screen.getByLabelText('Group: Frontend English');
+    await user.clear(groupLabel);
+    await user.type(groupLabel, 'Frontend');
+
+    await user.click(screen.getByRole('button', { name: /save labels/i }));
+    await waitFor(() => {
+      expect(screen.getByText('Saved')).toBeInTheDocument();
+    });
+    // Values survive the post-save refetch, proving they round-tripped.
+    expect(screen.getByLabelText('Skill: React English')).toHaveValue(
+      'React.js',
+    );
+    expect(screen.getByLabelText('Group: Frontend English')).toHaveValue(
+      'Frontend',
+    );
+  }, 30000);
+
   it('shows an error state when loading fails', async () => {
     mockApiJson(
       'get',

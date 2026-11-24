@@ -1,10 +1,6 @@
-import { Alert, Button, Stack, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useDocumentDraft } from '../../app/useDocumentDraft';
-import { errorMessage } from '../../components/AsyncStatus/AsyncStatus';
-import { FormCard } from '../../components/FormCard/FormCard';
-import { UnsavedChangesDialog } from '../../components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useTranslation } from '../../i18n/Provider';
 import {
   SKILLS_QUERY_KEY,
@@ -18,7 +14,9 @@ import {
   toRowDrafts,
 } from '../../services/skills';
 import type { Skill, SkillListPage } from '../../services/types/skills';
+import { SkillEditorForm } from './SkillEditorForm';
 import { SkillsTable } from './SkillsTable';
+import { runSkillSave } from './saveFlow';
 
 // Batch saves invalidate the skills query once, after every mutation settles.
 const DEFER_INVALIDATION = { onSuccess: () => undefined } as const;
@@ -46,7 +44,7 @@ export function SkillsForm({ skills }: SkillsFormProps) {
   const [isSaving, setIsSaving] = useState(false);
   const dirty = JSON.stringify(doc) !== JSON.stringify(baseline);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setFeedback(null);
     if (doc.rows.some((row) => row.id !== null && row.name.trim() === '')) {
@@ -66,53 +64,43 @@ export function SkillsForm({ skills }: SkillsFormProps) {
       setFeedback({ type: 'success', text: messages.common.saved });
       return;
     }
-    setIsSaving(true);
-    try {
-      for (const id of changes.deletes) await deleteSkill(id);
-      for (const update of changes.updates) await updateSkill(update);
-      for (const create of changes.creates) await createSkill(create);
-      await queryClient.invalidateQueries({ queryKey: SKILLS_QUERY_KEY });
-      const fresh = queryClient.getQueryData<SkillListPage>(SKILLS_QUERY_KEY);
-      if (fresh !== undefined) {
-        const next = { rows: toRowDrafts(fresh.skills) };
-        setDoc(next);
-        setBaseline(next);
-      } else {
-        setBaseline(doc);
-      }
-      setFeedback({ type: 'success', text: messages.common.saved });
-    } catch (error) {
-      await queryClient.invalidateQueries({ queryKey: SKILLS_QUERY_KEY });
-      setFeedback({ type: 'error', text: errorMessage(error) });
-    } finally {
-      setIsSaving(false);
-    }
+    void runSkillSave(
+      { setIsSaving, setFeedback },
+      () => queryClient.invalidateQueries({ queryKey: SKILLS_QUERY_KEY }),
+      async () => {
+        for (const id of changes.deletes) await deleteSkill(id);
+        for (const update of changes.updates) await updateSkill(update);
+        for (const create of changes.creates) await createSkill(create);
+      },
+      messages.common.saved,
+      () => {
+        const fresh = queryClient.getQueryData<SkillListPage>(SKILLS_QUERY_KEY);
+        if (fresh !== undefined) {
+          const next = { rows: toRowDrafts(fresh.skills) };
+          setDoc(next);
+          setBaseline(next);
+        } else {
+          setBaseline(doc);
+        }
+      },
+    );
   };
 
   return (
-    <FormCard
-      onSubmit={(event) => {
-        void handleSubmit(event);
-      }}
+    <SkillEditorForm
+      title={messages.skills.title}
+      saveLabel={messages.skills.save}
+      feedback={feedback}
+      dirty={dirty}
+      isSaving={isSaving}
+      blocker={blocker}
+      onSubmit={handleSubmit}
     >
-      <Stack spacing={1}>
-        <Typography variant="subtitle1">{messages.skills.title}</Typography>
-        {feedback && <Alert severity={feedback.type}>{feedback.text}</Alert>}
-        <SkillsTable
-          rows={doc.rows}
-          onChange={bind('rows')}
-          disabled={isSaving}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={isSaving || !dirty}
-          sx={{ alignSelf: 'flex-start' }}
-        >
-          {isSaving ? messages.common.saving : messages.skills.save}
-        </Button>
-        <UnsavedChangesDialog blocker={blocker} />
-      </Stack>
-    </FormCard>
+      <SkillsTable
+        rows={doc.rows}
+        onChange={bind('rows')}
+        disabled={isSaving}
+      />
+    </SkillEditorForm>
   );
 }

@@ -316,6 +316,12 @@ export interface Translation {
     nameRequired: string;
     duplicateName: string;
     save: string;
+    labelsTitle: string;
+    labelsDescription: string;
+    entityColumn: string;
+    kindSkill: string;
+    kindGroup: string;
+    saveLabels: string;
   };
 
   common: {

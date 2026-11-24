@@ -1,3 +1,4 @@
+import { SKILL_CATEGORIES } from '../services/jobOptions';
 import type { Application } from '../services/types/application';
 import type { Job, JobCreate } from '../services/types/job';
 import type {
@@ -328,15 +329,33 @@ const SEED_SKILL_ENTRIES: readonly (readonly [string, SkillCategory])[] = [
   ['Vitest', 'testing'],
 ];
 
+const SEED_SKILL_LABELS: Readonly<Record<number, Record<string, string>>> = {
+  1: { en: 'React', 'pt-BR': 'React' },
+  6: { 'pt-BR': 'React Native' },
+  11: { 'pt-BR': 'Node.js' },
+  20: { en: 'PostgreSQL', 'pt-BR': 'PostgreSQL' },
+};
+
 export const seedSkills: Skill[] = SEED_SKILL_ENTRIES.map(
   ([name, group], index) => ({
     id: index + 1,
     name,
     group,
+    labels: SEED_SKILL_LABELS[index + 1] ?? {},
     createdAt: daysAgo(30),
     updatedAt: daysAgo(1),
   }),
 );
+
+export const seedSkillGroupLabels = SKILL_CATEGORIES.map((group, index) => ({
+  group,
+  labels:
+    index === 0
+      ? { en: 'Frontend', 'pt-BR': 'Front-end' }
+      : index === 5
+        ? { 'pt-BR': 'Testes' }
+        : {},
+}));
 
 export function toJob(body: JobCreate, id: number): Job {
   const now = new Date().toISOString();

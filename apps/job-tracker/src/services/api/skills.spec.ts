@@ -8,6 +8,8 @@ import {
 import {
   useCreateSkill,
   useDeleteSkill,
+  useReplaceSkillGroupLabels,
+  useSkillGroupLabels,
   useSkills,
   useUpdateSkill,
 } from './skills';
@@ -110,5 +112,43 @@ describe('skills api', () => {
       wrapper: ApiTestWrapper,
     });
     await waitForQuerySuccess(() => result.current.isError);
+  });
+});
+
+describe('skill group labels api', () => {
+  it('fetches labels for every category', async () => {
+    const { result } = renderHook(() => useSkillGroupLabels(), {
+      wrapper: ApiTestWrapper,
+    });
+    await waitForQuerySuccess(() => result.current.isSuccess);
+    expect(result.current.data?.groups).toHaveLength(6);
+    const frontend = result.current.data?.groups.find(
+      (g) => g.group === 'frontend',
+    );
+    expect(frontend?.labels['pt-BR']).toBe('Front-end');
+  });
+
+  it('replaces group labels via PUT and refreshes', async () => {
+    const { result } = renderHook(
+      () => ({
+        labels: useSkillGroupLabels(),
+        replace: useReplaceSkillGroupLabels(),
+      }),
+      { wrapper: ApiTestWrapper },
+    );
+    await waitForQuerySuccess(() => result.current.labels.isSuccess);
+
+    result.current.replace.mutate({
+      group: 'testing',
+      labels: { en: 'Testing', 'pt-BR': 'Testes' },
+    });
+    await waitForQuerySuccess(() => result.current.replace.isSuccess);
+
+    await waitFor(() => {
+      const testing = result.current.labels.data?.groups.find(
+        (g) => g.group === 'testing',
+      );
+      expect(testing?.labels['pt-BR']).toBe('Testes');
+    });
   });
 });

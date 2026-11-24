@@ -19,6 +19,10 @@ jest.mock('../../services/projects/getProjects', () => ({
   getProjects: () => [],
 }));
 
+jest.mock('../../services/portfolio/languages', () => ({
+  usePortfolioLanguages: () => ({ status: 'ready', languages: [] }),
+}));
+
 describe('Resume', () => {
   it('renders the resume in the route and prints the current page', () => {
     const print = jest.spyOn(window, 'print').mockImplementation(() => {});

@@ -64,12 +64,41 @@ export interface PortfolioFilters {
   remoteOnly: boolean;
 }
 
+export type LanguageName =
+  | 'english'
+  | 'portuguese'
+  | 'spanish'
+  | 'french'
+  | 'german';
+
+export type LanguageProficiency =
+  | 'native'
+  | 'c2'
+  | 'c1'
+  | 'b2'
+  | 'b1'
+  | 'a2'
+  | 'a1';
+
+/** Per-locale display overrides for one language entry's fields. */
+export interface PortfolioLanguageLabels {
+  name?: string | null | undefined;
+  proficiency?: string | null | undefined;
+}
+
+export interface PortfolioLanguage {
+  language: LanguageName;
+  proficiency: LanguageProficiency;
+  labels?: Record<string, PortfolioLanguageLabels> | undefined;
+}
+
 /** One locale's portfolio content document (no locale tag, no filters). */
 export interface PortfolioContent {
   basics: PortfolioBasics;
   experience?: ExperienceEntry[] | undefined;
   skillGroups?: SkillGroup[] | undefined;
   projects?: ProjectEntry[] | undefined;
+  languages?: PortfolioLanguage[] | undefined;
 }
 
 export interface Portfolio {
@@ -87,5 +116,6 @@ export interface PortfolioDocumentWrite {
   experience?: ExperienceEntry[] | undefined;
   skillGroups?: SkillGroup[] | undefined;
   projects?: ProjectEntry[] | undefined;
+  languages?: PortfolioLanguage[] | undefined;
   filters?: PortfolioFilters | undefined;
 }

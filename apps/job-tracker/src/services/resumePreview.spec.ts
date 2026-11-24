@@ -254,4 +254,39 @@ describe('toPortfolioPdfDocument', () => {
     expect(result.certifications).toEqual([]);
     expect(result.languages).toEqual([]);
   });
+
+  it('resolves portfolio language labels per locale', () => {
+    const content: PortfolioContent = {
+      basics: {
+        fullName: 'Cassio Sousa',
+        headline: 'Engineer',
+        subtitle: '',
+        username: 'cassio',
+        location: 'Remote',
+        links: [],
+      },
+      languages: [
+        {
+          language: 'portuguese',
+          proficiency: 'native',
+          labels: {
+            'pt-BR': { name: 'Português', proficiency: 'Nativo' },
+          },
+        },
+        { language: 'english', proficiency: 'c1' },
+      ],
+    };
+
+    const pt = toPortfolioPdfDocument(content, 'pt-BR', copy);
+    expect(pt.languages).toEqual([
+      { name: 'Português', proficiency: 'Nativo' },
+      { name: 'English', proficiency: 'C1' },
+    ]);
+
+    const en = toPortfolioPdfDocument(content, 'en', copy);
+    expect(en.languages?.[0]).toEqual({
+      name: 'Portuguese',
+      proficiency: 'Native',
+    });
+  });
 });

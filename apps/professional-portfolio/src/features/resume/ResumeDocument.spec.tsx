@@ -4,6 +4,10 @@ import { TranslationProvider } from '../../i18n/Provider';
 import type { Project } from '../../types/project';
 import ResumeDocument from './ResumeDocument';
 
+jest.mock('../../services/portfolio/languages', () => ({
+  usePortfolioLanguages: () => ({ status: 'ready', languages: [] }),
+}));
+
 describe('ResumeDocument', () => {
   it('renders resume sections, experience, and selected projects as React content', () => {
     const messages = getDictionary('en');

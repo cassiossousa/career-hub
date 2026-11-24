@@ -330,6 +330,7 @@ const en: Translation = {
       experience: 'Experience',
       skillGroups: 'Skills',
       projects: 'Projects',
+      languages: 'Languages',
     },
     basics: {
       fullName: 'Full Name',
@@ -338,6 +339,14 @@ const en: Translation = {
       username: 'Username',
       location: 'Location',
       links: 'Links',
+    },
+    languages: {
+      add: 'Add language',
+      language: 'Language',
+      proficiency: 'Proficiency',
+      labels: 'Localized labels',
+      nameFor: '{locale} name',
+      proficiencyFor: '{locale} proficiency',
     },
     save: 'Save Portfolio',
     cancel: 'Cancel',

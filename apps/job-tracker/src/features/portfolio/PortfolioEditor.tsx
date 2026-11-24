@@ -30,6 +30,7 @@ const EMPTY_CONTENT: PortfolioContent = {
   experience: [],
   skillGroups: [],
   projects: [],
+  languages: [],
 };
 
 export function PortfolioEditor() {

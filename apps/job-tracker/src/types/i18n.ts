@@ -297,6 +297,7 @@ export interface Translation {
       experience: string;
       skillGroups: string;
       projects: string;
+      languages: string;
     };
     basics: {
       fullName: string;
@@ -305,6 +306,14 @@ export interface Translation {
       username: string;
       location: string;
       links: string;
+    };
+    languages: {
+      add: string;
+      language: string;
+      proficiency: string;
+      labels: string;
+      nameFor: string;
+      proficiencyFor: string;
     };
     save: string;
     cancel: string;

@@ -8,6 +8,7 @@ import { AccordionSection } from '../../components/AccordionSection/AccordionSec
 import {
   BasicsEditor,
   ExperienceEditor,
+  PortfolioLanguagesEditor,
   ProjectEditor,
   SkillGroupsEditor,
 } from '../../components/EntryEditors/EntryEditors';
@@ -109,6 +110,12 @@ export function PortfolioForm({ locale, initial }: PortfolioFormProps) {
           </AccordionSection>
           <AccordionSection title={t.projects}>
             <ProjectEditor value={doc.projects} onChange={bind('projects')} />
+          </AccordionSection>
+          <AccordionSection title={t.languages}>
+            <PortfolioLanguagesEditor
+              value={doc.languages}
+              onChange={bind('languages')}
+            />
           </AccordionSection>
           <Button type="submit" variant="contained" disabled={isPending}>
             {isPending ? messages.common.saving : messages.portfolio.save}

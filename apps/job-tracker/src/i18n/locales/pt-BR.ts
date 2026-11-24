@@ -330,6 +330,7 @@ const ptBR: Translation = {
       experience: 'Experiência',
       skillGroups: 'Habilidades',
       projects: 'Projetos',
+      languages: 'Idiomas',
     },
     basics: {
       fullName: 'Nome Completo',
@@ -338,6 +339,14 @@ const ptBR: Translation = {
       username: 'Nome de usuário',
       location: 'Localização',
       links: 'Links',
+    },
+    languages: {
+      add: 'Adicionar idioma',
+      language: 'Idioma',
+      proficiency: 'Nível',
+      labels: 'Rótulos por idioma',
+      nameFor: 'Nome em {locale}',
+      proficiencyFor: 'Nível em {locale}',
     },
     save: 'Salvar Portfólio',
     cancel: 'Cancelar',

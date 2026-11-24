@@ -1,5 +1,9 @@
 import type { JobArea, JobLevel, JobSource } from './types/job';
-import type { SkillCategory } from './types/portfolio';
+import type {
+  LanguageName,
+  LanguageProficiency,
+  SkillCategory,
+} from './types/portfolio';
 
 export const JOB_LEVELS = [
   'intern',
@@ -41,3 +45,21 @@ export const SKILL_CATEGORIES = [
   'cloud',
   'testing',
 ] as const satisfies readonly SkillCategory[];
+
+export const LANGUAGE_NAMES = [
+  'english',
+  'portuguese',
+  'spanish',
+  'french',
+  'german',
+] as const satisfies readonly LanguageName[];
+
+export const LANGUAGE_PROFICIENCIES = [
+  'native',
+  'c2',
+  'c1',
+  'b2',
+  'b1',
+  'a2',
+  'a1',
+] as const satisfies readonly LanguageProficiency[];

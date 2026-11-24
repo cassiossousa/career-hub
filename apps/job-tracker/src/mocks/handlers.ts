@@ -637,6 +637,7 @@ export const handlers = [
       experience: body.experience ?? [],
       skillGroups: body.skillGroups ?? [],
       projects: body.projects ?? [],
+      languages: body.languages ?? [],
     };
     portfolio = {
       id: portfolio?.id ?? 1,

@@ -19,6 +19,8 @@ module.exports = {
     // Entry bootstrap and theme config are verified by build + e2e, not unit tests.
     '!<rootDir>/src/main.tsx',
     '!<rootDir>/src/app/theme.ts',
+    // Reads import.meta.env, which ts-jest cannot execute; specs mock it.
+    '!<rootDir>/src/app/env.ts',
   ],
   coverageThreshold: {
     '**/src/app/**': {

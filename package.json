@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "npm@11.11.1",
   "author": {
     "name": "C\u00c3\u0192\u00c2\u00a1ssio dos Santos Sousa"
   },

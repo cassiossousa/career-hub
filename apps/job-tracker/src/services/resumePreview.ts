@@ -3,6 +3,7 @@ import type {
   ExperienceEntry,
   PortfolioBasics,
   PortfolioContent,
+  PortfolioLanguage,
   PortfolioLink,
   ProjectEntry,
   SkillCategory,
@@ -162,6 +163,38 @@ function toLanguage(
   };
 }
 
+const LABEL_FALLBACK_LOCALE = 'en';
+
+function humanizeEnum(value: string): string {
+  return value.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
+}
+
+function resolveLanguageLabel(
+  entry: PortfolioLanguage,
+  locale: string,
+  field: 'name' | 'proficiency',
+): string | undefined {
+  for (const candidate of [locale, LABEL_FALLBACK_LOCALE]) {
+    const value = entry.labels?.[candidate]?.[field];
+    if (typeof value === 'string' && value !== '') return value;
+  }
+  return undefined;
+}
+
+function toPortfolioLanguage(
+  entry: PortfolioLanguage,
+  locale: string,
+): LanguageEntry {
+  return {
+    name:
+      resolveLanguageLabel(entry, locale, 'name') ??
+      humanizeEnum(entry.language),
+    proficiency:
+      resolveLanguageLabel(entry, locale, 'proficiency') ??
+      humanizeEnum(entry.proficiency),
+  };
+}
+
 /** Maps the editable resume document into the viewer's presentation model. */
 export function toResumePdfDocument(
   doc: ResumeDocument,
@@ -201,6 +234,9 @@ export function toPortfolioPdfDocument(
       experience: content.experience,
       skillGroups: content.skillGroups,
       projects: content.projects,
+      languages: (content.languages ?? []).map((entry) =>
+        toPortfolioLanguage(entry, locale),
+      ),
     },
     locale,
     copy,

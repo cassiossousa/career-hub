@@ -62,6 +62,7 @@ const jobLevelSchema = z.enum([
   'mid',
   'senior',
   'lead',
+  'unknown',
 ]) satisfies z.ZodType<JobLevel>;
 
 const jobAreaSchema = z.enum([

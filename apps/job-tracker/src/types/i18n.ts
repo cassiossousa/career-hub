@@ -92,6 +92,7 @@ export interface Translation {
       mid: string;
       senior: string;
       lead: string;
+      unknown: string;
     };
     areas: {
       frontend: string;
@@ -352,7 +353,6 @@ export interface Translation {
 
   ingestion: {
     title: string;
-    description: string;
     runAll: string;
     running: string;
     jobsBySource: string;

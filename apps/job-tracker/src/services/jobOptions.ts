@@ -11,6 +11,7 @@ export const JOB_LEVELS = [
   'mid',
   'senior',
   'lead',
+  'unknown',
 ] as const satisfies readonly JobLevel[];
 
 export const JOB_AREAS = [

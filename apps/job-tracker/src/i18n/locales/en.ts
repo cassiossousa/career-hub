@@ -84,6 +84,7 @@ const en: Translation = {
       mid: 'Mid',
       senior: 'Senior',
       lead: 'Lead',
+      unknown: 'Unknown',
     },
     areas: {
       frontend: 'Frontend',
@@ -388,8 +389,6 @@ const en: Translation = {
 
   ingestion: {
     title: 'Job ingestion',
-    description:
-      'Scraper pipeline runs across every configured job source. Runs execute synchronously and may take a few minutes.',
     runAll: 'Run all sources',
     running: 'Running…',
     jobsBySource: 'Jobs by source',

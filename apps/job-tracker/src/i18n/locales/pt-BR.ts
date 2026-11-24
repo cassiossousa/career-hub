@@ -84,6 +84,7 @@ const ptBR: Translation = {
       mid: 'Pleno',
       senior: 'Sênior',
       lead: 'Líder',
+      unknown: 'Não informado',
     },
     areas: {
       frontend: 'Frontend',
@@ -389,8 +390,6 @@ const ptBR: Translation = {
 
   ingestion: {
     title: 'Ingestão de vagas',
-    description:
-      'Execuções do pipeline de scraping em todas as fontes configuradas. As execuções são síncronas e podem levar alguns minutos.',
     runAll: 'Executar todas as fontes',
     running: 'Executando…',
     jobsBySource: 'Vagas por fonte',

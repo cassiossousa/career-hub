@@ -13,6 +13,7 @@ import type {
   JobStats,
 } from '../types/job';
 import { apiClient } from './client';
+import { paginationParams } from './pagination';
 import {
   jobResponseSchema,
   jobStatsResponseSchema,
@@ -21,8 +22,8 @@ import {
 
 export const JOBS_PAGE_SIZE = 200;
 
-const JOBS_QUERY_KEY = ['jobs'];
-const JOB_STATS_QUERY_KEY = ['jobStats'];
+export const JOBS_QUERY_KEY = ['jobs'];
+export const JOB_STATS_QUERY_KEY = ['jobStats'];
 
 export interface JobsQueryOptions {
   limit?: number | undefined;
@@ -35,9 +36,7 @@ export function useJobs(
     JobsQueryOptions,
 ) {
   const { limit = JOBS_PAGE_SIZE, offset = 0, ...queryOptions } = options ?? {};
-  const params = new URLSearchParams();
-  params.set('limit', String(limit));
-  params.set('offset', String(offset));
+  const params = paginationParams(limit, offset);
   if (filter.source) params.set('source', filter.source);
   if (filter.level) params.set('level', filter.level);
   if (filter.location) params.set('location', filter.location);

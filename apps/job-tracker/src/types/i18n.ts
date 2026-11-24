@@ -1,3 +1,4 @@
+import type { IngestionRunStatus } from '../services/types/ingestion';
 import type {
   JobSource,
   RequirementClassification,
@@ -14,6 +15,8 @@ export interface Translation {
     applications: string;
     portfolio: string;
     skills: string;
+    settings: string;
+    ingestion: string;
     switchToEnglish: string;
     switchToPortuguese: string;
     addJob: string;
@@ -322,6 +325,41 @@ export interface Translation {
     kindSkill: string;
     kindGroup: string;
     saveLabels: string;
+  };
+
+  settings: {
+    title: string;
+    description: string;
+    filtersTitle: string;
+    filtersDescription: string;
+    levels: string;
+    areas: string;
+    locations: string;
+    locationsHint: string;
+    remoteOnly: string;
+    noPortfolio: string;
+    openPortfolio: string;
+  };
+
+  ingestion: {
+    title: string;
+    description: string;
+    runAll: string;
+    running: string;
+    jobsBySource: string;
+    runsTitle: string;
+    noRuns: string;
+    columns: {
+      started: string;
+      source: string;
+      status: string;
+      fetched: string;
+      inserted: string;
+      updated: string;
+      failed: string;
+      error: string;
+    };
+    status: Record<IngestionRunStatus, string>;
   };
 
   common: {

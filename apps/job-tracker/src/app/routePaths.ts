@@ -6,6 +6,8 @@ export const routePaths = {
   applicationDetail: (id: string) => `/applications/${id}`,
   portfolio: '/portfolio',
   skills: '/skills',
+  settings: '/settings',
+  ingestion: '/ingestion',
 } as const;
 
 export const publicRoutePaths = [
@@ -14,4 +16,6 @@ export const publicRoutePaths = [
   routePaths.applications,
   routePaths.portfolio,
   routePaths.skills,
+  routePaths.settings,
+  routePaths.ingestion,
 ] as const;

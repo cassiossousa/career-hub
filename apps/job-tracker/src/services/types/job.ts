@@ -61,6 +61,7 @@ export interface Job {
   currency: string;
   postedAt: string | null;
   lastSeenAt: string | null;
+  closedAt?: string | null | undefined;
   requirements: Requirement[];
   filterResult: JobFilterResult;
   createdAt: string;

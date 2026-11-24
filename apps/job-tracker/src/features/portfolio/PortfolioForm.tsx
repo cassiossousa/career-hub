@@ -2,9 +2,9 @@ import type { ResumePdfViewerLabels } from '@career-hub/ui/components';
 import { ResumePdfViewer } from '@career-hub/ui/components';
 import { Alert, Box, Button, Tab, Tabs } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { saveFeedbackOptions } from '../../app/saveFeedback';
 import { useDocumentDraft } from '../../app/useDocumentDraft';
 import { AccordionSection } from '../../components/AccordionSection/AccordionSection';
-import { errorMessage } from '../../components/AsyncStatus/AsyncStatus';
 import {
   BasicsEditor,
   ExperienceEditor,
@@ -34,15 +34,13 @@ export function PortfolioForm({ locale, initial }: PortfolioFormProps) {
     setFeedback(null);
     upsertPortfolio(
       { locale, ...doc },
-      {
-        onSuccess: () => {
+      saveFeedbackOptions({
+        savedText: messages.common.saved,
+        setFeedback,
+        onSaved: () => {
           setBaseline(doc);
-          setFeedback({ type: 'success', text: messages.common.saved });
         },
-        onError: (error) => {
-          setFeedback({ type: 'error', text: errorMessage(error) });
-        },
-      },
+      }),
     );
   };
 

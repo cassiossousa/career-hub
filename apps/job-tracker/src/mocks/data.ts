@@ -1,5 +1,6 @@
 import { SKILL_CATEGORIES } from '../services/jobOptions';
 import type { Application } from '../services/types/application';
+import type { IngestionRun } from '../services/types/ingestion';
 import type { Job, JobCreate } from '../services/types/job';
 import type {
   Portfolio,
@@ -886,3 +887,71 @@ export function toJob(body: JobCreate, id: number): Job {
     createdAt: now,
   };
 }
+
+export const seedIngestionRuns: IngestionRun[] = [
+  {
+    id: 1,
+    startedAt: daysAgo(0),
+    finishedAt: daysAgo(0),
+    createdAt: daysAgo(0),
+    source: 'remote',
+    status: 'succeeded',
+    fetched: 128,
+    inserted: 12,
+    updated: 116,
+    failed: 0,
+    error: null,
+  },
+  {
+    id: 2,
+    startedAt: daysAgo(0),
+    finishedAt: daysAgo(0),
+    createdAt: daysAgo(0),
+    source: 'solides',
+    status: 'succeeded',
+    fetched: 935,
+    inserted: 0,
+    updated: 935,
+    failed: 0,
+    error: null,
+  },
+  {
+    id: 3,
+    startedAt: daysAgo(0),
+    finishedAt: daysAgo(0),
+    createdAt: daysAgo(0),
+    source: 'empregos_com_br',
+    status: 'partial',
+    fetched: 1000,
+    inserted: 100,
+    updated: 890,
+    failed: 10,
+    error: '10 item(s) failed validation',
+  },
+  {
+    id: 4,
+    startedAt: daysAgo(0),
+    finishedAt: daysAgo(0),
+    createdAt: daysAgo(0),
+    source: 'gupy',
+    status: 'failed',
+    fetched: 0,
+    inserted: 0,
+    updated: 0,
+    failed: 0,
+    error: 'gupy: per-company career pages; needs a configured company list',
+  },
+  {
+    id: 5,
+    startedAt: daysAgo(1),
+    finishedAt: daysAgo(1),
+    createdAt: daysAgo(1),
+    source: 'casa_do_trabalhador',
+    status: 'succeeded',
+    fetched: 9,
+    inserted: 9,
+    updated: 0,
+    failed: 0,
+    error: null,
+  },
+];

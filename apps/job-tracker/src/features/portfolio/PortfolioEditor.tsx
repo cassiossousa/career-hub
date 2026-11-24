@@ -10,14 +10,9 @@ import {
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
-import {
-  EmptyState,
-  LoadingState,
-  QueryErrorAlert,
-} from '../../components/AsyncStatus/AsyncStatus';
+import { EmptyState } from '../../components/AsyncStatus/AsyncStatus';
+import { PortfolioQueryGate } from '../../components/PortfolioQueryGate/PortfolioQueryGate';
 import { useTranslation } from '../../i18n/Provider';
-import { isApiError } from '../../services/api/client';
-import { usePortfolio } from '../../services/api/portfolio';
 import type { PortfolioContent } from '../../services/types/portfolio';
 import { PortfolioForm } from './PortfolioForm';
 
@@ -39,83 +34,69 @@ const EMPTY_CONTENT: PortfolioContent = {
 
 export function PortfolioEditor() {
   const { messages, locale } = useTranslation();
-  const portfolioQuery = usePortfolio();
   const [selectedLocale, setSelectedLocale] = useState<string>(locale);
 
-  if (portfolioQuery.isLoading) {
-    return <LoadingState label={messages.common.loading} />;
-  }
-
-  const portfolioMissing =
-    portfolioQuery.isError &&
-    isApiError(portfolioQuery.error) &&
-    portfolioQuery.error.code === 'not_found';
-
-  if (portfolioQuery.isError && !portfolioMissing) {
-    return (
-      <QueryErrorAlert
-        error={portfolioQuery.error}
-        subject={messages.portfolio.title}
-        onRetry={() => void portfolioQuery.refetch()}
-      />
-    );
-  }
-
-  const documents = portfolioQuery.data?.documents ?? {};
-  const initial = documents[selectedLocale] ?? EMPTY_CONTENT;
-
   return (
-    <Stack spacing={3}>
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          rowGap: 1,
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          {messages.portfolio.title}
-        </Typography>
-        <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel>{messages.portfolio.locale}</InputLabel>
-          <Select
-            value={selectedLocale}
-            label={messages.portfolio.locale}
-            onChange={(e) => {
-              setSelectedLocale(e.target.value);
-            }}
-          >
-            {LOCALES.map((l) => (
-              <MenuItem key={l} value={l}>
-                {messages.common.locales[l]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
-      {documents[selectedLocale] === undefined && !portfolioMissing && (
-        <EmptyState
-          title={messages.portfolio.noDocumentForLocale.replace(
-            '{locale}',
-            selectedLocale,
-          )}
-        />
-      )}
-      <PortfolioForm
-        key={selectedLocale}
-        locale={selectedLocale}
-        initial={initial}
-      />
-      <Button
-        component={RouterLink}
-        to={routePaths.applications}
-        variant="text"
-        sx={{ alignSelf: 'flex-start' }}
-      >
-        {messages.common.back}
-      </Button>
-    </Stack>
+    <PortfolioQueryGate subject={messages.portfolio.title}>
+      {({ portfolio, missing }) => {
+        const documents = portfolio?.documents ?? {};
+        const initial = documents[selectedLocale] ?? EMPTY_CONTENT;
+
+        return (
+          <Stack spacing={3}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                rowGap: 1,
+              }}
+            >
+              <Typography component="h1" variant="h5">
+                {messages.portfolio.title}
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel>{messages.portfolio.locale}</InputLabel>
+                <Select
+                  value={selectedLocale}
+                  label={messages.portfolio.locale}
+                  onChange={(e) => {
+                    setSelectedLocale(e.target.value);
+                  }}
+                >
+                  {LOCALES.map((l) => (
+                    <MenuItem key={l} value={l}>
+                      {messages.common.locales[l]}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+            {documents[selectedLocale] === undefined && !missing && (
+              <EmptyState
+                title={messages.portfolio.noDocumentForLocale.replace(
+                  '{locale}',
+                  selectedLocale,
+                )}
+              />
+            )}
+            <PortfolioForm
+              key={selectedLocale}
+              locale={selectedLocale}
+              initial={initial}
+            />
+            <Button
+              component={RouterLink}
+              to={routePaths.applications}
+              variant="text"
+              sx={{ alignSelf: 'flex-start' }}
+            >
+              {messages.common.back}
+            </Button>
+          </Stack>
+        );
+      }}
+    </PortfolioQueryGate>
   );
 }

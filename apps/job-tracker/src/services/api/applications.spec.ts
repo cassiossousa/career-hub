@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
+import { seedApplications } from '../../mocks/data';
 import { ApiTestWrapper, waitForQuerySuccess } from '../../test/TestUtils';
 import type { Application, ApplicationListPage } from '../types/application';
 import {
@@ -31,7 +32,9 @@ describe('applications api', () => {
     await waitForQuerySuccess(() => result.current.isSuccess);
     const apps = currentApps(result.current);
     expect(apps.every((a) => a.status === 'saved')).toBe(true);
-    expect(apps.length).toBe(1);
+    expect(apps.length).toBe(
+      seedApplications.filter((a) => a.status === 'saved').length,
+    );
   });
 
   it('creates an application and refetches the list', async () => {

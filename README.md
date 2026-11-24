@@ -67,9 +67,14 @@ Developer portfolio built with React, TypeScript, and Vite. Project and work exp
   background-worker, and shared packages.
 
 Each app is a static frontend deployed as its own Vercel project (Root
-Directory = `apps/<app>`). Database access, job-application submissions, and
-scheduled jobs will require server-capable hosting and should live outside
-the web bundles.
+Directory = `apps/<app>`). The portfolio deploys publicly; the job tracker
+deploys privately — its Vercel project has Deployment Protection → Vercel
+Authentication → "All Deployments" enabled, because `VITE_API_KEY` is
+inlined into the bundle and must never be reachable without a Vercel login.
+Job-tracker build-time env vars (`VITE_API_URL`, `VITE_API_KEY`) are set in
+the Vercel dashboard, never committed; locally they live in gitignored
+`.env*.local` files (see `apps/job-tracker/.env.example`). The backend API
+lives in a separate repository.
 
 ## Key Features
 

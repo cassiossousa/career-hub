@@ -7,6 +7,8 @@ const en: Translation = {
     applications: 'Applications',
     portfolio: 'Portfolio',
     skills: 'Skills',
+    settings: 'Settings',
+    ingestion: 'Ingestion',
     switchToEnglish: 'EN — Switch to English',
     switchToPortuguese: 'PT — Switch to Portuguese',
     addJob: 'Add Job',
@@ -357,6 +359,48 @@ const en: Translation = {
     kindSkill: 'Skill',
     kindGroup: 'Group',
     saveLabels: 'Save Labels',
+  },
+
+  settings: {
+    title: 'Settings',
+    description: 'Application preferences stored on the server.',
+    filtersTitle: 'Profile job filters',
+    filtersDescription:
+      'Jobs matching these rules are flagged as passing your profile when ingested.',
+    levels: 'Levels',
+    areas: 'Areas',
+    locations: 'Locations',
+    locationsHint: 'Comma-separated substrings matched against job locations.',
+    remoteOnly: 'Remote only',
+    noPortfolio:
+      'Profile filters live on the portfolio. Create your portfolio document first.',
+    openPortfolio: 'Open Portfolio',
+  },
+
+  ingestion: {
+    title: 'Job ingestion',
+    description:
+      'Scraper pipeline runs across every configured job source. Runs execute synchronously and may take a few minutes.',
+    runAll: 'Run all sources',
+    running: 'Running…',
+    jobsBySource: 'Jobs by source',
+    runsTitle: 'Recent runs',
+    noRuns: 'No ingestion runs yet.',
+    columns: {
+      started: 'Started',
+      source: 'Source',
+      status: 'Status',
+      fetched: 'Fetched',
+      inserted: 'Inserted',
+      updated: 'Updated',
+      failed: 'Failed',
+      error: 'Error',
+    },
+    status: {
+      succeeded: 'Succeeded',
+      partial: 'Partial',
+      failed: 'Failed',
+    },
   },
 
   common: {

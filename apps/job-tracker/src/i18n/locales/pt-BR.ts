@@ -7,6 +7,8 @@ const ptBR: Translation = {
     applications: 'Candidaturas',
     portfolio: 'Portfólio',
     skills: 'Habilidades',
+    settings: 'Configurações',
+    ingestion: 'Ingestão',
     switchToEnglish: 'EN — Mudar para Inglês',
     switchToPortuguese: 'PT — Mudar para Português',
     addJob: 'Adicionar Vaga',
@@ -357,6 +359,49 @@ const ptBR: Translation = {
     kindSkill: 'Habilidade',
     kindGroup: 'Grupo',
     saveLabels: 'Salvar Rótulos',
+  },
+
+  settings: {
+    title: 'Configurações',
+    description: 'Preferências do aplicativo armazenadas no servidor.',
+    filtersTitle: 'Filtros de vagas do perfil',
+    filtersDescription:
+      'Vagas que correspondem a estas regras são marcadas como compatíveis com seu perfil na ingestão.',
+    levels: 'Níveis',
+    areas: 'Áreas',
+    locations: 'Localizações',
+    locationsHint:
+      'Termos separados por vírgula comparados com a localização das vagas.',
+    remoteOnly: 'Somente remoto',
+    noPortfolio:
+      'Os filtros de perfil ficam no portfólio. Crie primeiro o documento do seu portfólio.',
+    openPortfolio: 'Abrir Portfólio',
+  },
+
+  ingestion: {
+    title: 'Ingestão de vagas',
+    description:
+      'Execuções do pipeline de scraping em todas as fontes configuradas. As execuções são síncronas e podem levar alguns minutos.',
+    runAll: 'Executar todas as fontes',
+    running: 'Executando…',
+    jobsBySource: 'Vagas por fonte',
+    runsTitle: 'Execuções recentes',
+    noRuns: 'Nenhuma execução de ingestão ainda.',
+    columns: {
+      started: 'Início',
+      source: 'Fonte',
+      status: 'Status',
+      fetched: 'Buscadas',
+      inserted: 'Inseridas',
+      updated: 'Atualizadas',
+      failed: 'Falhas',
+      error: 'Erro',
+    },
+    status: {
+      succeeded: 'Sucesso',
+      partial: 'Parcial',
+      failed: 'Falha',
+    },
   },
 
   common: {

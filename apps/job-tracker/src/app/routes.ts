@@ -33,6 +33,16 @@ const SkillsEditor = lazy(() =>
     default: m.SkillsEditor,
   })),
 );
+const SettingsEditor = lazy(() =>
+  import('../features/settings/SettingsEditor').then((m) => ({
+    default: m.SettingsEditor,
+  })),
+);
+const IngestionDashboard = lazy(() =>
+  import('../features/ingestion/IngestionDashboard').then((m) => ({
+    default: m.IngestionDashboard,
+  })),
+);
 
 export interface AppRoute {
   path: string;
@@ -67,6 +77,16 @@ export const appRoutes: AppRoute[] = [
     path: routePaths.skills,
     Component: SkillsEditor,
     navLabel: (nav) => nav.skills,
+  },
+  {
+    path: routePaths.settings,
+    Component: SettingsEditor,
+    navLabel: (nav) => nav.settings,
+  },
+  {
+    path: routePaths.ingestion,
+    Component: IngestionDashboard,
+    navLabel: (nav) => nav.ingestion,
   },
 ];
 

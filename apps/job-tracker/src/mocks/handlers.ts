@@ -6,6 +6,10 @@ import type {
   ApplicationUpdate,
 } from '../services/types/application';
 import type {
+  IngestionRun,
+  IngestionRunTrigger,
+} from '../services/types/ingestion';
+import type {
   Job,
   JobCreate,
   JobFilter,
@@ -26,9 +30,11 @@ import type {
 } from '../services/types/skills';
 import {
   seedApplications,
+  seedIngestionRuns,
   seedJobs,
   seedPortfolio,
   seedResume,
+  seedResumeDraft,
   seedSkillGroupLabels,
   seedSkills,
   toJob,
@@ -37,8 +43,10 @@ import {
 let jobs = [...seedJobs];
 let applications = [...seedApplications];
 let portfolio: Portfolio | null = { ...seedPortfolio };
-let resumes: Resume[] = [seedResume];
+let resumes: Resume[] = [seedResume, seedResumeDraft];
 let skills: Skill[] = [...seedSkills];
+let ingestionRuns: IngestionRun[] = [...seedIngestionRuns];
+let nextIngestionRunId = 100;
 let skillGroupLabels: SkillGroupLabels[] = seedSkillGroupLabels.map(
   (entry) => ({
     ...entry,
@@ -54,8 +62,10 @@ export function resetMockData() {
   jobs = [...seedJobs];
   applications = [...seedApplications];
   portfolio = { ...seedPortfolio };
-  resumes = [seedResume];
+  resumes = [seedResume, seedResumeDraft];
   skills = [...seedSkills];
+  ingestionRuns = [...seedIngestionRuns];
+  nextIngestionRunId = 100;
   skillGroupLabels = seedSkillGroupLabels.map((entry) => ({
     ...entry,
     labels: { ...entry.labels },
@@ -325,7 +335,65 @@ function documentFromBody(body: ResumeDocument): ResumeDocument {
   };
 }
 
+const INGESTION_SOURCES: Job['source'][] = [
+  'remote',
+  'solides',
+  'empregos_com_br',
+  'sine_bahia',
+  'casa_do_trabalhador',
+  'gupy',
+  'google_jobs',
+];
+
+const INGESTION_FAILURES: Partial<Record<Job['source'], string>> = {
+  sine_bahia: 'sine_bahia: candidate-login-gated portal; no public feed',
+  gupy: 'gupy: per-company career pages; needs a configured company list',
+  google_jobs:
+    'google_jobs: requires a configured Google Cloud API key (not enabled)',
+};
+
+function mockIngestionRun(source: Job['source']): IngestionRun {
+  const now = new Date().toISOString();
+  const error = INGESTION_FAILURES[source];
+  const ok = error === undefined;
+  return {
+    id: nextIngestionRunId++,
+    startedAt: now,
+    finishedAt: now,
+    createdAt: now,
+    source,
+    status: ok ? 'succeeded' : 'failed',
+    fetched: ok ? 25 : 0,
+    inserted: ok ? 3 : 0,
+    updated: ok ? 22 : 0,
+    failed: 0,
+    error: error ?? null,
+  };
+}
+
 export const handlers = [
+  http.get('/api/ingestion/runs', ({ request }) => {
+    const { items, total } = pageOf(
+      ingestionRuns.toSorted((a, b) => b.id - a.id),
+      new URL(request.url).searchParams,
+    );
+    return HttpResponse.json({ runs: items, total });
+  }),
+
+  http.post('/api/ingestion/runs', async ({ request }) => {
+    const body = (await request.json()) as IngestionRunTrigger;
+    const sources =
+      body.source !== undefined && body.source !== null
+        ? [body.source]
+        : INGESTION_SOURCES;
+    const created = sources.map(mockIngestionRun);
+    ingestionRuns = [...created, ...ingestionRuns];
+    return HttpResponse.json(
+      { runs: created, total: created.length },
+      { status: 201 },
+    );
+  }),
+
   http.get('/api/jobs/stats', () => HttpResponse.json(jobStats())),
 
   http.get('/api/jobs', ({ request }) => {
@@ -683,3 +751,9 @@ export const handlers = [
     });
   }),
 ];
+
+// Appended last by the browser worker in production builds only: any /api/*
+// request without a real handler fails as a network error, so the public demo
+// can never reach the backend. First-match wins, so real handlers take
+// precedence.
+export const unhandledApiGuard = http.all('/api/*', () => HttpResponse.error());

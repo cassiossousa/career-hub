@@ -83,7 +83,7 @@ describe('standalone resumes api', () => {
   it('lists, reads, creates, and updates resumes', async () => {
     const list = await apiClient.get('/api/resumes?limit=10');
     const parsed = resumesResponseSchema.parse(list.data);
-    expect(parsed.total).toBe(1);
+    expect(parsed.total).toBe(2);
 
     const created = await apiClient.post('/api/resumes', {
       applicationId: 3,

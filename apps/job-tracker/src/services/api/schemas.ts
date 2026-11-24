@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import type { Application, ApplicationStatus } from '../types/application';
 import type {
+  IngestionRun,
+  IngestionRunListPage,
+  IngestionRunStatus,
+} from '../types/ingestion';
+import type {
   Job,
   JobArea,
   JobFilterResult,
@@ -108,6 +113,7 @@ const jobSchema = z.object({
   currency: z.string(),
   postedAt: z.string().nullable(),
   lastSeenAt: z.string().nullable(),
+  closedAt: z.string().nullable().optional(),
   requirements: z.array(requirementSchema),
   filterResult: jobFilterResultSchema,
   createdAt: z.string(),
@@ -258,6 +264,26 @@ const skillSchema = z.object({
   updatedAt: z.string(),
 }) satisfies z.ZodType<Skill>;
 
+const ingestionRunStatusSchema = z.enum([
+  'succeeded',
+  'partial',
+  'failed',
+]) satisfies z.ZodType<IngestionRunStatus>;
+
+const ingestionRunSchema = z.object({
+  id: z.number(),
+  startedAt: z.string(),
+  finishedAt: z.string(),
+  createdAt: z.string(),
+  source: jobSourceSchema,
+  status: ingestionRunStatusSchema,
+  fetched: z.number(),
+  inserted: z.number(),
+  updated: z.number(),
+  failed: z.number(),
+  error: z.string().nullable(),
+}) satisfies z.ZodType<IngestionRun>;
+
 const matchBaselineSchema = z.object({
   kind: z.enum(['resume', 'portfolio']),
   locale: z.string().nullable(),
@@ -333,6 +359,11 @@ export const skillGroupLabelsListSchema = z.object({
 }) satisfies z.ZodType<SkillGroupLabelsList>;
 
 export const skillGroupLabelsResponseSchema = skillGroupLabelsSchema;
+
+export const ingestionRunListResponseSchema = z.object({
+  runs: z.array(ingestionRunSchema),
+  total: z.number(),
+}) satisfies z.ZodType<IngestionRunListPage>;
 
 export const matchResponseSchema = matchResultSchema;
 

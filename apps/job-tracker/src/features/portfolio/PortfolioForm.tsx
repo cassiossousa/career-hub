@@ -1,7 +1,8 @@
 import type { ResumePdfViewerLabels } from '@career-hub/ui/components';
 import { ResumePdfViewer } from '@career-hub/ui/components';
 import { Alert, Box, Button, Tab, Tabs } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { saveFeedbackOptions } from '../../app/saveFeedback';
 import { useDocumentDraft } from '../../app/useDocumentDraft';
 import { AccordionSection } from '../../components/AccordionSection/AccordionSection';
@@ -18,17 +19,19 @@ import { useTranslation } from '../../i18n/Provider';
 import { useUpsertPortfolio } from '../../services/api/portfolio';
 import { toPortfolioPdfDocument } from '../../services/resumePreview';
 import type { PortfolioContent } from '../../services/types/portfolio';
+import type { Locale } from '../../types/i18n';
 
 interface PortfolioFormProps {
-  locale: string;
+  locale: Locale;
   initial: PortfolioContent;
 }
 
 export function PortfolioForm({ locale, initial }: PortfolioFormProps) {
   const { messages } = useTranslation();
   const { mutate: upsertPortfolio, isPending } = useUpsertPortfolio();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { doc, setBaseline, feedback, setFeedback, blocker, bind } =
-    useDocumentDraft(initial);
+    useDocumentDraft(initial, true, true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,9 +48,18 @@ export function PortfolioForm({ locale, initial }: PortfolioFormProps) {
     );
   };
 
-  const [activeTab, setActiveTab] = useState(0);
+  const activeTab = searchParams.get('view') === 'preview' ? 1 : 0;
   const handleTabChange = (_event: React.SyntheticEvent, value: number) => {
-    setActiveTab(value);
+    // Preserve sibling params (?locale=) when toggling the preview tab.
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value === 1) {
+        next.set('view', 'preview');
+      } else {
+        next.delete('view');
+      }
+      return next;
+    });
   };
 
   const t = messages.portfolio.sections;
@@ -115,6 +127,7 @@ export function PortfolioForm({ locale, initial }: PortfolioFormProps) {
             <PortfolioLanguagesEditor
               value={doc.languages}
               onChange={bind('languages')}
+              locale={locale}
             />
           </AccordionSection>
           <Button type="submit" variant="contained" disabled={isPending}>

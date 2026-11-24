@@ -118,6 +118,19 @@ function lastCall<T>(calls: T[]): T {
   return last;
 }
 
+function renderTwoLinksBasics() {
+  const twoLinks: PortfolioBasics = {
+    ...basics,
+    links: [
+      { kind: 'github', url: 'https://github.com/a', label: null },
+      { kind: 'linkedin', url: 'https://linkedin.com/in/b', label: null },
+    ],
+  };
+  const { Harness, calls } = makeHarness(twoLinks, BasicsEditor);
+  renderWithProviders(<Harness />);
+  return calls;
+}
+
 describe('BasicsEditor', () => {
   it('edits scalar fields and links', async () => {
     const user = userEvent.setup();
@@ -157,6 +170,48 @@ describe('BasicsEditor', () => {
     expect(lastCall(calls).avatarUrl).toBe('https://example.com/a.png');
     fireEvent.change(avatar, { target: { value: '' } });
     expect(lastCall(calls).avatarUrl).toBeNull();
+  });
+
+  it('reorders links by dragging the handle onto another row', () => {
+    const calls = renderTwoLinksBasics();
+
+    const rows = screen.getAllByRole('listitem');
+    const handles = screen.getAllByRole('button', { name: /reorder link/i });
+    const firstRow = rows[0];
+    const secondHandle = handles[1];
+    if (!firstRow || !secondHandle) throw new Error('expected link rows');
+    fireEvent.dragStart(secondHandle);
+    fireEvent.dragOver(firstRow);
+    fireEvent.drop(firstRow);
+
+    expect(lastCall(calls).links.map((l) => l.url)).toEqual([
+      'https://linkedin.com/in/b',
+      'https://github.com/a',
+    ]);
+  });
+
+  it('moves links with arrow keys on the reorder handle', () => {
+    const calls = renderTwoLinksBasics();
+
+    const handles = screen.getAllByRole('button', { name: /reorder link/i });
+    const [firstHandle, secondHandle] = handles;
+    if (!firstHandle || !secondHandle) {
+      throw new Error('expected reorder handles');
+    }
+    fireEvent.keyDown(firstHandle, { key: 'ArrowUp' });
+    expect(calls).toHaveLength(0);
+
+    fireEvent.keyDown(secondHandle, { key: 'ArrowUp' });
+    expect(lastCall(calls).links.map((l) => l.url)).toEqual([
+      'https://linkedin.com/in/b',
+      'https://github.com/a',
+    ]);
+
+    fireEvent.keyDown(firstHandle, { key: 'ArrowDown' });
+    expect(lastCall(calls).links.map((l) => l.url)).toEqual([
+      'https://github.com/a',
+      'https://linkedin.com/in/b',
+    ]);
   });
 });
 

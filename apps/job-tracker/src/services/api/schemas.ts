@@ -20,7 +20,6 @@ import type {
   ExperienceBullet,
   ExperienceEntry,
   LanguageName,
-  LanguageProficiency,
   Portfolio,
   PortfolioBasics,
   PortfolioContent,
@@ -243,16 +242,6 @@ const languageNameSchema = z.enum([
   'german',
 ]) satisfies z.ZodType<LanguageName>;
 
-const languageProficiencySchema = z.enum([
-  'native',
-  'c2',
-  'c1',
-  'b2',
-  'b1',
-  'a2',
-  'a1',
-]) satisfies z.ZodType<LanguageProficiency>;
-
 const portfolioLanguageLabelsSchema = z.object({
   name: z.string().nullish(),
   proficiency: z.string().nullish(),
@@ -260,7 +249,7 @@ const portfolioLanguageLabelsSchema = z.object({
 
 const portfolioLanguageSchema = z.object({
   language: languageNameSchema,
-  proficiency: languageProficiencySchema,
+  proficiency: z.string().min(1).max(100),
   labels: z.record(z.string(), portfolioLanguageLabelsSchema).optional(),
 }) satisfies z.ZodType<PortfolioLanguage>;
 

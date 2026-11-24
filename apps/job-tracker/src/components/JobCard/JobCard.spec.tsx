@@ -49,6 +49,14 @@ describe('JobCard', () => {
     expect(screen.queryByText('Remote')).not.toBeInTheDocument();
   });
 
+  it('links to the external job posting in a new tab', () => {
+    renderWithProviders(<JobCard job={seedJob(0)} />);
+    const link = screen.getByRole('link', { name: 'View posting' });
+    expect(link).toHaveAttribute('href', seedJob(0).url);
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'));
+  });
+
   it('is keyboard-activatable when clickable', async () => {
     const onClick = jest.fn();
     const user = userEvent.setup();

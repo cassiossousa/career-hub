@@ -7,8 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
 import { EmptyState } from '../../components/AsyncStatus/AsyncStatus';
 import { PortfolioQueryGate } from '../../components/PortfolioQueryGate/PortfolioQueryGate';
@@ -31,7 +30,11 @@ const EMPTY_CONTENT: PortfolioContent = {
 
 export function PortfolioEditor() {
   const { messages, locale } = useTranslation();
-  const [selectedLocale, setSelectedLocale] = useState<string>(locale);
+  // ?locale= selects which portfolio document is edited; unknown values
+  // fall back to the UI locale. Shareable like ?view=preview.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramLocale = searchParams.get('locale');
+  const selectedLocale = LOCALES.find((l) => l === paramLocale) ?? locale;
 
   return (
     <PortfolioQueryGate subject={messages.portfolio.title}>
@@ -54,12 +57,17 @@ export function PortfolioEditor() {
                 {messages.portfolio.title}
               </Typography>
               <FormControl size="small" sx={{ minWidth: 140 }}>
-                <InputLabel>{messages.portfolio.locale}</InputLabel>
+                <InputLabel id="portfolio-locale-label">
+                  {messages.portfolio.locale}
+                </InputLabel>
                 <Select
+                  labelId="portfolio-locale-label"
                   value={selectedLocale}
                   label={messages.portfolio.locale}
                   onChange={(e) => {
-                    setSelectedLocale(e.target.value);
+                    const next = new URLSearchParams(searchParams);
+                    next.set('locale', e.target.value);
+                    setSearchParams(next);
                   }}
                 >
                   {LOCALES.map((l) => (

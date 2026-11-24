@@ -1,4 +1,5 @@
 import { Alert, Button, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
 import {
   errorMessage,
   LoadingState,
@@ -9,12 +10,14 @@ import {
   useIngestionRuns,
   useTriggerIngestionRuns,
 } from '../../services/api/ingestion';
+import type { JobSource } from '../../services/types/job';
 import { RunsTable, SourceCounts } from './IngestionSections';
 
 export function IngestionDashboard() {
   const { messages } = useTranslation();
   const runsQuery = useIngestionRuns();
   const trigger = useTriggerIngestionRuns();
+  const [sourceFilter, setSourceFilter] = useState<JobSource | null>(null);
   const t = messages.ingestion;
 
   return (
@@ -46,7 +49,10 @@ export function IngestionDashboard() {
       {trigger.isError && (
         <Alert severity="error">{errorMessage(trigger.error)}</Alert>
       )}
-      <SourceCounts />
+      <SourceCounts
+        selectedSource={sourceFilter}
+        onSourceChange={setSourceFilter}
+      />
       <Stack spacing={1}>
         <Typography variant="subtitle1">{t.runsTitle}</Typography>
         {runsQuery.isLoading && (
@@ -60,7 +66,13 @@ export function IngestionDashboard() {
           />
         )}
         {runsQuery.data !== undefined && (
-          <RunsTable runs={runsQuery.data.runs} />
+          <RunsTable
+            runs={runsQuery.data.runs}
+            sourceFilter={sourceFilter}
+            onClearSourceFilter={() => {
+              setSourceFilter(null);
+            }}
+          />
         )}
       </Stack>
     </Stack>

@@ -1,4 +1,6 @@
+import { ToggleChip } from '@career-hub/ui/components';
 import {
+  Button,
   Chip,
   Stack,
   Table,
@@ -10,6 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { EmptyState } from '../../components/AsyncStatus/AsyncStatus';
+import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
 import { useJobStats } from '../../services/api/jobs';
 import { JOB_SOURCES } from '../../services/jobOptions';
@@ -32,7 +35,15 @@ function formatTimestamp(iso: string, locale: string): string {
   return new Date(iso).toLocaleString(locale);
 }
 
-export function SourceCounts() {
+interface SourceCountsProps {
+  selectedSource: JobSource | null;
+  onSourceChange: (source: JobSource | null) => void;
+}
+
+export function SourceCounts({
+  selectedSource,
+  onSourceChange,
+}: SourceCountsProps) {
   const { messages } = useTranslation();
   const statsQuery = useJobStats();
   const bySource = statsQuery.data?.bySource ?? {};
@@ -43,25 +54,60 @@ export function SourceCounts() {
         {messages.ingestion.jobsBySource}
       </Typography>
       <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
-        {JOB_SOURCES.map((source: JobSource) => (
-          <Chip
-            key={source}
-            size="small"
-            variant="outlined"
-            label={`${messages.jobs.sources[source]}: ${bySource[source] ?? 0}`}
-          />
-        ))}
+        {JOB_SOURCES.map((source) => {
+          const active = selectedSource === source;
+          return (
+            <ToggleChip
+              key={source}
+              label={`${messages.jobs.sources[source]}: ${bySource[source] ?? 0}`}
+              active={active}
+              onToggle={() => {
+                onSourceChange(active ? null : source);
+              }}
+            />
+          );
+        })}
       </Stack>
     </Stack>
   );
 }
 
-export function RunsTable({ runs }: { runs: IngestionRun[] }) {
+interface RunsTableProps {
+  runs: IngestionRun[];
+  sourceFilter: JobSource | null;
+  onClearSourceFilter: () => void;
+}
+
+export function RunsTable({
+  runs,
+  sourceFilter,
+  onClearSourceFilter,
+}: RunsTableProps) {
   const { messages, locale } = useTranslation();
   const t = messages.ingestion;
 
   if (runs.length === 0) {
     return <EmptyState title={t.noRuns} />;
+  }
+
+  const visibleRuns =
+    sourceFilter === null
+      ? runs
+      : runs.filter((run) => run.source === sourceFilter);
+
+  if (visibleRuns.length === 0 && sourceFilter !== null) {
+    return (
+      <EmptyState
+        title={interpolate(t.noRunsForSource, {
+          source: messages.jobs.sources[sourceFilter],
+        })}
+        action={
+          <Button variant="outlined" size="small" onClick={onClearSourceFilter}>
+            {t.showAllSources}
+          </Button>
+        }
+      />
+    );
   }
 
   return (
@@ -80,7 +126,7 @@ export function RunsTable({ runs }: { runs: IngestionRun[] }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {runs.map((run) => (
+          {visibleRuns.map((run) => (
             <TableRow key={run.id}>
               <TableCell>{formatTimestamp(run.startedAt, locale)}</TableCell>
               <TableCell>{messages.jobs.sources[run.source]}</TableCell>

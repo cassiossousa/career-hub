@@ -107,6 +107,7 @@ export interface Translation {
     };
     sources: Record<JobSource, string>;
     possiblyExpired: string;
+    viewPosting: string;
     saveForLater: string;
     markApplied: string;
     appliedConfirmTitle: string;
@@ -229,6 +230,7 @@ export interface Translation {
       linkUrl: string;
       linkLabel: string;
       addLink: string;
+      reorderLink: string;
       linkKinds: Record<LinkKind, string>;
     };
     experience: {
@@ -310,7 +312,6 @@ export interface Translation {
       add: string;
       language: string;
       proficiency: string;
-      labels: string;
       nameFor: string;
       proficiencyFor: string;
     };
@@ -356,6 +357,8 @@ export interface Translation {
     jobsBySource: string;
     runsTitle: string;
     noRuns: string;
+    noRunsForSource: string;
+    showAllSources: string;
     columns: {
       started: string;
       source: string;

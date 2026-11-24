@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import type { SxProps, Theme } from '@mui/material';
 import {
   Box,
@@ -18,11 +19,7 @@ import {
 } from '@mui/material';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from '../../i18n/Provider';
-import {
-  LANGUAGE_NAMES,
-  LANGUAGE_PROFICIENCIES,
-  SKILL_CATEGORIES,
-} from '../../services/jobOptions';
+import { LANGUAGE_NAMES, SKILL_CATEGORIES } from '../../services/jobOptions';
 import type {
   ExperienceBullet,
   ExperienceEntry,
@@ -88,6 +85,7 @@ interface EntryFieldProps {
   type?: string | undefined;
   multiline?: boolean | undefined;
   rows?: number | undefined;
+  size?: 'small' | 'medium' | undefined;
   sx?: SxProps<Theme> | undefined;
   fullWidth?: boolean | undefined;
 }
@@ -102,6 +100,7 @@ function EntryField({
   type,
   multiline,
   rows,
+  size,
   sx,
   fullWidth,
 }: EntryFieldProps) {
@@ -115,6 +114,7 @@ function EntryField({
       type={type}
       multiline={multiline}
       rows={rows}
+      size={size}
       fullWidth={fullWidth}
       sx={sx}
       onChange={(e) => {
@@ -433,6 +433,8 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
   const { messages } = useTranslation();
   const basics = messages.resumes.basics;
   const linkKeys = useListKeys(value.links.length);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
 
   const set = <K extends keyof PortfolioBasics>(
     key: K,
@@ -462,6 +464,15 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
     );
   };
 
+  const moveLink = (from: number, to: number) => {
+    const item = value.links[from];
+    if (item === undefined || from === to) return;
+    const links = [...value.links];
+    links.splice(from, 1);
+    links.splice(to, 0, item);
+    set('links', links);
+  };
+
   return (
     <Stack spacing={2}>
       <BoundFields
@@ -471,61 +482,116 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
         disabled={disabled}
       />
       <Typography variant="subtitle2">{basics.links}</Typography>
-      {value.links.map((link, index) => (
-        <Stack
-          key={linkKeys[index]}
-          direction="row"
-          spacing={1}
-          sx={{ flexWrap: 'wrap' }}
-        >
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>{basics.linkKind}</InputLabel>
-            <Select
-              value={link.kind}
-              label={basics.linkKind}
-              disabled={disabled}
-              onChange={(e) => {
-                updateLink(index, {
-                  kind: e.target.value,
-                });
+      <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
+        {value.links.map((link, index) => {
+          const isDropTarget =
+            dropIndex === index && dragIndex !== null && dragIndex !== index;
+          return (
+            <Stack
+              key={linkKeys[index]}
+              component="li"
+              direction="row"
+              spacing={1}
+              sx={{
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                borderRadius: 1,
+                bgcolor: isDropTarget ? 'action.hover' : 'transparent',
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragIndex !== null) setDropIndex(index);
+              }}
+              onDragLeave={() => {
+                setDropIndex((current) => (current === index ? null : current));
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (dragIndex !== null) moveLink(dragIndex, index);
+                setDragIndex(null);
+                setDropIndex(null);
               }}
             >
-              {LINK_KINDS.map((kind) => (
-                <MenuItem key={kind} value={kind}>
-                  {kind}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <EntryField
-            label={basics.linkUrl}
-            value={link.url}
-            disabled={disabled}
-            onValue={(v) => {
-              updateLink(index, { url: v });
-            }}
-            sx={fieldFlexWide}
-          />
-          <EntryField
-            label={basics.linkLabel}
-            value={link.label}
-            disabled={disabled}
-            onValue={(v) => {
-              updateLink(index, { label: emptyToNull(v) });
-            }}
-            sx={fieldFlex}
-          />
-          <RemoveButton
-            disabled={disabled}
-            onClick={() => {
-              set(
-                'links',
-                value.links.filter((_, i) => i !== index),
-              );
-            }}
-          />
-        </Stack>
-      ))}
+              <IconButton
+                aria-label={basics.reorderLink}
+                disabled={disabled}
+                draggable={!disabled}
+                onDragStart={() => {
+                  setDragIndex(index);
+                }}
+                onDragEnd={() => {
+                  setDragIndex(null);
+                  setDropIndex(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowUp' && index > 0) {
+                    e.preventDefault();
+                    moveLink(index, index - 1);
+                  } else if (
+                    e.key === 'ArrowDown' &&
+                    index < value.links.length - 1
+                  ) {
+                    e.preventDefault();
+                    moveLink(index, index + 1);
+                  }
+                }}
+                size="small"
+                sx={{ cursor: 'grab' }}
+              >
+                <DragIndicatorIcon fontSize="small" />
+              </IconButton>
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel>{basics.linkKind}</InputLabel>
+                <Select
+                  value={link.kind}
+                  label={basics.linkKind}
+                  disabled={disabled}
+                  onChange={(e) => {
+                    updateLink(index, {
+                      kind: e.target.value,
+                    });
+                  }}
+                >
+                  {LINK_KINDS.map((kind) => (
+                    <MenuItem key={kind} value={kind}>
+                      {kind}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <EntryField
+                label={basics.linkUrl}
+                value={link.url}
+                disabled={disabled}
+                size="small"
+                onValue={(v) => {
+                  updateLink(index, { url: v });
+                }}
+                sx={fieldFlexWide}
+              />
+              <EntryField
+                label={basics.linkLabel}
+                value={link.label}
+                disabled={disabled}
+                size="small"
+                onValue={(v) => {
+                  updateLink(index, { label: emptyToNull(v) });
+                }}
+                sx={fieldFlex}
+              />
+              <RemoveButton
+                disabled={disabled}
+                onClick={() => {
+                  set(
+                    'links',
+                    value.links.filter((_, i) => i !== index),
+                  );
+                }}
+              />
+            </Stack>
+          );
+        })}
+      </Stack>
       <Button
         variant="text"
         size="small"
@@ -1005,17 +1071,19 @@ function updateLanguageLabel(
 interface PortfolioLanguagesEditorProps {
   value: PortfolioLanguage[] | undefined;
   onChange: (entries: PortfolioLanguage[]) => void;
+  locale: Locale;
   disabled?: boolean | undefined;
 }
 
 export function PortfolioLanguagesEditor({
   value,
   onChange,
+  locale,
   disabled,
 }: PortfolioLanguagesEditorProps) {
   const { messages } = useTranslation();
   const t = messages.portfolio.languages;
-  const locales = Object.keys(messages.common.locales) as Locale[];
+  const localeName = messages.common.locales[locale];
 
   return (
     <EntryList<PortfolioLanguage>
@@ -1051,66 +1119,37 @@ export function PortfolioLanguagesEditor({
                 ))}
               </Select>
             </FormControl>
-            <FormControl size="small" sx={fieldFixed}>
-              <InputLabel>{t.proficiency}</InputLabel>
-              <Select
-                value={entry.proficiency}
-                label={t.proficiency}
-                disabled={disabled}
-                onChange={(e) => {
-                  update('proficiency', e.target.value);
-                }}
-              >
-                {LANGUAGE_PROFICIENCIES.map((level) => (
-                  <MenuItem key={level} value={level}>
-                    {humanizeEnum(level)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <EntryField
+              label={t.proficiency}
+              value={entry.proficiency}
+              disabled={disabled}
+              required
+              sx={fieldFixed}
+              onValue={(v) => {
+                update('proficiency', v);
+              }}
+            />
           </Stack>
-          <Typography variant="subtitle2">{t.labels}</Typography>
-          {locales.map((locale) => {
-            const labels = entry.labels?.[locale];
-            return (
-              <Stack
-                key={locale}
-                direction="row"
-                sx={{ flexWrap: 'wrap', gap: 2 }}
-              >
-                <EntryField
-                  label={t.nameFor.replace(
-                    '{locale}',
-                    messages.common.locales[locale],
-                  )}
-                  value={labels?.name ?? ''}
-                  disabled={disabled}
-                  sx={fieldFlex}
-                  onValue={(v) => {
-                    updateLanguageLabel(update, entry, locale, 'name', v);
-                  }}
-                />
-                <EntryField
-                  label={t.proficiencyFor.replace(
-                    '{locale}',
-                    messages.common.locales[locale],
-                  )}
-                  value={labels?.proficiency ?? ''}
-                  disabled={disabled}
-                  sx={fieldFlex}
-                  onValue={(v) => {
-                    updateLanguageLabel(
-                      update,
-                      entry,
-                      locale,
-                      'proficiency',
-                      v,
-                    );
-                  }}
-                />
-              </Stack>
-            );
-          })}
+          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
+            <EntryField
+              label={t.nameFor.replace('{locale}', localeName)}
+              value={entry.labels?.[locale]?.name}
+              disabled={disabled}
+              sx={fieldFlex}
+              onValue={(v) => {
+                updateLanguageLabel(update, entry, locale, 'name', v);
+              }}
+            />
+            <EntryField
+              label={t.proficiencyFor.replace('{locale}', localeName)}
+              value={entry.labels?.[locale]?.proficiency}
+              disabled={disabled}
+              sx={fieldFlex}
+              onValue={(v) => {
+                updateLanguageLabel(update, entry, locale, 'proficiency', v);
+              }}
+            />
+          </Stack>
         </>
       )}
     />

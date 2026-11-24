@@ -109,6 +109,7 @@ const ptBR: Translation = {
       other: 'Outro',
     },
     possiblyExpired: 'Possivelmente expirada',
+    viewPosting: 'Ver vaga',
     saveForLater: 'Salvar para depois',
     markApplied: 'Marcar como aplicada',
     appliedConfirmTitle: 'Marcar como aplicada?',
@@ -248,6 +249,7 @@ const ptBR: Translation = {
       linkUrl: 'URL',
       linkLabel: 'Rótulo',
       addLink: 'Adicionar link',
+      reorderLink: 'Reordenar link',
       linkKinds: {
         github: 'GitHub',
         linkedin: 'LinkedIn',
@@ -343,7 +345,6 @@ const ptBR: Translation = {
       add: 'Adicionar idioma',
       language: 'Idioma',
       proficiency: 'Nível',
-      labels: 'Rótulos por idioma',
       nameFor: 'Nome em {locale}',
       proficiencyFor: 'Nível em {locale}',
     },
@@ -393,6 +394,8 @@ const ptBR: Translation = {
     jobsBySource: 'Vagas por fonte',
     runsTitle: 'Execuções recentes',
     noRuns: 'Nenhuma execução de ingestão ainda.',
+    noRunsForSource: 'Nenhuma execução recente para {source}.',
+    showAllSources: 'Mostrar todas as fontes',
     columns: {
       started: 'Início',
       source: 'Fonte',

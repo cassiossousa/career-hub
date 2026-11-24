@@ -70,15 +70,6 @@ export type LanguageName =
   | 'french'
   | 'german';
 
-export type LanguageProficiency =
-  | 'native'
-  | 'c2'
-  | 'c1'
-  | 'b2'
-  | 'b1'
-  | 'a2'
-  | 'a1';
-
 /** Per-locale display overrides for one language entry's fields. */
 export interface PortfolioLanguageLabels {
   name?: string | null | undefined;
@@ -87,7 +78,7 @@ export interface PortfolioLanguageLabels {
 
 export interface PortfolioLanguage {
   language: LanguageName;
-  proficiency: LanguageProficiency;
+  proficiency: string;
   labels?: Record<string, PortfolioLanguageLabels> | undefined;
 }
 

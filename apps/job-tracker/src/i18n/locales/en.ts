@@ -109,6 +109,7 @@ const en: Translation = {
       other: 'Other',
     },
     possiblyExpired: 'Possibly expired',
+    viewPosting: 'View posting',
     saveForLater: 'Save for later',
     markApplied: 'Mark as applied',
     appliedConfirmTitle: 'Mark as applied?',
@@ -248,6 +249,7 @@ const en: Translation = {
       linkUrl: 'URL',
       linkLabel: 'Label',
       addLink: 'Add link',
+      reorderLink: 'Reorder link',
       linkKinds: {
         github: 'GitHub',
         linkedin: 'LinkedIn',
@@ -343,7 +345,6 @@ const en: Translation = {
       add: 'Add language',
       language: 'Language',
       proficiency: 'Proficiency',
-      labels: 'Localized labels',
       nameFor: '{locale} name',
       proficiencyFor: '{locale} proficiency',
     },
@@ -392,6 +393,8 @@ const en: Translation = {
     jobsBySource: 'Jobs by source',
     runsTitle: 'Recent runs',
     noRuns: 'No ingestion runs yet.',
+    noRunsForSource: 'No recent runs for {source}.',
+    showAllSources: 'Show all sources',
     columns: {
       started: 'Started',
       source: 'Source',

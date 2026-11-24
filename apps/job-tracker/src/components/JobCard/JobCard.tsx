@@ -1,9 +1,11 @@
+import { ToggleChip } from '@career-hub/ui/components';
 import {
   Box,
   Card,
   CardActionArea,
   CardContent,
   Chip,
+  Link,
   Stack,
   Typography,
 } from '@mui/material';
@@ -31,26 +33,6 @@ const REMOTE_LOCATION_VALUES = new Set([
 function isRedundantRemoteLocation(job: Job): boolean {
   return (
     job.remote && REMOTE_LOCATION_VALUES.has(job.location.trim().toLowerCase())
-  );
-}
-
-interface ToggleChipProps {
-  label: string;
-  active: boolean;
-  onToggle: () => void;
-}
-
-function ToggleChip({ label, active, onToggle }: ToggleChipProps) {
-  return (
-    <Chip
-      label={label}
-      size="small"
-      variant={active ? 'filled' : 'outlined'}
-      color={active ? 'primary' : 'default'}
-      clickable
-      aria-pressed={active}
-      onClick={onToggle}
-    />
   );
 }
 
@@ -138,6 +120,15 @@ function JobChips({ job }: { job: Job }) {
             color="warning"
           />
         )}
+        <Link
+          href={job.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="body2"
+          sx={{ alignSelf: 'center' }}
+        >
+          {messages.jobs.viewPosting}
+        </Link>
       </Stack>
     </Box>
   );

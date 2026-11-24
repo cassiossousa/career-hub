@@ -13,3 +13,5 @@ export type {
 export { ResumePdfViewer, resumePrintPageSx } from './ResumePdfViewer';
 export type { ThemeModeToggleProps } from './ThemeModeToggle';
 export { ThemeModeToggle } from './ThemeModeToggle';
+export type { ToggleChipProps } from './ToggleChip';
+export { ToggleChip } from './ToggleChip';

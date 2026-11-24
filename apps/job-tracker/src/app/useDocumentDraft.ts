@@ -13,12 +13,16 @@ export interface FormFeedback {
 export function useDocumentDraft<T extends object>(
   initial: T,
   guardEnabled = true,
+  allowSamePathNavigation = false,
 ) {
   const [doc, setDoc] = useState<T>(() => initial);
   const [baseline, setBaseline] = useState<T>(() => initial);
   const [feedback, setFeedback] = useState<FormFeedback | null>(null);
   const dirty = JSON.stringify(doc) !== JSON.stringify(baseline);
-  const blocker = useUnsavedChangesGuard(dirty && guardEnabled);
+  const blocker = useUnsavedChangesGuard(
+    dirty && guardEnabled,
+    allowSamePathNavigation,
+  );
 
   const set = <K extends keyof T>(key: K, value: T[K]) => {
     setDoc((prev) => Object.assign({}, prev, { [key]: value }));

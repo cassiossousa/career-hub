@@ -1,6 +1,7 @@
 import type { ContentEntry } from '../../types/content';
 import type { Locale, Translation } from '../../types/i18n';
 import { findSkillCategory, type SkillCategory } from '../skills';
+import { parseSkillTagNames, SKILLS_TAG_PATTERN } from './skillTags';
 
 interface WorkBulletSkill {
   category: SkillCategory;
@@ -27,15 +28,10 @@ interface WorkRoleValidationError {
   message: string;
 }
 
-const SKILLS_TAG_PATTERN = /<!--\s*skills:\s*(.+?)\s*-->/g;
-
 function parseBulletSkills(raw: string): WorkBulletSkill[] {
   const skills: WorkBulletSkill[] = [];
 
-  for (const name of raw
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)) {
+  for (const name of parseSkillTagNames(raw)) {
     const category = findSkillCategory(name);
     if (!category) {
       console.warn(`Unknown skill "${name}" in work experience content`);

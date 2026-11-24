@@ -34,13 +34,13 @@ interface FilterState {
 
 type PersistedFilterState = z.infer<typeof persistedFilterStateSchema>;
 
-const STORAGE_KEY = 'job-tracker-filters';
+export const FILTERS_STORAGE_KEY = 'job-tracker-filters';
 
 const loadState = (): Partial<PersistedFilterState> =>
-  loadPersistedState(STORAGE_KEY, persistedFilterStateSchema);
+  loadPersistedState(FILTERS_STORAGE_KEY, persistedFilterStateSchema);
 
 const saveState = (state: PersistedFilterState) => {
-  savePersistedState(STORAGE_KEY, state);
+  savePersistedState(FILTERS_STORAGE_KEY, state);
 };
 
 export const useFilterStore = create<FilterState>((set, get) => {

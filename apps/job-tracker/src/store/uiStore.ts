@@ -16,13 +16,13 @@ interface UIState {
   toggleThemeMode: () => void;
 }
 
-const STORAGE_KEY = 'job-tracker-ui';
+export const UI_STORAGE_KEY = 'job-tracker-ui';
 
 const loadState = (): Partial<z.infer<typeof persistedUiStateSchema>> =>
-  loadPersistedState(STORAGE_KEY, persistedUiStateSchema);
+  loadPersistedState(UI_STORAGE_KEY, persistedUiStateSchema);
 
 const saveState = (state: UIState) => {
-  savePersistedState(STORAGE_KEY, {
+  savePersistedState(UI_STORAGE_KEY, {
     isManualJobFormOpen: state.isManualJobFormOpen,
     themeMode: state.themeMode,
   });

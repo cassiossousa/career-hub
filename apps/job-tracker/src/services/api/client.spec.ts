@@ -27,11 +27,11 @@ function expectNotFoundError(error: unknown) {
 describe('apiClient', () => {
   it('wraps API error envelopes in ApiError', async () => {
     const error: unknown = await captureError(apiClient.get('/api/jobs/99999'));
-    expect(isApiError(error)).toBe(true);
-    if (isApiError(error)) {
-      expect(error.code).toBe('not_found');
-      expect(error.message).toBe('Job not found');
+    if (!isApiError(error)) {
+      throw new Error('expected ApiError');
     }
+    expect(error.code).toBe('not_found');
+    expect(error.message).toBe('Job not found');
   });
 
   it('patches a job through the mock API', async () => {

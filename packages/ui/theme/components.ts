@@ -6,6 +6,7 @@ import type {
 import { alpha } from '@mui/material/styles';
 import {
   CHIP_COLOR_NAMES,
+  CHIP_TINT_ALPHA,
   type ChipColorName,
   darkChipLabelColors,
   lightChipLabelColors,
@@ -30,7 +31,7 @@ function chipLabelColor(theme: Theme, color: ChipColorName): string {
 
 function chipOverrides(theme: Theme): CSSInterpolation {
   const isDark = theme.palette.mode === 'dark';
-  const tintAlpha = isDark ? 0.14 : 0.12;
+  const tintAlpha = CHIP_TINT_ALPHA[isDark ? 'dark' : 'light'];
   const hoverAlpha = isDark ? 0.22 : 0.2;
   const ringAlpha = isDark ? 0.35 : 0.28;
   const borderAlpha = isDark ? 0.5 : 0.45;

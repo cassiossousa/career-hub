@@ -1,3 +1,34 @@
+const fs = require('node:fs');
+const path = require('node:path');
+
+// Stryker's jest runner copies this config into .stryker-tmp/sandbox-*, so
+// __dirname-relative lookups for repo-root paths (packages/, node_modules/)
+// break. Walk up to the workspace-root package.json instead.
+function findRepoRoot(start) {
+  let dir = start;
+  for (;;) {
+    const manifest = path.join(dir, 'package.json');
+    if (fs.existsSync(manifest)) {
+      try {
+        if (
+          JSON.parse(fs.readFileSync(manifest, 'utf8')).name === 'career-hub'
+        ) {
+          return dir;
+        }
+      } catch {
+        // keep walking
+      }
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      throw new Error(`career-hub workspace root not found from ${start}`);
+    }
+    dir = parent;
+  }
+}
+
+const REPO_ROOT = findRepoRoot(__dirname);
+
 /** @type {import('jest').Config} */
 module.exports = {
   preset: 'ts-jest',
@@ -11,11 +42,20 @@ module.exports = {
   },
   setupFiles: ['<rootDir>/src/test/polyfills.ts'],
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
+  // Discovery is pinned to src/ via a rootDir-free glob: Stryker's jest runner
+  // re-roots into .stryker-tmp/sandbox-*, where <rootDir>-based testMatch and
+  // testPathIgnorePatterns stop matching (Playwright specs get executed by
+  // Jest). '**/src/**' also keeps stale sandbox copies out via the ignore
+  // patterns below.
+  testMatch: ['**/src/**/*.spec.{ts,tsx}'],
   testPathIgnorePatterns: ['<rootDir>/e2e/', '<rootDir>/.stryker-tmp/'],
+  modulePathIgnorePatterns: ['<rootDir>/.stryker-tmp/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@career-hub/ui/(.*)$': '<rootDir>/../../packages/ui/$1/index.ts',
-    '^msw/node$': '<rootDir>/../../node_modules/msw/lib/node/index.js',
+    // Absolute paths anchored at the workspace root: Stryker's jest runner
+    // re-roots <rootDir> into .stryker-tmp/sandbox-*, breaking ../../ lookups.
+    '^@career-hub/ui/(.*)$': path.join(REPO_ROOT, 'packages/ui/$1/index.ts'),
+    '^msw/node$': path.join(REPO_ROOT, 'node_modules/msw/lib/node/index.js'),
     '/app/env$': '<rootDir>/src/test/env.ts',
     '\\.svg$': '<rootDir>/src/test/svgMock.ts',
   },

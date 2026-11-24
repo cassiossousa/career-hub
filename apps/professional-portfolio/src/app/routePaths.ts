@@ -8,6 +8,13 @@ export const routePaths = {
   resume: '/resume',
 } as const;
 
+export const publicRoutePaths = [
+  routePaths.home,
+  routePaths.workExperience,
+  routePaths.projects,
+  routePaths.resume,
+] as const;
+
 export const navigationItems = [
   {
     to: routePaths.home,

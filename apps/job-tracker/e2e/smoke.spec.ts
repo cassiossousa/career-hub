@@ -1,23 +1,21 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 
+import { publicRoutePaths } from '../src/app/routePaths';
+import { LOCALE_STORAGE_KEY } from '../src/i18n/localeStorageKey';
+
 const LOCALES = ['en', 'pt-BR'] as const;
 const VIEWPORTS = [
   { name: 'mobile-360', width: 360, height: 800 },
   { name: 'desktop-1280', width: 1280, height: 800 },
 ] as const;
-const ROUTES = [
-  '/',
-  '/jobs',
-  '/applications',
-  '/portfolio',
-  '/skills',
-] as const;
-
 async function setLocale(page: Page, locale: string) {
-  await page.addInitScript((value) => {
-    window.localStorage.setItem('job-tracker-lang', value);
-  }, locale);
+  await page.addInitScript(
+    ({ key, value }: { key: string; value: string }) => {
+      window.localStorage.setItem(key, value);
+    },
+    { key: LOCALE_STORAGE_KEY, value: locale },
+  );
 }
 
 async function expectNoHorizontalOverflow(page: Page) {
@@ -52,7 +50,7 @@ test.describe('job-tracker smoke matrix', () => {
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await setLocale(page, 'pt-BR');
-    for (const route of ROUTES) {
+    for (const route of publicRoutePaths) {
       await page.goto(route);
       await expect(
         page.locator('h1, h2, [role="alert"]').first(),

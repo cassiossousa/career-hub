@@ -1,9 +1,9 @@
 import { storageRemoveItem } from '../app/storage';
-import { useUIStore } from './uiStore';
+import { UI_STORAGE_KEY, useUIStore } from './uiStore';
 
 describe('useUIStore', () => {
   beforeEach(() => {
-    storageRemoveItem('job-tracker-ui');
+    storageRemoveItem(UI_STORAGE_KEY);
     useUIStore.setState({ isManualJobFormOpen: false });
   });
 

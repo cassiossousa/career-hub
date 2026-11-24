@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
-import BulletList from '../../../components/BulletList';
-import { collectSkillGroups } from '../../../services/skills';
-import type { WorkRole } from '../../../services/work-experience/workModel';
-import type { Translation } from '../../../types/i18n';
+import BulletList from '@/components/BulletList';
+import { collectSkillGroups } from '@/services/skills';
+import type { WorkRole } from '@/services/work-experience/workModel';
+import type { Translation } from '@/types/i18n';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeSkills({

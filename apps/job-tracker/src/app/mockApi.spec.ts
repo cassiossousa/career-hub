@@ -1,15 +1,17 @@
-import { isMockApiEnabled, setMockApiEnabled } from './mockApi';
+import {
+  isMockApiEnabled,
+  MOCK_API_STORAGE_KEY,
+  setMockApiEnabled,
+} from './mockApi';
 import { storageRemoveItem } from './storage';
-
-const STORAGE_KEY = 'job-tracker-mock-api';
 
 describe('mockApi', () => {
   beforeEach(() => {
-    storageRemoveItem(STORAGE_KEY);
+    storageRemoveItem(MOCK_API_STORAGE_KEY);
   });
 
   afterEach(() => {
-    storageRemoveItem(STORAGE_KEY);
+    storageRemoveItem(MOCK_API_STORAGE_KEY);
   });
 
   it('is always disabled outside dev builds', () => {

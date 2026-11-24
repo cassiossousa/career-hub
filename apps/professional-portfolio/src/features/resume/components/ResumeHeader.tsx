@@ -1,5 +1,5 @@
 import { Link, Stack, Typography } from '@mui/material';
-import type { Translation } from '../../../types/i18n';
+import type { Translation } from '@/types/i18n';
 
 export default function ResumeHeader({
   name,

@@ -4,6 +4,7 @@ import {
   storageRemoveItem,
   storageSetItem,
 } from '../app/storage';
+import { LOCALE_STORAGE_KEY } from './localeStorageKey';
 import { TranslationProvider, useTranslation } from './Provider';
 
 function Consumer() {
@@ -33,11 +34,11 @@ function renderConsumer(onLocaleChange?: (locale: 'en' | 'pt-BR') => void) {
 
 describe('useTranslation', () => {
   beforeEach(() => {
-    storageRemoveItem('lang');
+    storageRemoveItem(LOCALE_STORAGE_KEY);
   });
 
   afterEach(() => {
-    storageRemoveItem('lang');
+    storageRemoveItem(LOCALE_STORAGE_KEY);
   });
 
   it('throws when used outside TranslationProvider', () => {
@@ -53,14 +54,14 @@ describe('useTranslation', () => {
   });
 
   it('initializes from a valid stored locale', () => {
-    storageSetItem('lang', 'pt-BR');
+    storageSetItem(LOCALE_STORAGE_KEY, 'pt-BR');
     renderConsumer();
 
     expect(screen.getByTestId('locale')).toHaveTextContent('pt-BR');
   });
 
   it('falls back to English for an invalid stored locale', () => {
-    storageSetItem('lang', 'klingon');
+    storageSetItem(LOCALE_STORAGE_KEY, 'klingon');
     renderConsumer();
 
     expect(screen.getByTestId('locale')).toHaveTextContent('en');
@@ -73,7 +74,7 @@ describe('useTranslation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'switch' }));
 
     expect(screen.getByTestId('locale')).toHaveTextContent('pt-BR');
-    expect(storageGetItem('lang')).toBe('pt-BR');
+    expect(storageGetItem(LOCALE_STORAGE_KEY)).toBe('pt-BR');
     expect(onLocaleChange).toHaveBeenCalledWith('pt-BR');
   });
 });

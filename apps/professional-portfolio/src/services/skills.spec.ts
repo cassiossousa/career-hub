@@ -1,11 +1,13 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import path from 'node:path';
+import en from '../i18n/locales/en';
+import ptBR from '../i18n/locales/pt-BR';
+import { getAllEntries } from './content';
 import {
   collectSkillGroups,
   findSkillCategory,
   type SkillCategory,
   skills,
 } from './skills';
+import { mapContentToWorkRoles } from './work-experience/workModel';
 
 const CATEGORIES = Object.keys(skills) as SkillCategory[];
 
@@ -74,36 +76,25 @@ describe('collectSkillGroups', () => {
   });
 });
 
-const SKILLS_TAG_PATTERN = /<!--\s*skills:\s*(.+?)\s*-->/g;
+describe('committed work-experience content', () => {
+  it.each([
+    ['en', en],
+    ['pt-BR', ptBR],
+  ] as const)(
+    'every skills tag in %s content resolves to a known skill',
+    (locale, dictionary) => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        const entries = getAllEntries('work-experience', locale);
+        const roles = mapContentToWorkRoles(entries, dictionary, locale);
 
-function skillTagNames(content: string): string[] {
-  return [...content.matchAll(SKILLS_TAG_PATTERN)].flatMap((match) =>
-    match[1]
-      .split(',')
-      .map((part) => part.trim())
-      .filter(Boolean),
+        expect(roles.length).toBeGreaterThan(0);
+        expect(warn).not.toHaveBeenCalledWith(
+          expect.stringContaining('Unknown skill'),
+        );
+      } finally {
+        warn.mockRestore();
+      }
+    },
   );
-}
-
-describe('work-experience content skill tags', () => {
-  // apps/professional-portfolio/src/services -> repo root is four levels up.
-  const CONTENT_DIR = path.resolve(
-    __dirname,
-    '../../../..',
-    'content/work-experience',
-  );
-
-  it('every skills tag in committed MDX resolves to a known skill', () => {
-    const unknown = readdirSync(CONTENT_DIR)
-      .filter((name) => name.endsWith('.mdx'))
-      .flatMap((file) =>
-        skillTagNames(readFileSync(path.join(CONTENT_DIR, file), 'utf8')).map(
-          (name) => ({ file, name }),
-        ),
-      )
-      .filter(({ name }) => !findSkillCategory(name))
-      .map(({ file, name }) => `${file}: ${name}`);
-
-    expect(unknown).toEqual([]);
-  });
 });

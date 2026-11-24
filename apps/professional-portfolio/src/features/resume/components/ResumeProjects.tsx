@@ -1,7 +1,7 @@
 import { Box, Link, Stack, Typography } from '@mui/material';
-import BulletList from '../../../components/BulletList';
-import type { Translation } from '../../../types/i18n';
-import type { Project } from '../../../types/project';
+import BulletList from '@/components/BulletList';
+import type { Translation } from '@/types/i18n';
+import type { Project } from '@/types/project';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeProjects({

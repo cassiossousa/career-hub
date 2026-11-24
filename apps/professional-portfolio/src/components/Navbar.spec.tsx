@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { routePaths } from '../app/routePaths';
 import { TranslationProvider } from '../i18n/Provider';
 import Navbar from './Navbar';
 
@@ -32,7 +33,7 @@ describe('Navbar', () => {
     });
     const menuButton = screen.getByRole('button', { name: 'Toggle menu' });
 
-    expect(homeLink).toHaveAttribute('href', '/');
+    expect(homeLink).toHaveAttribute('href', routePaths.home);
     expect(
       menuButton.compareDocumentPosition(homeLink) &
         Node.DOCUMENT_POSITION_FOLLOWING,
@@ -40,7 +41,7 @@ describe('Navbar', () => {
 
     expect(screen.getByRole('link', { name: /^Resume/ })).toHaveAttribute(
       'href',
-      '/resume',
+      routePaths.resume,
     );
     expect(screen.getByRole('link', { name: /^Resume/ })).not.toHaveAttribute(
       'target',

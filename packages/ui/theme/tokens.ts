@@ -45,6 +45,10 @@ export const CHIP_COLOR_NAMES = [
 
 export type ChipColorName = (typeof CHIP_COLOR_NAMES)[number];
 
+// Translucent tint alpha for filled/outlined chips, per mode — consumed by
+// chipOverrides in components.ts and asserted by theme.spec.ts.
+export const CHIP_TINT_ALPHA = { light: 0.12, dark: 0.14 } as const;
+
 // Chip label colors sit on a translucent tint of the palette color composited
 // over the paper surface — every entry keeps >= 4.5:1, verified by
 // apps/job-tracker/src/app/theme.spec.ts.

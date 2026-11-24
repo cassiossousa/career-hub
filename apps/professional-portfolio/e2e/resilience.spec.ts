@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-const publicRoutes = ['/', '/work-experience', '/projects', '/resume'];
+import { publicRoutePaths } from '../src/app/routePaths';
+import { LOCALE_STORAGE_KEY } from '../src/i18n/localeStorageKey';
 
 test.describe('resilience: storage, network, and viewport faults', () => {
   test('app renders when localStorage is unavailable', async ({ page }) => {
@@ -23,9 +24,9 @@ test.describe('resilience: storage, network, and viewport faults', () => {
   });
 
   test('invalid stored locale falls back to English', async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.setItem('lang', 'klingon');
-    });
+    await page.addInitScript((key) => {
+      localStorage.setItem(key, 'klingon');
+    }, LOCALE_STORAGE_KEY);
 
     await page.goto('/');
 
@@ -49,14 +50,17 @@ test.describe('resilience: storage, network, and viewport faults', () => {
   });
 
   for (const locale of [undefined, 'pt-BR'] as const) {
-    for (const route of publicRoutes) {
+    for (const route of publicRoutePaths) {
       test(`no horizontal overflow${locale ? ` in ${locale}` : ''} at 360px on ${route}`, async ({
         page,
       }) => {
         if (locale) {
-          await page.addInitScript((lang) => {
-            localStorage.setItem('lang', lang);
-          }, locale);
+          await page.addInitScript(
+            ({ key, lang }: { key: string; lang: string }) => {
+              localStorage.setItem(key, lang);
+            },
+            { key: LOCALE_STORAGE_KEY, lang: locale },
+          );
         }
         await page.setViewportSize({ width: 360, height: 800 });
         await page.goto(route);

@@ -1,3 +1,4 @@
+import { LOCALE_STORAGE_KEY } from '../i18n/localeStorageKey';
 import { storageGetItem, storageRemoveItem, storageSetItem } from './storage';
 
 describe('storage helpers', () => {
@@ -7,10 +8,10 @@ describe('storage helpers', () => {
   });
 
   it('reads and writes values through localStorage', () => {
-    storageSetItem('lang', 'pt-BR');
+    storageSetItem(LOCALE_STORAGE_KEY, 'pt-BR');
 
-    expect(storageGetItem('lang')).toBe('pt-BR');
-    expect(localStorage.getItem('lang')).toBe('pt-BR');
+    expect(storageGetItem(LOCALE_STORAGE_KEY)).toBe('pt-BR');
+    expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe('pt-BR');
   });
 
   it('returns null for missing keys', () => {
@@ -18,10 +19,10 @@ describe('storage helpers', () => {
   });
 
   it('removes stored values', () => {
-    storageSetItem('lang', 'pt-BR');
-    storageRemoveItem('lang');
+    storageSetItem(LOCALE_STORAGE_KEY, 'pt-BR');
+    storageRemoveItem(LOCALE_STORAGE_KEY);
 
-    expect(storageGetItem('lang')).toBeNull();
+    expect(storageGetItem(LOCALE_STORAGE_KEY)).toBeNull();
   });
 
   it('does not throw when storage removal fails', () => {
@@ -30,7 +31,7 @@ describe('storage helpers', () => {
     });
 
     expect(() => {
-      storageRemoveItem('lang');
+      storageRemoveItem(LOCALE_STORAGE_KEY);
     }).not.toThrow();
   });
 
@@ -39,7 +40,7 @@ describe('storage helpers', () => {
       throw new Error('Storage disabled');
     });
 
-    expect(storageGetItem('lang')).toBeNull();
+    expect(storageGetItem(LOCALE_STORAGE_KEY)).toBeNull();
   });
 
   it('does not throw when storage writes fail', () => {
@@ -48,7 +49,7 @@ describe('storage helpers', () => {
     });
 
     expect(() => {
-      storageSetItem('lang', 'en');
+      storageSetItem(LOCALE_STORAGE_KEY, 'en');
     }).not.toThrow();
   });
 });

@@ -3,6 +3,8 @@ import fc from 'fast-check';
 import en from '../../i18n/locales/en';
 import type { ContentEntry } from '../../types/content';
 import type { Locale } from '../../types/i18n';
+import { type SkillCategory, skills } from '../skills';
+import { SKILLS_TAG_PATTERN } from './skillTags';
 import {
   mapContentToWorkRoles,
   sortRolesByStart,
@@ -92,12 +94,7 @@ const workRoleArb: fc.Arbitrary<WorkRole> = fc.record({
       skills: fc.array(
         fc.record({
           category: fc.constantFrom(
-            'frontend',
-            'backend',
-            'databases',
-            'distributed',
-            'cloud',
-            'testing',
+            ...(Object.keys(skills) as SkillCategory[]),
           ),
           name: fc.string(),
         }),
@@ -199,9 +196,7 @@ describe('mapContentToWorkRoles', () => {
             .split('\n')
             .map((line) => line.trim())
             .filter(Boolean)
-            .map((line) =>
-              line.replace(/<!--\s*skills:\s*(.+?)\s*-->/g, '').trim(),
-            )
+            .map((line) => line.replace(SKILLS_TAG_PATTERN, '').trim())
             .filter((line) => line !== '');
 
           return (

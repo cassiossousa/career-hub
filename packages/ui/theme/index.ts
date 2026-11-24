@@ -8,6 +8,7 @@ export type { SemanticColors } from './semantic';
 export { semanticColors } from './semantic';
 export {
   CHIP_COLOR_NAMES,
+  CHIP_TINT_ALPHA,
   type ChipColorName,
   darkChipLabelColors,
   lightChipLabelColors,

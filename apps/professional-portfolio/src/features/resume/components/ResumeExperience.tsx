@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
-import BulletList from '../../../components/BulletList';
-import type { WorkRole } from '../../../services/work-experience/workModel';
+import BulletList from '@/components/BulletList';
+import type { WorkRole } from '@/services/work-experience/workModel';
 import ResumeSection from './ResumeSection';
 
 export default function ResumeExperience({

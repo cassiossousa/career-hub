@@ -94,7 +94,7 @@ export function getAllEntries(
       if (type !== 'work-experience') return true;
 
       const isLocaleFile = file.endsWith(`.${locale}.mdx`);
-      const isBaseFile = !file.match(/\.[a-z]{2}(-[A-Z]{2})?\.mdx$/);
+      const isBaseFile = !file.match(/\.[a-z]{2}(?:-[A-Z]{2})?\.mdx$/);
 
       return isLocaleFile || isBaseFile;
     });
@@ -102,7 +102,9 @@ export function getAllEntries(
   // Map to unique slugs
   const slugs = Array.from(
     new Set(
-      files.map((file) => file.replace(/(\.[a-z]{2}(-[A-Z]{2})?)?\.mdx$/, '')),
+      files.map((file) =>
+        file.replace(/(?:\.[a-z]{2}(?:-[A-Z]{2})?)?\.mdx$/, ''),
+      ),
     ),
   );
 

@@ -1,10 +1,15 @@
 import eslintReact from '@eslint-react/eslint-plugin';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import checkFile from 'eslint-plugin-check-file';
+import jest from 'eslint-plugin-jest';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import newWithError from 'eslint-plugin-new-with-error';
 import noBarrelFiles from 'eslint-plugin-no-barrel-files';
+import noRelativeImportPaths from 'eslint-plugin-no-relative-import-paths';
+import playwright from 'eslint-plugin-playwright';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactYouMightNotNeedAnEffect from 'eslint-plugin-react-you-might-not-need-an-effect';
+import regexp from 'eslint-plugin-regexp';
 import security from 'eslint-plugin-security';
 import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
@@ -89,6 +94,60 @@ const eslintConfig = defineConfig([
     },
   },
   {
+    files: ['apps/*/e2e/**/*.ts', 'apps/*/playwright.config.ts'],
+    ...playwright.configs['flat/recommended'],
+  },
+  {
+    files: [
+      'apps/*/src/**/*.spec.ts',
+      'apps/*/src/**/*.spec.tsx',
+      'apps/*/src/test/**/*.ts',
+    ],
+    ...jest.configs['flat/recommended'],
+  },
+  {
+    files: ['apps/*/src/**/*.spec.ts', 'apps/*/src/**/*.spec.tsx'],
+    rules: {
+      'jest/no-disabled-tests': 'error',
+      'jest/no-focused-tests': 'error',
+      'jest/expect-expect': [
+        'error',
+        {
+          assertFunctionNames: [
+            'expect',
+            'expectContrast',
+            'expectChipLabelContrast',
+            'expectNotFoundError',
+            'expectStandardEntry',
+            'expectErrorWithRetry',
+            'expectJobTitlesRendered',
+            'expectApiErrorCode',
+            'waitForQuerySuccess',
+            'fc.assert',
+          ],
+        },
+      ],
+      'jest/no-conditional-expect': 'error',
+      'jest/valid-expect': 'error',
+    },
+  },
+  {
+    files: APP_SOURCE_FILES,
+    plugins: {
+      regexp,
+      'new-with-error': newWithError,
+      'no-relative-import-paths': noRelativeImportPaths,
+    },
+    rules: {
+      ...regexp.configs['flat/recommended'].rules,
+      'new-with-error/new-with-error': 'error',
+      'no-relative-import-paths/no-relative-import-paths': [
+        'error',
+        { allowSameFolder: true, allowedDepth: 2, prefix: '@' },
+      ],
+    },
+  },
+  {
     files: APP_SOURCE_FILES,
     ignores: ['apps/*/src/app/storage.ts'],
     rules: {
@@ -103,6 +162,57 @@ const eslintConfig = defineConfig([
           selector:
             "MemberExpression[property.name='localStorage'], MemberExpression[property.name='sessionStorage']",
           message: STORAGE_MESSAGE,
+        },
+      ],
+    },
+  },
+  {
+    // Specs and e2e must not re-declare production parsing/business-rule
+    // patterns — import the constant from source instead (AGENTS.md §2).
+    files: ['**/*.spec.ts', '**/*.spec.tsx', 'apps/*/e2e/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'VariableDeclarator > Literal[regex]',
+          message:
+            "Don't re-declare parsing/business-rule patterns in tests — import the constant from source.",
+        },
+        {
+          selector: 'VariableDeclarator > NewExpression[callee.name="RegExp"]',
+          message:
+            "Don't re-declare parsing/business-rule patterns in tests — import the constant from source.",
+        },
+      ],
+    },
+  },
+  {
+    // src specs additionally keep the Web Storage ban. no-restricted-syntax
+    // is replaced, not merged, for files matched by multiple blocks, so the
+    // selectors are re-declared here alongside the pattern ban.
+    files: ['apps/*/src/**/*.spec.ts', 'apps/*/src/**/*.spec.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "MemberExpression[object.name='localStorage'], MemberExpression[object.name='sessionStorage']",
+          message: STORAGE_MESSAGE,
+        },
+        {
+          selector:
+            "MemberExpression[property.name='localStorage'], MemberExpression[property.name='sessionStorage']",
+          message: STORAGE_MESSAGE,
+        },
+        {
+          selector: 'VariableDeclarator > Literal[regex]',
+          message:
+            "Don't re-declare parsing/business-rule patterns in tests — import the constant from source.",
+        },
+        {
+          selector: 'VariableDeclarator > NewExpression[callee.name="RegExp"]',
+          message:
+            "Don't re-declare parsing/business-rule patterns in tests — import the constant from source.",
         },
       ],
     },
@@ -126,6 +236,12 @@ const eslintConfig = defineConfig([
     // barrels are the intended pattern there, unlike inside app source.
     files: ['packages/ui/**/index.ts'],
     rules: { 'no-barrel-files/no-barrel-files': 'off' },
+  },
+  {
+    // .cjs files are CommonJS by definition — require() is the module system,
+    // not an import-style violation.
+    files: ['**/*.cjs'],
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
   },
   globalIgnores([
     '**/dist/**',

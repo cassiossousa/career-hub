@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { routePaths } from '../../app/routePaths';
 import { renderWithProviders } from '../../test/TestUtils';
 
 function renderLayout() {
@@ -24,10 +25,13 @@ describe('Layout', () => {
     ).toBeInTheDocument();
   });
 
-  it('closes the drawer when a nav item is clicked', async () => {
+  it('navigates when a nav item is clicked', async () => {
     const user = userEvent.setup();
     renderLayout();
     await user.click(screen.getByRole('link', { name: 'Job openings' }));
+    expect(screen.getByRole('link', { name: 'Job openings' })).toHaveClass(
+      'Mui-selected',
+    );
   });
 
   it('toggles the mobile drawer via the menu button', async () => {
@@ -50,11 +54,22 @@ describe('Layout', () => {
     try {
       const user = userEvent.setup();
       renderLayout();
-      const menuButton = await screen.findByRole('button', {
+      expect(
+        screen.queryByRole('link', { name: 'Dashboard' }),
+      ).not.toBeInTheDocument();
+      const menuButton = screen.getByRole('button', {
         name: /open navigation menu/i,
       });
       await user.click(menuButton);
+      expect(
+        await screen.findByRole('link', { name: 'Dashboard' }),
+      ).toBeInTheDocument();
       await user.click(menuButton);
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('link', { name: 'Dashboard' }),
+        ).not.toBeInTheDocument();
+      });
     } finally {
       window.matchMedia = original;
     }
@@ -65,7 +80,7 @@ describe('Layout', () => {
       <Layout>
         <div>content</div>
       </Layout>,
-      { route: '/jobs/42' },
+      { route: routePaths.jobDetail('42') },
     );
     expect(screen.getByRole('link', { name: 'Job openings' })).toHaveClass(
       'Mui-selected',

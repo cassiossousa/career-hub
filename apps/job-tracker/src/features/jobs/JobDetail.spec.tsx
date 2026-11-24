@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
 import { Route, Routes } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import { server } from '../../mocks/server';
 import { renderWithProviders } from '../../test/TestUtils';
 import { JobDetail } from './JobDetail';
@@ -17,7 +18,7 @@ function renderDetail(route: string) {
 
 describe('JobDetail', () => {
   it('renders job details for a valid id', async () => {
-    renderDetail('/jobs/1');
+    renderDetail(routePaths.jobDetail('1'));
     await waitFor(() => {
       expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
     });
@@ -25,12 +26,12 @@ describe('JobDetail', () => {
   });
 
   it('shows not-found for an invalid id', () => {
-    renderDetail('/jobs/abc');
+    renderDetail(routePaths.jobDetail('abc'));
     expect(screen.getByText('Job not found.')).toBeInTheDocument();
   });
 
   it('shows the existing application status for tracked jobs', async () => {
-    renderDetail('/jobs/1');
+    renderDetail(routePaths.jobDetail('1'));
     expect(
       await screen.findByText('Applied', {}, { timeout: 8000 }),
     ).toBeInTheDocument();
@@ -48,14 +49,14 @@ describe('JobDetail', () => {
         ),
       ),
     );
-    renderDetail('/jobs/1');
+    renderDetail(routePaths.jobDetail('1'));
     expect(await screen.findByText('Job unavailable')).toBeInTheDocument();
   });
 
   it('creates an application via mark-as-applied', async () => {
     const user = userEvent.setup();
     // job 4 has no seeded application, so the action buttons are shown
-    renderDetail('/jobs/4');
+    renderDetail(routePaths.jobDetail('4'));
     const button = await screen.findByRole('button', {
       name: 'Mark as applied',
     });

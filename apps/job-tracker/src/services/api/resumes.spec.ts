@@ -72,10 +72,10 @@ describe('application resume api', () => {
       expect(result.current.isError).toBe(true);
     });
     const error: unknown = result.current.error;
-    expect(isApiError(error)).toBe(true);
-    if (isApiError(error)) {
-      expect(error.code).toBe('resume_locked');
+    if (!isApiError(error)) {
+      throw new Error('expected ApiError');
     }
+    expect(error.code).toBe('resume_locked');
   });
 });
 

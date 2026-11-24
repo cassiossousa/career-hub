@@ -1,5 +1,6 @@
 import {
   CHIP_COLOR_NAMES,
+  CHIP_TINT_ALPHA,
   darkChipLabelColors,
   lightChipLabelColors,
 } from '@career-hub/ui/theme';
@@ -70,10 +71,6 @@ const FILLED_COLORS = [
   'info',
   'success',
 ] as const;
-
-// Mirrors the alpha values used by chipOverrides in
-// packages/ui/theme/components.ts.
-const CHIP_TINT_ALPHA = { light: 0.12, dark: 0.14 } as const;
 
 type AppTheme = (typeof appThemes)[keyof typeof appThemes];
 type ChipColorName = (typeof CHIP_COLOR_NAMES)[number];

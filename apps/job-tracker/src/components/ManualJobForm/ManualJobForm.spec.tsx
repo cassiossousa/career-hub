@@ -85,6 +85,10 @@ describe('ManualJobForm', () => {
       target: { value: '8000' },
     });
     await user.click(screen.getByRole('switch', { name: /remote/i }));
+
+    expect(screen.getByLabelText(/salary min/i)).toHaveValue(5000);
+    expect(screen.getByLabelText(/salary max/i)).toHaveValue(8000);
+    expect(screen.getByRole('switch', { name: /remote/i })).toBeChecked();
   });
 
   it('shows an error alert when creation fails', async () => {

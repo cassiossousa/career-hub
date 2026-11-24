@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { storageRemoveItem } from '../../app/storage';
 import { seedJobs } from '../../mocks/data';
-import { useFilterStore } from '../../store/filterStore';
+import { FILTERS_STORAGE_KEY, useFilterStore } from '../../store/filterStore';
 import { renderWithProviders } from '../../test/TestUtils';
 import { JobCard } from './JobCard';
 
@@ -14,7 +14,7 @@ function seedJob(index: number) {
 
 describe('JobCard', () => {
   beforeEach(() => {
-    storageRemoveItem('job-tracker-filters');
+    storageRemoveItem(FILTERS_STORAGE_KEY);
     useFilterStore.setState({
       level: undefined,
       area: undefined,

@@ -12,7 +12,11 @@
       ]
     },
     "apps/job-tracker": {
-      "entry": ["src/test/**/*.{ts,tsx}"],
+      "entry": [
+        "src/test/**/*.{ts,tsx}",
+        "stryker.core.config.mjs",
+        "scripts/*.mjs"
+      ],
       "ignore": ["public/mockServiceWorker.js"]
     }
   }

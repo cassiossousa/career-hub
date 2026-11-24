@@ -1,9 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const publicRoutes = ['/', '/work-experience', '/projects', '/resume'];
+import { publicRoutePaths, routePaths } from '../src/app/routePaths';
 
-for (const route of publicRoutes) {
+for (const route of publicRoutePaths) {
   test(`${route} renders and passes WCAG AA accessibility`, async ({
     page,
   }) => {
@@ -20,7 +20,7 @@ for (const route of publicRoutes) {
 }
 
 test('project details route renders a real project', async ({ page }) => {
-  await page.goto('/projects/sudoku-next');
+  await page.goto(`${routePaths.projects}/sudoku-next`);
 
   await expect(page.locator('main')).toBeVisible();
   await expect(page).toHaveURL(/\/projects\/sudoku-next/);
@@ -61,9 +61,11 @@ test('keyboard tab order only lands on visible focusable elements', async ({
 });
 
 test('projects list navigates to project details', async ({ page }) => {
-  await page.goto('/projects');
+  await page.goto(routePaths.projects);
 
-  const firstProjectLink = page.locator('main a[href^="/projects/"]').first();
+  const firstProjectLink = page
+    .locator(`main a[href^="${routePaths.projects}/"]`)
+    .first();
   await expect(firstProjectLink).toBeVisible();
   await firstProjectLink.click();
 

@@ -1,0 +1,132 @@
+# Tooling Effectiveness Audit — 2026-11-23
+
+Point-in-time audit of every lint/test/CI gate in this repo and the verdict for
+each tool in the two 300-item evaluation catalogs. Durable rules live in
+`AGENTS.md`; this file records _evidence_ — what each gate actually catches,
+how often it fires, and whether it overlaps another gate.
+
+## 1. Installed gates — what they actually do
+
+| Gate                                           | Config                                             | What it enforces                                                                                                                            | Evidence of value                                                                                                  | Verdict                                                                                              |
+| ---------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| oxlint + Biome (`check:fast`)                  | root `package.json`, `biome.json`                  | correctness/suspicious lint, formatting, import sorting                                                                                     | runs on every commit via lint-staged; sub-second                                                                   | **keep** — but note overlap with Prettier (see below)                                                |
+| ESLint `strictTypeChecked`                     | `eslint.config.ts`                                 | typed rules on `apps/*/src`, `packages/ui`                                                                                                  | catches type-unsafe patterns oxlint can't see                                                                      | **keep**                                                                                             |
+| `sonarjs/cognitive-complexity` ≤ 10            | `eslint.config.ts`                                 | complexity brake on AI-generated nesting                                                                                                    | 0 suppressions repo-wide                                                                                           | **keep**                                                                                             |
+| `@eslint-react` recommended-type-checked       | `eslint.config.ts`                                 | React purity/immutability/compiler diagnostics                                                                                              | covers React Compiler lint rules without the runtime compiler                                                      | **keep**                                                                                             |
+| `eslint-plugin-react-hooks` recommended-latest | `eslint.config.ts`                                 | rules-of-hooks + compiler-aware diagnostics                                                                                                 | same                                                                                                               | **keep**                                                                                             |
+| `react-you-might-not-need-an-effect`           | `eslint.config.ts`                                 | bans derived-state `useEffect`                                                                                                              | directly enforces AGENTS §2                                                                                        | **keep**                                                                                             |
+| `eslint-plugin-jsx-a11y`                       | `eslint.config.ts`                                 | a11y JSX rules                                                                                                                              | complements axe e2e audits                                                                                         | **keep**                                                                                             |
+| `eslint-plugin-security`                       | `eslint.config.ts` (app src, excl. services/specs) | XSS sinks, unsafe regex, object injection                                                                                                   | 1 warning currently (`detect-non-literal-regexp` in a spec)                                                        | **keep**                                                                                             |
+| `check-file` + `no-barrel-files`               | `eslint.config.ts`                                 | naming conventions, no barrels in app src                                                                                                   | enforces slice architecture mechanically                                                                           | **keep**                                                                                             |
+| raw Web Storage ban                            | `no-restricted-syntax` in `eslint.config.ts`       | `localStorage`/`sessionStorage` only via `app/storage.ts`                                                                                   | 1 scoped spec override (documented)                                                                                | **keep**                                                                                             |
+| `dependency-cruiser` (`check:arch`)            | per-app `.dependency-cruiser.cjs`                  | **only circular deps** — the rich layer rules live in `architecture.spec.ts` (Jest)                                                         | boundary enforcement actually happens in the Jest spec, not depcruise                                              | **keep+tune** — consider moving boundary rules into depcruise config or accept spec as the real gate |
+| `architecture.spec.ts` (Jest)                  | per app                                            | feature isolation, shared-component purity                                                                                                  | the real boundary gate                                                                                             | **keep**                                                                                             |
+| `jscpd` (`check:clones`)                       | root script                                        | ≥5-line/40-token duplication across src+e2e+scripts                                                                                         | ratchet; no baseline file — hard fail on any clone                                                                 | **keep**                                                                                             |
+| `knip` (`check:dead`)                          | `knip.json`                                        | unused exports/deps/files                                                                                                                   | catches dead helpers AI leaves behind                                                                              | **keep**                                                                                             |
+| bundle budgets + delta ratchet                 | `scripts/audit-bundle-budget.mjs`                  | per-app gzip JS/CSS budgets + >5 kB growth fails                                                                                            | 150 kB portfolio / 400 kB job-tracker                                                                              | **keep** — this is the real "no bloat" gate                                                          |
+| `check:case`                                   | `scripts/check-case-sensitivity.mjs`               | filename casing vs git index                                                                                                                | prevents Windows→Linux CI breaks                                                                                   | **keep** (cheap, real bug class)                                                                     |
+| Jest coverage floors                           | per-app `jest.config.cjs`                          | portfolio per-dir thresholds (app 95%, features 90%…), job-tracker global 80%                                                               | enforced in `verify:all`                                                                                           | **keep**                                                                                             |
+| Stryker mutation (`check:mutate:*`)            | `stryker*.config.mjs` per app                      | kills surviving mutants in changed files (diff) + core globs                                                                                | both apps; job-tracker diff baseline 83.15 (break 60) on 2026-11-23                                                | **keep**                                                                                             |
+| Playwright e2e + axe + visual regression       | `e2e/`, `playwright.config.ts`                     | smoke, WCAG 2.1 AA, fault injection, pixel diffs (platform-suffixed baselines)                                                              | real-browser gate CI runs in the pinned Playwright container                                                       | **keep** — strongest gate in the repo                                                                |
+| Lighthouse CI                                  | `lighthouserc.json`                                | perf ≥0.75, a11y ≥0.9, BP ≥0.9, CLS ≤0.1                                                                                                    | production-build assertions                                                                                        | **keep**                                                                                             |
+| MemLab (`audit:deep`)                          | `scripts/memlab-*.mjs`                             | leaked-object clusters on production bundle                                                                                                 | manual deep gate only                                                                                              | **keep** (on-demand)                                                                                 |
+| `npm audit` (`check:audit`)                    | root script                                        | prod-dep vulnerabilities ≥high                                                                                                              | in `verify:all`                                                                                                    | **keep**                                                                                             |
+| Husky + lint-staged                            | `.husky/`, `lint-staged.config.mjs`                | oxlint+biome+prettier on staged files, chunked for Windows                                                                                  | typed ESLint deliberately excluded (30 s cost) — documented trade-off                                              | **keep**                                                                                             |
+| `tsc -b` strict                                | per-app `tsconfig.json`                            | `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` (job-tracker only), `noUnusedLocals/Parameters` (both, added 2026-11-23) | **drift found:** portfolio lacks the two index/optional flags — 36 errors if enabled; deferred to a dedicated pass | **keep+tune**                                                                                        |
+
+## 2. Overlaps and redundancies found
+
+- **Biome formatter + Prettier both run in `verify:all`** (`check:fast` →
+  `biome check`, then `prettier:check`). They mostly agree, so this is
+  belt-and-suspenders rather than conflict — but it doubles format CI time.
+  Candidate for consolidation (drop Biome's formatter, keep lint+assist, or
+  vice versa) — **deferred**, low urgency.
+- **`@/` Jest `moduleNameMapper` existed in both apps with zero `@/` imports** —
+  dead config until the alias codemod (2026-11-23).
+- **depcruise configs only forbid circular deps** — the actual architectural
+  boundaries are enforced by `architecture.spec.ts`. Either enrich the
+  depcruise configs or accept the spec as the boundary gate.
+- **jest version drift:** `jest@29.7.0` + `jest-environment-jsdom@30.3.0` +
+  `@types/jest@30` — works, but majors disagree; `syncpack` would catch this
+  class (evaluated, not adopted yet).
+
+## 3. New gates added 2026-11-23
+
+| Addition                                                | Covers catalog items                                             | First-run findings                                                                                                                                                                                                                    |
+| ------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eslint-plugin-jest` (flat/recommended + curated rules) | test-theater enforcement                                         | caught ~10 genuinely assertion-free tests; fixed by adding real assertions or registering assertion helpers in `assertFunctionNames`                                                                                                  |
+| `eslint-plugin-playwright` (flat/recommended)           | e2e anti-patterns                                                | 5 warnings (conditionals in e2e, intentional `.skip()` for macOS baseline absence) — warnings only, no errors                                                                                                                         |
+| `eslint-plugin-regexp` (flat/recommended)               | ReDoS/regex hygiene                                              | **real finding:** `SKILLS_TAG_PATTERN` `/<!--\s*skills:\s*(.+?)\s*-->/` had polynomial-backtracking potential in `workModel.ts` + 2 specs — rewritten to `/<!--\s*skills:(.+?)-->/`; 4 unused capturing groups → non-capturing        |
+| `eslint-plugin-no-relative-import-paths`                | `../../../` sprawl                                               | 10 deep imports in portfolio `features/resume` → rewritten to `@/`                                                                                                                                                                    |
+| `@/` aliases                                            | tsconfig `paths` + `vite-tsconfig-paths` + existing jest mappers | both apps' jest configs already mapped `^@/` (dead until now)                                                                                                                                                                         |
+| `eslint-plugin-new-with-error`                          | `Error()` without `new`                                          | 0 violations                                                                                                                                                                                                                          |
+| Stryker for job-tracker                                 | mutation gap                                                     | first diff run: 83.15 ≥ break 60 (91 mutants, 6 survived — mostly storage-key literals and `??` defaults in `filterStore`/`uiStore`); required jest sandbox fixes (`**/src/**` testMatch, workspace-root-anchored `moduleNameMapper`) |
+| Dependabot                                              | supply-chain PRs                                                 | weekly npm + github-actions, grouped minor/patch                                                                                                                                                                                      |
+| `noUnusedLocals`/`noUnusedParameters`                   | dead code at compile time                                        | 0 violations on enable                                                                                                                                                                                                                |
+
+## 4. Catalog verdicts (300 items, grouped)
+
+**Already covered — no action:** sonarjs, depcruise, Biome, oxlint, Vite,
+React Compiler _diagnostics_ (via react-hooks recommended-latest),
+react-you-might-not-need-an-effect, @eslint-react≈eslint-plugin-react,
+Zustand/TanStack Query (chosen state libs), Intl, Playwright, Testing
+Library, MSW, Stryker, Jest coverage, eslint-plugin-security, Husky,
+lint-staged, strict tsc, GH Actions, custom i18n (covers i18next/FormatJS),
+custom typed boundaries (covers tRPC/GraphQL-codegen need), no-barrel-files,
+check-file naming, fast-check (property testing), axe-core, MDX, AGENTS.md
+(= item #175), npm audit.
+
+**Adopted 2026-11-23:** eslint-plugin-jest, eslint-plugin-playwright,
+eslint-plugin-regexp, eslint-plugin-no-relative-import-paths,
+eslint-plugin-new-with-error, vite-tsconfig-paths, `@/` aliases,
+noUnusedLocals/Parameters, Stryker job-tracker, Dependabot, .editorconfig.
+
+**No value for this repo:** unicorn/perfectionist/simple-import-sort/
+unused-imports/functional/immutable/no-loops/promise/array-func/yoda/
+prefer-arrow (overlap sonarjs+strictTypeChecked+Biome+knip);
+SonarQube/SonarCloud; eslint-plugin-depend/n/vitest-globals/storybook/
+tsdoc/jsdoc/deprecate; all alternate bundlers/package managers/test
+runners (Vite+oxlint+Biome+Jest optimal); tsd/expect-type/ts-pattern/io-ts
+(zod+strict TS); Tailwind/Vanilla-Extract/Panda/CSS-Modules/Sass/Base-UI
+(MUI+Emotion stays); ky/ofetch/Immer/RxJS/urql/TanStack-Router
+(TanStack Query+axios+React Router cover); Cypress/WebdriverIO/Puppeteer/
+nock/Sinon/Loki/Reg-suit/Argos/Storybook-\*/Vitest-UI (Playwright+MSW+
+visual.spec+fast-check cover); k6 (API repo's `load.yml` covers);
+observability SaaS (Sentry/Datadog/NewRelic/OTel/LogRocket/etc. — none
+justified for a portfolio+internal tracker today); pnpm/Turborepo/Lerna/
+Yarn/semantic-release/pkg-pr-new/publint (npm workspaces, private
+packages, Vercel per-app); webpack/Parcel/Babel-pipeline/Rollup-direct/
+lightningcss/terser/unplugin/plugin-react-swc (Vite internals);
+MUI-X; Docusaurus/VitePress/TypeDoc/Swagger-UI/Redoc/git-cliff (AGENTS.md
+
+- MDX content serve the docs role); Docker/Compose for FE; alternate
+  cloud hosts (Vercel); feature-flag platforms; backend items (API repo's
+  domain); release-safety infra items (Vercel immutable deploys + instant
+  rollback cover the SPA case).
+
+**Deferred with trigger:** React Compiler runtime (needs React 19/babel —
+lint diagnostics already active); Storybook/Chromatic (Playwright
+visual.spec renders every route — revisit at component-library scale);
+RHF+resolvers (zod covers API boundary — revisit if form count grows);
+TanStack Table/Virtual (revisit on table perf pain); Sentry (job-tracker
+prod error visibility later); Codecov/Coveralls (PR coverage comments —
+needs hosted account decision); CSP headers (needs careful Vite SPA
+rollout); portfolio `noUncheckedIndexedAccess`+`exactOptionalPropertyTypes`
+(36 errors — dedicated pass); verbatimModuleSyntax (churn untested).
+
+**Evaluated and rejected:** `syncpack` — `npx syncpack lint` flags only
+convention false-positives (`@career-hub/ui: "*"` workspace specifiers,
+peer-range vs pinned mismatches, unparseable `overrides` object) and does
+not catch the intra-file `jest@29`/`jest-environment-jsdom@30` drift it
+was adopted to find. `commitlint` — history is already conventional-style.
+`gitleaks` CI step — no secrets scanner today, but requires a workflow
+change (AGENTS §4 explicit-request rule); revisit if wanted. `eslint_d`,
+`dpdm`, `perfectionist`, `simple-import-sort`, `eslint-plugin-unicorn` —
+redundant with oxlint+Biome+dependency-cruiser already in the fast path.
+
+## 5. How to use this file
+
+Re-run the audit when adding/removing gates. Update verdicts, not just the
+tool list — a gate that never fires and has no suppressions is either
+perfectly preventive or dead weight; check `git log` for the commit that
+introduced it and any CI failure it caught before deciding.

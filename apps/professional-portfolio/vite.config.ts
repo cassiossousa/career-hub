@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import type { ContentEntry, ContentType } from './src/types/content';
 import type { Locale } from './src/types/i18n';
 
@@ -51,7 +52,7 @@ export default defineConfig(async () => {
   return {
     root: webRoot,
     base: process.env.VITE_BASE_PATH ?? '/',
-    plugins: [react(), portfolioContent(getAllEntries)],
+    plugins: [react(), tsconfigPaths(), portfolioContent(getAllEntries)],
     server: { proxy: apiProxy },
     preview: { host: true, port: 4173, proxy: apiProxy },
   };

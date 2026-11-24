@@ -1,6 +1,7 @@
 import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import { apiClient } from '../../services/api/client';
 import {
   expectErrorWithRetry,
@@ -40,7 +41,7 @@ async function expandSections(
 describe('ResumeEditor', () => {
   it('seeds a new resume from the portfolio for a saved application', async () => {
     const user = userEvent.setup();
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     expect(await screen.findByText('Tailored Resume')).toBeInTheDocument();
     expect(
       screen.getByText(/pre-filled from your portfolio/i),
@@ -53,7 +54,7 @@ describe('ResumeEditor', () => {
   });
 
   it('shows a live PDF preview of the resume document', async () => {
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     const preview = await screen.findByRole('complementary', {
       name: 'Preview',
     });
@@ -73,7 +74,7 @@ describe('ResumeEditor', () => {
 
   it('updates the preview as the document is edited', async () => {
     const user = userEvent.setup();
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     const preview = await screen.findByRole('complementary', {
       name: 'Preview',
     });
@@ -87,7 +88,7 @@ describe('ResumeEditor', () => {
 
   it('saves the seeded resume', async () => {
     const user = userEvent.setup();
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     await screen.findByText('Tailored Resume');
     await expandSections(user, ALL_SECTIONS);
 
@@ -138,7 +139,7 @@ describe('ResumeEditor', () => {
   }, 60000);
 
   it('shows the locked state for a submitted application resume', async () => {
-    renderEditor('/applications/1');
+    renderEditor(routePaths.applicationDetail('1'));
     expect(
       await screen.findByText(/already been submitted/i),
     ).toBeInTheDocument();
@@ -147,7 +148,7 @@ describe('ResumeEditor', () => {
 
   it('shows the locked error when saving a now-locked resume', async () => {
     const user = userEvent.setup();
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     const saveButton = await screen.findByRole('button', { name: 'Save' });
     await apiClient.patch('/api/applications/3', { status: 'applied' });
     await user.click(saveButton);
@@ -169,7 +170,7 @@ describe('ResumeEditor', () => {
       },
       200,
     );
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     expect(await screen.findByText('Tailored Resume')).toBeInTheDocument();
     const user = userEvent.setup();
     await expandSections(user, ['Summary']);
@@ -178,7 +179,7 @@ describe('ResumeEditor', () => {
   });
 
   it('shows not-found for an invalid id', () => {
-    renderEditor('/applications/abc');
+    renderEditor(routePaths.applicationDetail('abc'));
     expect(screen.getByText('Page not found.')).toBeInTheDocument();
   });
 
@@ -189,7 +190,7 @@ describe('ResumeEditor', () => {
       { error: { code: 'UPSTREAM', message: 'Application unavailable' } },
       500,
     );
-    renderEditor('/applications/3');
+    renderEditor(routePaths.applicationDetail('3'));
     await expectErrorWithRetry('Application unavailable');
   });
 });

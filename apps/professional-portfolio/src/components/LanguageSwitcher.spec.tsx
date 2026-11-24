@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { storageRemoveItem, storageSetItem } from '../app/storage';
+import { LOCALE_STORAGE_KEY } from '../i18n/localeStorageKey';
 import { TranslationProvider } from '../i18n/Provider';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -14,11 +15,11 @@ function renderSwitcher(onLocaleChange = jest.fn()) {
 
 describe('LanguageSwitcher', () => {
   beforeEach(() => {
-    storageRemoveItem('lang');
+    storageRemoveItem(LOCALE_STORAGE_KEY);
   });
 
   afterEach(() => {
-    storageRemoveItem('lang');
+    storageRemoveItem(LOCALE_STORAGE_KEY);
   });
 
   it('marks the active locale as pressed and requests the other locale on click', () => {
@@ -40,7 +41,7 @@ describe('LanguageSwitcher', () => {
   });
 
   it('reflects a stored pt-BR locale as the active one', () => {
-    storageSetItem('lang', 'pt-BR');
+    storageSetItem(LOCALE_STORAGE_KEY, 'pt-BR');
     renderSwitcher();
 
     expect(

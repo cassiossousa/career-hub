@@ -16,7 +16,12 @@
     "jsx": "react-jsx",
     "noUncheckedIndexedAccess": true,
     "types": ["vite/client", "jest"],
-    "exactOptionalPropertyTypes": true
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]

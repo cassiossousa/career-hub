@@ -10,6 +10,8 @@
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:e2e": "playwright test",
+    "check:mutate:diff": "node scripts/check-mutation-diff.mjs",
+    "check:mutate:core": "node scripts/check-mutation-core.mjs",
     "check:bundle": "node ../../scripts/audit-bundle-budget.mjs apps/job-tracker --js-limit-kb 400"
   },
   "dependencies": {
@@ -42,6 +44,7 @@
     "msw": "2.7.0",
     "ts-jest": "29.4.15",
     "typescript": "5.9.3",
-    "vite": "6.4.6"
+    "vite": "6.4.6",
+    "vite-tsconfig-paths": "6.1.1"
   }
 }

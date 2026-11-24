@@ -78,6 +78,6 @@ describe('ProjectDetails', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Back to projects' }),
-    ).toHaveAttribute('href', '/projects');
+    ).toHaveAttribute('href', routePaths.projects);
   });
 });

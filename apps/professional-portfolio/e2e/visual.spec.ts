@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { routePaths } from '../src/app/routePaths';
+
 const viewports = [
   { name: 'desktop', width: 1280, height: 800 },
   { name: 'mobile-360', width: 360, height: 800 },
@@ -8,8 +10,8 @@ const viewports = [
 // `/projects` is intentionally excluded: its content is synced from GitHub and
 // changes upstream, which would make the baseline churn on unrelated PRs.
 const routes = [
-  { path: '/', name: 'home' },
-  { path: '/work-experience', name: 'work-experience' },
+  { path: routePaths.home, name: 'home' },
+  { path: routePaths.workExperience, name: 'work-experience' },
 ] as const;
 
 test.describe('visual regression', () => {

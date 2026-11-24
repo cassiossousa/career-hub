@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from '../../i18n/Provider';
-import { LANGUAGE_NAMES, SKILL_CATEGORIES } from '../../services/jobOptions';
 import type {
   ExperienceBullet,
   ExperienceEntry,
@@ -29,14 +28,17 @@ import type {
   ProjectEntry,
   SkillGroup,
 } from '../../services/types/portfolio';
+import {
+  LANGUAGE_NAMES,
+  LINK_KINDS,
+  SKILL_CATEGORIES,
+} from '../../services/types/portfolio';
 import type {
   CertificationEntry,
   EducationEntry,
   LanguageEntry,
 } from '../../services/types/resume';
 import type { Locale } from '../../types/i18n';
-
-const LINK_KINDS = ['github', 'linkedin', 'website', 'email', 'other'] as const;
 
 type ListScalar = string | number | null | undefined;
 type EntryUpdater<T> = (
@@ -432,7 +434,8 @@ interface BasicsEditorProps {
 export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
   const { messages } = useTranslation();
   const basics = messages.resumes.basics;
-  const linkKeys = useListKeys(value.links.length);
+  const links = value.links ?? [];
+  const linkKeys = useListKeys(links.length);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
 
@@ -458,19 +461,17 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
   const updateLink = (index: number, patch: Partial<PortfolioLink>) => {
     set(
       'links',
-      value.links.map((link, i) =>
-        i === index ? { ...link, ...patch } : link,
-      ),
+      links.map((link, i) => (i === index ? { ...link, ...patch } : link)),
     );
   };
 
   const moveLink = (from: number, to: number) => {
-    const item = value.links[from];
+    const item = links[from];
     if (item === undefined || from === to) return;
-    const links = [...value.links];
-    links.splice(from, 1);
-    links.splice(to, 0, item);
-    set('links', links);
+    const next = [...links];
+    next.splice(from, 1);
+    next.splice(to, 0, item);
+    set('links', next);
   };
 
   return (
@@ -483,7 +484,7 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
       />
       <Typography variant="subtitle2">{basics.links}</Typography>
       <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
-        {value.links.map((link, index) => {
+        {links.map((link, index) => {
           const isDropTarget =
             dropIndex === index && dragIndex !== null && dragIndex !== index;
           return (
@@ -529,7 +530,7 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
                     moveLink(index, index - 1);
                   } else if (
                     e.key === 'ArrowDown' &&
-                    index < value.links.length - 1
+                    index < links.length - 1
                   ) {
                     e.preventDefault();
                     moveLink(index, index + 1);
@@ -584,7 +585,7 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
                 onClick={() => {
                   set(
                     'links',
-                    value.links.filter((_, i) => i !== index),
+                    links.filter((_, i) => i !== index),
                   );
                 }}
               />
@@ -598,10 +599,7 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
         startIcon={<AddIcon />}
         disabled={disabled}
         onClick={() => {
-          set('links', [
-            ...value.links,
-            { kind: 'website', url: '', label: null },
-          ]);
+          set('links', [...links, { kind: 'website', url: '', label: null }]);
         }}
         sx={{ alignSelf: 'flex-start' }}
       >

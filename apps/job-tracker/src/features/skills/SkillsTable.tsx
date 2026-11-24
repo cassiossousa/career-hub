@@ -20,8 +20,8 @@ import {
 import { useListKeys } from '../../components/EntryEditors/EntryEditors';
 import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
-import { SKILL_CATEGORIES } from '../../services/jobOptions';
 import type { SkillRowDraft } from '../../services/skills';
+import { SKILL_CATEGORIES } from '../../services/types/portfolio';
 
 interface SkillsTableProps {
   rows: SkillRowDraft[];

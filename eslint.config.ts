@@ -261,6 +261,8 @@ const eslintConfig = defineConfig([
     '**/coverage/**',
     // Generated MSW worker — not hand-written source.
     'apps/*/public/**',
+    // Generated from the backend OpenAPI spec — do not hand-edit.
+    'apps/job-tracker/src/services/api/generated/**',
   ]),
 ]);
 

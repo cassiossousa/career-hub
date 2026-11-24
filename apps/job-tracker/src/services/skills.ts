@@ -1,5 +1,5 @@
-import { SKILL_CATEGORIES } from './jobOptions';
 import type { SkillCategory } from './types/portfolio';
+import { SKILL_CATEGORIES } from './types/portfolio';
 import type {
   Skill,
   SkillCreate,

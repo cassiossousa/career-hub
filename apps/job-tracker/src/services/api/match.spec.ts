@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { ApiTestWrapper, waitForQuerySuccess } from '../../test/TestUtils';
+import { MATCH_ALGORITHMS } from '../types/match';
 import {
-  MATCH_ALGORITHMS,
   useApplicationMatch,
   useJobMatch,
   useJobMatchAllAlgorithms,

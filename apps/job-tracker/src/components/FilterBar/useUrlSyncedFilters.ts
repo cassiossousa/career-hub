@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { JOB_AREAS, JOB_LEVELS } from '../../services/jobOptions';
+import { JOB_AREAS, JOB_LEVELS } from '../../services/types/job';
 import { useFilterStore } from '../../store/filterStore';
 
 const AGE_OPTIONS = [1, 7, 30, 90] as const;

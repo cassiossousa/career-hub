@@ -1,38 +1,17 @@
-import type { SkillCategory } from './portfolio';
+import type { Schemas, Wire } from './contract';
 
 /** Canonical technical-skill catalog row (mirrors GET /api/skills). */
-export interface Skill {
-  id: number;
-  name: string;
-  group: SkillCategory;
-  labels: Record<string, string>;
-  createdAt: string;
-  updatedAt: string;
-}
+export type Skill = Wire<Schemas['SkillResponse']>;
 
-export interface SkillListPage {
-  skills: Skill[];
-  total: number;
-}
+export type SkillListPage = Wire<Schemas['SkillListResponse']>;
 
-export interface SkillCreate {
-  name: string;
-  group: SkillCategory;
-  labels?: Record<string, string> | undefined;
-}
+export type SkillCreate = Wire<Schemas['SkillCreate']>;
 
-export interface SkillPatch {
-  name?: string | undefined;
-  group?: SkillCategory | undefined;
-  labels?: Record<string, string> | undefined;
-}
+export type SkillPatch = Wire<Schemas['SkillPatch']>;
 
 /** Per-locale display labels for one skill group (mirrors GET /api/skill-group-labels). */
-export interface SkillGroupLabels {
-  group: SkillCategory;
-  labels: Record<string, string>;
-}
+export type SkillGroupLabels = Wire<Schemas['SkillGroupLabelsResponse']>;
 
-export interface SkillGroupLabelsList {
-  groups: SkillGroupLabels[];
-}
+export type SkillGroupLabelsList = Wire<
+  Schemas['SkillGroupLabelsListResponse']
+>;

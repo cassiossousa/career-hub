@@ -18,8 +18,14 @@ import { useState } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import { isApiError } from '../../services/api/client';
 import { useCreateJob, useJobs } from '../../services/api/jobs';
-import { JOB_AREAS, JOB_LEVELS, JOB_SOURCES } from '../../services/jobOptions';
-import type { JobArea, JobLevel, JobSource } from '../../services/types/job';
+import {
+  JOB_AREAS,
+  JOB_LEVELS,
+  JOB_SOURCES,
+  type JobArea,
+  type JobLevel,
+  type JobSource,
+} from '../../services/types/job';
 import { useUIStore } from '../../store/uiStore';
 
 const INITIAL_FORM = {

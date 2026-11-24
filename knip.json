@@ -17,7 +17,11 @@
         "stryker.core.config.mjs",
         "scripts/*.mjs"
       ],
-      "ignore": ["public/mockServiceWorker.js"]
+      "ignore": [
+        "public/mockServiceWorker.js",
+        "src/services/api/generated/**"
+      ],
+      "ignoreDependencies": ["openapi-typescript"]
     }
   }
 }

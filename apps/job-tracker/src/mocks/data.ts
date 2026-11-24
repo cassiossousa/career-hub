@@ -1,4 +1,3 @@
-import { SKILL_CATEGORIES } from '../services/jobOptions';
 import type { Application } from '../services/types/application';
 import type { IngestionRun } from '../services/types/ingestion';
 import type { Job, JobCreate } from '../services/types/job';
@@ -7,6 +6,7 @@ import type {
   PortfolioContent,
   SkillCategory,
 } from '../services/types/portfolio';
+import { SKILL_CATEGORIES } from '../services/types/portfolio';
 import type { Resume } from '../services/types/resume';
 import type { Skill } from '../services/types/skills';
 
@@ -44,6 +44,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(1),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 2,
@@ -70,6 +72,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(3),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 3,
@@ -95,6 +99,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_level',
     createdAt: daysAgo(10),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 4,
@@ -120,6 +126,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(45),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 5,
@@ -146,6 +154,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(2),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 6,
@@ -174,6 +184,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(5),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 7,
@@ -200,6 +212,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'unevaluated',
     createdAt: daysAgo(8),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 8,
@@ -225,6 +239,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_area',
     createdAt: daysAgo(7),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 9,
@@ -251,6 +267,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_location',
     createdAt: daysAgo(12),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 10,
@@ -277,6 +295,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_area',
     createdAt: daysAgo(20),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 11,
@@ -305,6 +325,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'unevaluated',
     createdAt: daysAgo(1),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 12,
@@ -331,6 +353,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(4),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 13,
@@ -357,6 +381,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_level',
     createdAt: daysAgo(8),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 14,
@@ -384,6 +410,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'unevaluated',
     createdAt: daysAgo(14),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 15,
@@ -410,6 +438,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(25),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 16,
@@ -436,6 +466,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_age',
     createdAt: daysAgo(40),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 17,
@@ -463,6 +495,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'filtered_level',
     createdAt: daysAgo(3),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 18,
@@ -490,6 +524,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(6),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 19,
@@ -516,6 +552,8 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'unevaluated',
     createdAt: daysAgo(18),
+    closedAt: null,
+    tags: [],
   },
   {
     id: 20,
@@ -543,6 +581,35 @@ export const seedJobs: Job[] = [
     ],
     filterResult: 'passed',
     createdAt: daysAgo(0),
+    closedAt: null,
+    tags: [],
+  },
+  {
+    id: 21,
+    source: 'remote',
+    externalId: 'remote-2100',
+    url: 'https://jobs.example.com/remote/2100',
+    title: 'Product Engineer',
+    company: 'Lumen Retail',
+    location: 'Remote',
+    area: 'fullstack',
+    level: 'unknown',
+    contractType: 'PJ',
+    description: 'Full-stack role; seniority not stated in the posting.',
+    remote: true,
+    salaryMin: null,
+    salaryMax: null,
+    currency: 'BRL',
+    postedAt: daysAgo(2),
+    lastSeenAt: daysAgo(1),
+    requirements: [
+      { text: 'React', classification: 'proven', weight: 8 },
+      { text: 'Node.js', classification: 'proven', weight: 7 },
+    ],
+    filterResult: 'unevaluated',
+    createdAt: daysAgo(2),
+    closedAt: null,
+    tags: [],
   },
 ];
 
@@ -556,6 +623,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(2),
     statusChangedAt: daysAgo(2),
     createdAt: daysAgo(2),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 2,
@@ -566,6 +635,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(5),
     statusChangedAt: daysAgo(1),
     createdAt: daysAgo(5),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 3,
@@ -576,6 +647,8 @@ export const seedApplications: Application[] = [
     appliedAt: null,
     statusChangedAt: daysAgo(3),
     createdAt: daysAgo(3),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 4,
@@ -586,6 +659,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(4),
     statusChangedAt: daysAgo(4),
     createdAt: daysAgo(4),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 5,
@@ -596,6 +671,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(9),
     statusChangedAt: daysAgo(2),
     createdAt: daysAgo(9),
+    followUpAt: new Date(Date.now() + 2 * 86400000).toISOString(),
+    tags: [],
   },
   {
     id: 6,
@@ -606,6 +683,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(1),
     statusChangedAt: daysAgo(1),
     createdAt: daysAgo(1),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 7,
@@ -616,6 +695,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(12),
     statusChangedAt: daysAgo(6),
     createdAt: daysAgo(12),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 8,
@@ -626,6 +707,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(20),
     statusChangedAt: daysAgo(10),
     createdAt: daysAgo(20),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 9,
@@ -636,6 +719,8 @@ export const seedApplications: Application[] = [
     appliedAt: dateDaysAgo(15),
     statusChangedAt: daysAgo(1),
     createdAt: daysAgo(15),
+    followUpAt: null,
+    tags: [],
   },
   {
     id: 10,
@@ -646,6 +731,8 @@ export const seedApplications: Application[] = [
     appliedAt: null,
     statusChangedAt: daysAgo(2),
     createdAt: daysAgo(2),
+    followUpAt: null,
+    tags: [],
   },
 ];
 
@@ -899,6 +986,8 @@ export function toJob(body: JobCreate, id: number): Job {
     currency: body.currency ?? 'BRL',
     postedAt: body.postedAt ?? null,
     lastSeenAt: null,
+    closedAt: null,
+    tags: body.tags ?? [],
     requirements: body.requirements ?? [],
     filterResult: body.filterResult ?? 'unevaluated',
     createdAt: now,

@@ -1,21 +1,41 @@
 import { z } from 'zod';
-import type { Application, ApplicationStatus } from '../types/application';
+import type {
+  Application,
+  ApplicationListPage,
+  ApplicationStatus,
+} from '../types/application';
+import { APPLICATION_STATUS_ORDER } from '../types/application';
 import type {
   IngestionRun,
   IngestionRunListPage,
   IngestionRunStatus,
 } from '../types/ingestion';
+import { INGESTION_RUN_STATUSES } from '../types/ingestion';
 import type {
   Job,
   JobArea,
   JobFilterResult,
   JobLevel,
+  JobListPage,
   JobSource,
   JobStats,
   Requirement,
   RequirementClassification,
 } from '../types/job';
-import type { MatchResult } from '../types/match';
+import {
+  JOB_AREAS,
+  JOB_FILTER_RESULTS,
+  JOB_LEVELS,
+  JOB_SOURCES,
+  REQUIREMENT_CLASSIFICATIONS,
+} from '../types/job';
+import type {
+  MatchAlgorithm,
+  MatchBaseline,
+  MatchResult,
+  RequirementMatch,
+} from '../types/match';
+import { MATCH_ALGORITHMS, MATCH_BASELINE_KINDS } from '../types/match';
 import type {
   ExperienceBullet,
   ExperienceEntry,
@@ -31,67 +51,38 @@ import type {
   SkillCategory,
   SkillGroup,
 } from '../types/portfolio';
+import {
+  LANGUAGE_NAMES,
+  LINK_KINDS,
+  SKILL_CATEGORIES,
+} from '../types/portfolio';
 import type {
   CertificationEntry,
   EducationEntry,
   LanguageEntry,
   Resume,
+  ResumeListPage,
 } from '../types/resume';
 import type {
   Skill,
   SkillGroupLabels,
   SkillGroupLabelsList,
+  SkillListPage,
 } from '../types/skills';
 
-const jobSourceSchema = z.enum([
-  'gupy',
-  'solides',
-  'empregos_com_br',
-  'sine_bahia',
-  'casa_do_trabalhador',
-  'remote',
-  'google_jobs',
-  'manual',
-  'other',
-]) satisfies z.ZodType<JobSource>;
+const jobSourceSchema = z.enum(JOB_SOURCES) satisfies z.ZodType<JobSource>;
 
-const jobLevelSchema = z.enum([
-  'intern',
-  'junior',
-  'mid',
-  'senior',
-  'lead',
-  'unknown',
-]) satisfies z.ZodType<JobLevel>;
+const jobLevelSchema = z.enum(JOB_LEVELS) satisfies z.ZodType<JobLevel>;
 
-const jobAreaSchema = z.enum([
-  'frontend',
-  'backend',
-  'fullstack',
-  'data',
-  'devops',
-  'mobile',
-  'qa',
-  'management',
-  'other',
-]) satisfies z.ZodType<JobArea>;
+const jobAreaSchema = z.enum(JOB_AREAS) satisfies z.ZodType<JobArea>;
 
-const jobFilterResultSchema = z.enum([
-  'unevaluated',
-  'passed',
-  'filtered_level',
-  'filtered_location',
-  'filtered_area',
-  'filtered_remote',
-  'filtered_age',
-]) satisfies z.ZodType<JobFilterResult>;
+const jobFilterResultSchema = z.enum(
+  JOB_FILTER_RESULTS,
+) satisfies z.ZodType<JobFilterResult>;
 
-const requirementClassificationSchema = z.enum([
-  'proven',
-  'equivalent',
-  'partial',
-  'unproven',
-]) satisfies z.ZodType<RequirementClassification>;
+const requirementClassificationSchema = z.enum(
+  REQUIREMENT_CLASSIFICATIONS,
+) satisfies z.ZodType<RequirementClassification>;
 
 const requirementSchema = z.object({
   text: z.string(),
@@ -117,13 +108,12 @@ const jobSchema = z.object({
   currency: z.string(),
   postedAt: z.string().nullable(),
   lastSeenAt: z.string().nullable(),
-  closedAt: z.string().nullable().optional(),
+  closedAt: z.string().nullable(),
   requirements: z.array(requirementSchema),
+  tags: z.array(z.string()),
   filterResult: jobFilterResultSchema,
   createdAt: z.string(),
 }) satisfies z.ZodType<Job>;
-
-const jobAgeBucketSchema = z.enum(['unknown', '<1d', '1-7d', '7-30d', '>30d']);
 
 const jobStatsSchema = z.object({
   total: z.number(),
@@ -132,18 +122,12 @@ const jobStatsSchema = z.object({
   byArea: z.record(z.string(), z.number()),
   filtered: z.record(z.string(), z.number()),
   applicationsByStatus: z.record(z.string(), z.number()),
-  jobsByAge: z.partialRecord(jobAgeBucketSchema, z.number()),
+  jobsByAge: z.record(z.string(), z.number()),
 }) satisfies z.ZodType<JobStats>;
 
-const applicationStatusSchema = z.enum([
-  'saved',
-  'applied',
-  'screening',
-  'interview',
-  'offer',
-  'rejected',
-  'withdrawn',
-]) satisfies z.ZodType<ApplicationStatus>;
+const applicationStatusSchema = z.enum(
+  APPLICATION_STATUS_ORDER,
+) satisfies z.ZodType<ApplicationStatus>;
 
 const applicationSchema = z.object({
   id: z.number(),
@@ -152,12 +136,16 @@ const applicationSchema = z.object({
   status: applicationStatusSchema,
   notes: z.string().nullable(),
   appliedAt: z.string().nullable(),
+  followUpAt: z.string().nullable(),
+  tags: z.array(z.string()),
   statusChangedAt: z.string(),
   createdAt: z.string(),
 }) satisfies z.ZodType<Application>;
 
+const portfolioLinkKindSchema = z.enum(LINK_KINDS);
+
 const portfolioLinkSchema = z.object({
-  kind: z.enum(['github', 'linkedin', 'website', 'email', 'other']),
+  kind: portfolioLinkKindSchema,
   url: z.string(),
   label: z.string().nullish(),
 }) satisfies z.ZodType<PortfolioLink>;
@@ -168,7 +156,7 @@ const portfolioBasicsSchema = z.object({
   subtitle: z.string().nullish(),
   location: z.string().nullish(),
   avatarUrl: z.string().nullish(),
-  links: z.array(portfolioLinkSchema),
+  links: z.array(portfolioLinkSchema).optional(),
 }) satisfies z.ZodType<PortfolioBasics>;
 
 const experienceBulletSchema = z.object({
@@ -185,14 +173,9 @@ const experienceEntrySchema = z.object({
   bullets: z.array(experienceBulletSchema).optional(),
 }) satisfies z.ZodType<ExperienceEntry>;
 
-const skillCategorySchema = z.enum([
-  'frontend',
-  'backend',
-  'databases',
-  'distributed',
-  'cloud',
-  'testing',
-]) satisfies z.ZodType<SkillCategory>;
+const skillCategorySchema = z.enum(
+  SKILL_CATEGORIES,
+) satisfies z.ZodType<SkillCategory>;
 
 const skillGroupSchema = z.object({
   category: skillCategorySchema,
@@ -234,13 +217,9 @@ const languageEntrySchema = z.object({
   proficiency: z.string().nullish(),
 }) satisfies z.ZodType<LanguageEntry>;
 
-const languageNameSchema = z.enum([
-  'english',
-  'portuguese',
-  'spanish',
-  'french',
-  'german',
-]) satisfies z.ZodType<LanguageName>;
+const languageNameSchema = z.enum(
+  LANGUAGE_NAMES,
+) satisfies z.ZodType<LanguageName>;
 
 const portfolioLanguageLabelsSchema = z.object({
   name: z.string().nullish(),
@@ -262,10 +241,10 @@ const portfolioContentSchema = z.object({
 }) satisfies z.ZodType<PortfolioContent>;
 
 const portfolioFiltersSchema = z.object({
-  levels: z.array(jobLevelSchema),
-  areas: z.array(jobAreaSchema),
-  locations: z.array(z.string()),
-  remoteOnly: z.boolean(),
+  levels: z.array(jobLevelSchema).optional(),
+  areas: z.array(jobAreaSchema).optional(),
+  locations: z.array(z.string()).optional(),
+  remoteOnly: z.boolean().optional(),
 }) satisfies z.ZodType<PortfolioFilters>;
 
 const portfolioSchema = z.object({
@@ -287,11 +266,9 @@ const skillSchema = z.object({
   updatedAt: z.string(),
 }) satisfies z.ZodType<Skill>;
 
-const ingestionRunStatusSchema = z.enum([
-  'succeeded',
-  'partial',
-  'failed',
-]) satisfies z.ZodType<IngestionRunStatus>;
+const ingestionRunStatusSchema = z.enum(
+  INGESTION_RUN_STATUSES,
+) satisfies z.ZodType<IngestionRunStatus>;
 
 const ingestionRunSchema = z.object({
   id: z.number(),
@@ -307,22 +284,26 @@ const ingestionRunSchema = z.object({
   error: z.string().nullable(),
 }) satisfies z.ZodType<IngestionRun>;
 
+const matchAlgorithmSchema = z.enum(
+  MATCH_ALGORITHMS,
+) satisfies z.ZodType<MatchAlgorithm>;
+
 const matchBaselineSchema = z.object({
-  kind: z.enum(['resume', 'portfolio']),
+  kind: z.enum(MATCH_BASELINE_KINDS),
   locale: z.string().nullable(),
   applicationId: z.number().nullable(),
-});
+}) satisfies z.ZodType<MatchBaseline>;
 
 const requirementMatchSchema = z.object({
   text: z.string(),
   weight: z.number(),
   matched: z.boolean(),
   score: z.number(),
-});
+}) satisfies z.ZodType<RequirementMatch>;
 
 const matchResultSchema = z.object({
   score: z.number(),
-  algorithm: z.enum(['keyword', 'tfidf', 'hybrid']),
+  algorithm: matchAlgorithmSchema,
   baseline: matchBaselineSchema,
   components: z.record(z.string(), z.number()),
   matchedTerms: z.array(z.string()),
@@ -350,7 +331,7 @@ const resumeSchema = z.object({
 export const jobsResponseSchema = z.object({
   jobs: z.array(jobSchema),
   total: z.number(),
-});
+}) satisfies z.ZodType<JobListPage>;
 
 export const jobResponseSchema = jobSchema;
 
@@ -359,7 +340,7 @@ export const jobStatsResponseSchema = jobStatsSchema;
 export const applicationsResponseSchema = z.object({
   applications: z.array(applicationSchema),
   total: z.number(),
-});
+}) satisfies z.ZodType<ApplicationListPage>;
 
 export const applicationResponseSchema = applicationSchema;
 
@@ -368,7 +349,7 @@ export const portfolioResponseSchema = portfolioSchema;
 export const skillsResponseSchema = z.object({
   skills: z.array(skillSchema),
   total: z.number(),
-});
+}) satisfies z.ZodType<SkillListPage>;
 
 export const skillResponseSchema = skillSchema;
 
@@ -395,4 +376,4 @@ export const resumeResponseSchema = resumeSchema;
 export const resumesResponseSchema = z.object({
   resumes: z.array(resumeSchema),
   total: z.number(),
-});
+}) satisfies z.ZodType<ResumeListPage>;

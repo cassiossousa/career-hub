@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useId } from 'react';
 import { useTranslation } from '../../i18n/Provider';
-import { JOB_AREAS, JOB_LEVELS } from '../../services/jobOptions';
+import { JOB_AREAS, JOB_LEVELS } from '../../services/types/job';
 import { useFilterStore } from '../../store/filterStore';
 import { useUrlSyncedFilters } from './useUrlSyncedFilters';
 

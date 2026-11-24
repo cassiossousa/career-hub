@@ -13,9 +13,8 @@ import { EmptyState } from '../../components/AsyncStatus/AsyncStatus';
 import { PortfolioQueryGate } from '../../components/PortfolioQueryGate/PortfolioQueryGate';
 import { useTranslation } from '../../i18n/Provider';
 import type { PortfolioContent } from '../../services/types/portfolio';
+import { LOCALES } from '../../types/i18n';
 import { PortfolioForm } from './PortfolioForm';
-
-const LOCALES = ['en', 'pt-BR'] as const;
 
 const EMPTY_CONTENT: PortfolioContent = {
   basics: {

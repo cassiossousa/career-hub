@@ -6,7 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!**/dist", "!!**/mockServiceWorker.js"]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!**/mockServiceWorker.js",
+      "!!apps/job-tracker/src/services/api/generated"
+    ]
   },
   "formatter": {
     "enabled": true,

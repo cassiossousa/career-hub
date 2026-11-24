@@ -1,111 +1,59 @@
-import type { JobArea, JobLevel } from './job';
+import type { Schemas, Wire } from './contract';
 
-export type SkillCategory =
-  | 'frontend'
-  | 'backend'
-  | 'databases'
-  | 'distributed'
-  | 'cloud'
-  | 'testing';
+export const SKILL_CATEGORIES = [
+  'frontend',
+  'backend',
+  'databases',
+  'distributed',
+  'cloud',
+  'testing',
+] as const satisfies readonly Schemas['SkillCategory'][];
 
-export interface PortfolioLink {
-  kind: 'github' | 'linkedin' | 'website' | 'email' | 'other';
-  url: string;
-  label?: string | null | undefined;
-}
+export type SkillCategory = Schemas['SkillCategory'];
 
-export interface PortfolioBasics {
-  fullName: string;
-  headline?: string | null | undefined;
-  subtitle?: string | null | undefined;
-  location?: string | null | undefined;
-  avatarUrl?: string | null | undefined;
-  links: PortfolioLink[];
-}
+export const LINK_KINDS = [
+  'github',
+  'linkedin',
+  'website',
+  'email',
+  'other',
+] as const satisfies readonly Schemas['PortfolioLinkKind'][];
 
-export interface ExperienceBullet {
-  text: string;
-  skills?: string[] | undefined;
-}
+export type LinkKind = Schemas['PortfolioLinkKind'];
 
-export interface ExperienceEntry {
-  company: string;
-  role: string;
-  location?: string | null | undefined;
-  start: string; // YYYY-MM
-  end?: string | null | undefined; // YYYY-MM or null for present
-  bullets?: ExperienceBullet[] | undefined;
-}
+export const LANGUAGE_NAMES = [
+  'english',
+  'portuguese',
+  'spanish',
+  'french',
+  'german',
+] as const satisfies readonly Schemas['LanguageName'][];
 
-export interface SkillGroup {
-  category: SkillCategory;
-  items?: string[] | undefined;
-}
+export type LanguageName = Schemas['LanguageName'];
 
-export interface ProjectEntry {
-  slug: string;
-  title: string;
-  summary: string;
-  highlights?: string[] | undefined;
-  repoUrl?: string | null | undefined;
-  demoUrl?: string | null | undefined;
-  featured?: boolean | undefined;
-  technologies?: string[] | undefined;
-  topics?: string[] | undefined;
-  category?: string | null | undefined;
-  stars?: number | null | undefined;
-}
+export type PortfolioLink = Wire<Schemas['PortfolioLinkSchema']>;
 
-export interface PortfolioFilters {
-  levels: JobLevel[];
-  areas: JobArea[];
-  locations: string[];
-  remoteOnly: boolean;
-}
+export type PortfolioBasics = Wire<Schemas['PortfolioBasicsSchema']>;
 
-export type LanguageName =
-  | 'english'
-  | 'portuguese'
-  | 'spanish'
-  | 'french'
-  | 'german';
+export type ExperienceBullet = Wire<Schemas['ExperienceBulletSchema']>;
+
+export type ExperienceEntry = Wire<Schemas['ExperienceEntrySchema']>;
+
+export type SkillGroup = Wire<Schemas['SkillGroupSchema']>;
+
+export type ProjectEntry = Wire<Schemas['ProjectEntrySchema']>;
+
+export type PortfolioFilters = Wire<Schemas['PortfolioFiltersSchema']>;
 
 /** Per-locale display overrides for one language entry's fields. */
-export interface PortfolioLanguageLabels {
-  name?: string | null | undefined;
-  proficiency?: string | null | undefined;
-}
+export type PortfolioLanguageLabels = Wire<Schemas['LanguageLabelsSchema']>;
 
-export interface PortfolioLanguage {
-  language: LanguageName;
-  proficiency: string;
-  labels?: Record<string, PortfolioLanguageLabels> | undefined;
-}
+export type PortfolioLanguage = Wire<Schemas['PortfolioLanguageSchema']>;
 
 /** One locale's portfolio content document (no locale tag, no filters). */
-export interface PortfolioContent {
-  basics: PortfolioBasics;
-  experience?: ExperienceEntry[] | undefined;
-  skillGroups?: SkillGroup[] | undefined;
-  projects?: ProjectEntry[] | undefined;
-  languages?: PortfolioLanguage[] | undefined;
-}
+export type PortfolioContent = Wire<Schemas['PortfolioContentSchema']>;
 
-export interface Portfolio {
-  id: number;
-  filters: PortfolioFilters;
-  documents: Record<string, PortfolioContent>;
-  createdAt: string;
-  updatedAt: string;
-}
+export type Portfolio = Wire<Schemas['PortfolioResponse']>;
 
 /** PUT /api/portfolio body: one locale's document + optional shared filters. */
-export interface PortfolioDocumentWrite {
-  locale: string;
-  basics: PortfolioBasics;
-  experience?: ExperienceEntry[] | undefined;
-  skillGroups?: SkillGroup[] | undefined;
-  projects?: ProjectEntry[] | undefined;
-  languages?: PortfolioLanguage[] | undefined;
-  filters?: PortfolioFilters | undefined;
-}
+export type PortfolioDocumentWrite = Wire<Schemas['PortfolioDocument']>;

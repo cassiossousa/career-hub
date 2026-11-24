@@ -15,12 +15,12 @@ import { EmptyState } from '../../components/AsyncStatus/AsyncStatus';
 import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
 import { useJobStats } from '../../services/api/jobs';
-import { JOB_SOURCES } from '../../services/jobOptions';
 import type {
   IngestionRun,
   IngestionRunStatus,
 } from '../../services/types/ingestion';
 import type { JobSource } from '../../services/types/job';
+import { JOB_SOURCES } from '../../services/types/job';
 
 const STATUS_COLORS: Record<
   IngestionRunStatus,

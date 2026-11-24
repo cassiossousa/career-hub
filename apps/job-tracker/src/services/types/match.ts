@@ -1,26 +1,22 @@
-export type MatchAlgorithm = 'keyword' | 'tfidf' | 'hybrid';
+import type { Schemas, Wire } from './contract';
 
-type MatchBaselineKind = 'resume' | 'portfolio';
+export const MATCH_ALGORITHMS = [
+  'keyword',
+  'tfidf',
+  'hybrid',
+] as const satisfies readonly Schemas['MatchAlgorithm'][];
 
-interface MatchBaseline {
-  kind: MatchBaselineKind;
-  locale: string | null;
-  applicationId: number | null;
-}
+export type MatchAlgorithm = Schemas['MatchAlgorithm'];
 
-interface RequirementMatch {
-  text: string;
-  weight: number;
-  matched: boolean;
-  score: number;
-}
+export const MATCH_BASELINE_KINDS = [
+  'resume',
+  'portfolio',
+] as const satisfies readonly Schemas['MatchBaselineKind'][];
 
-export interface MatchResult {
-  score: number; // 0-100
-  algorithm: MatchAlgorithm;
-  baseline: MatchBaseline;
-  components: Record<string, number>;
-  matchedTerms: string[];
-  missingTerms: string[];
-  requirements: RequirementMatch[];
-}
+export type MatchBaselineKind = Schemas['MatchBaselineKind'];
+
+export type MatchBaseline = Wire<Schemas['MatchBaselineSchema']>;
+
+export type RequirementMatch = Wire<Schemas['RequirementMatchSchema']>;
+
+export type MatchResult = Wire<Schemas['MatchResponse']>;

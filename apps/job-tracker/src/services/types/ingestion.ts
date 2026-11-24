@@ -1,27 +1,16 @@
-import type { JobSource } from './job';
+import type { Schemas, Wire } from './contract';
 
-export type IngestionRunStatus = 'succeeded' | 'partial' | 'failed';
+export const INGESTION_RUN_STATUSES = [
+  'succeeded',
+  'partial',
+  'failed',
+] as const satisfies readonly Schemas['IngestionRunStatus'][];
 
-export interface IngestionRun {
-  id: number;
-  startedAt: string;
-  finishedAt: string;
-  createdAt: string;
-  source: JobSource;
-  status: IngestionRunStatus;
-  fetched: number;
-  inserted: number;
-  updated: number;
-  failed: number;
-  error: string | null;
-}
+export type IngestionRunStatus = Schemas['IngestionRunStatus'];
 
-export interface IngestionRunListPage {
-  runs: IngestionRun[];
-  total: number;
-}
+export type IngestionRun = Wire<Schemas['IngestionRunResponse']>;
+
+export type IngestionRunListPage = Wire<Schemas['IngestionRunListResponse']>;
 
 /** POST /api/ingestion/runs body; omitted source means "all sources". */
-export interface IngestionRunTrigger {
-  source?: JobSource | null | undefined;
-}
+export type IngestionRunTrigger = Wire<Schemas['IngestionRunCreate']>;

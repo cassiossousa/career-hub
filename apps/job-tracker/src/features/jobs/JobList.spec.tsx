@@ -36,6 +36,28 @@ describe('JobList', () => {
     });
   });
 
+  it('filters the list when a job card chip is clicked', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<JobList />);
+    await waitFor(() => {
+      expect(screen.getByText(/Job openings \(\d+\)/)).toBeInTheDocument();
+    });
+    const before = screen.getByText(/Job openings \(\d+\)/).textContent;
+
+    const seniorChip = screen.getAllByRole('button', { name: 'Senior' })[0];
+    if (!seniorChip) throw new Error('expected a senior level chip');
+    await user.click(seniorChip);
+
+    await waitFor(() => {
+      expect(useFilterStore.getState().level).toBe('senior');
+    });
+    await waitFor(() => {
+      expect(screen.getByText(/Job openings \(\d+\)/).textContent).not.toBe(
+        before,
+      );
+    });
+  }, 30000);
+
   it('navigates to job detail when a card is clicked', async () => {
     const user = userEvent.setup();
     renderWithProviders(<JobList />);

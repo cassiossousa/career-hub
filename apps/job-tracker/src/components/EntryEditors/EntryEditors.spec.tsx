@@ -156,12 +156,12 @@ describe('BasicsEditor', () => {
     fireEvent.change(screen.getByLabelText('URL'), {
       target: { value: 'https://github.com/new' },
     });
-    expect(lastCall(calls).links[0]?.url).toBe('https://github.com/new');
+    expect(lastCall(calls).links?.[0]?.url).toBe('https://github.com/new');
 
     fireEvent.change(screen.getByLabelText('Label'), {
       target: { value: 'Work' },
     });
-    expect(lastCall(calls).links[0]?.label).toBe('Work');
+    expect(lastCall(calls).links?.[0]?.label).toBe('Work');
 
     const avatar = screen.getByLabelText(/avatar url/i);
     fireEvent.change(avatar, {
@@ -184,7 +184,7 @@ describe('BasicsEditor', () => {
     fireEvent.dragOver(firstRow);
     fireEvent.drop(firstRow);
 
-    expect(lastCall(calls).links.map((l) => l.url)).toEqual([
+    expect((lastCall(calls).links ?? []).map((l) => l.url)).toEqual([
       'https://linkedin.com/in/b',
       'https://github.com/a',
     ]);
@@ -202,13 +202,13 @@ describe('BasicsEditor', () => {
     expect(calls).toHaveLength(0);
 
     fireEvent.keyDown(secondHandle, { key: 'ArrowUp' });
-    expect(lastCall(calls).links.map((l) => l.url)).toEqual([
+    expect((lastCall(calls).links ?? []).map((l) => l.url)).toEqual([
       'https://linkedin.com/in/b',
       'https://github.com/a',
     ]);
 
     fireEvent.keyDown(firstHandle, { key: 'ArrowDown' });
-    expect(lastCall(calls).links.map((l) => l.url)).toEqual([
+    expect((lastCall(calls).links ?? []).map((l) => l.url)).toEqual([
       'https://github.com/a',
       'https://linkedin.com/in/b',
     ]);

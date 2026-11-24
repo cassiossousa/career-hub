@@ -74,7 +74,7 @@ function toBasics(
     headline: basics.headline || undefined,
     subtitle: basics.subtitle || undefined,
     location: basics.location || undefined,
-    links: basics.links
+    links: (basics.links ?? [])
       .filter((link) => link.url.trim() !== '')
       .map((link) => ({
         label: link.label || copy.linkKindLabels[link.kind],

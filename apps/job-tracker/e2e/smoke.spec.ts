@@ -3,8 +3,8 @@ import { expect, type Page, test } from '@playwright/test';
 
 import { publicRoutePaths } from '../src/app/routePaths';
 import { LOCALE_STORAGE_KEY } from '../src/i18n/localeStorageKey';
+import { LOCALES } from '../src/types/i18n';
 
-const LOCALES = ['en', 'pt-BR'] as const;
 const VIEWPORTS = [
   { name: 'mobile-360', width: 360, height: 800 },
   { name: 'desktop-1280', width: 1280, height: 800 },

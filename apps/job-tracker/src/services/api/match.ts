@@ -3,15 +3,13 @@ import {
   useQueries,
   useQuery,
 } from '@tanstack/react-query';
-import type { MatchAlgorithm, MatchResult } from '../types/match';
+import {
+  MATCH_ALGORITHMS,
+  type MatchAlgorithm,
+  type MatchResult,
+} from '../types/match';
 import { apiClient } from './client';
 import { matchResponseSchema } from './schemas';
-
-export const MATCH_ALGORITHMS: readonly MatchAlgorithm[] = [
-  'keyword',
-  'tfidf',
-  'hybrid',
-];
 
 const MATCH_QUERY_KEY = 'match';
 

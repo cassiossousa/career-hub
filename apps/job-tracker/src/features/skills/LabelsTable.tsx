@@ -12,9 +12,8 @@ import { useListKeys } from '../../components/EntryEditors/EntryEditors';
 import { getDictionary } from '../../i18n/dictionaries';
 import { useTranslation } from '../../i18n/Provider';
 import { type LabelEntry, labelEntryKey } from '../../services/skills';
-import type { Locale } from '../../types/i18n';
+import { LOCALES, type Locale } from '../../types/i18n';
 
-const LABEL_LOCALES: readonly Locale[] = ['en', 'pt-BR'];
 const LABEL_MAX_LENGTH = 100;
 
 const fallbackLabel = (entry: LabelEntry, locale: Locale) => {
@@ -52,7 +51,7 @@ export function LabelsTable({
         <TableHead>
           <TableRow>
             <TableCell>{t.entityColumn}</TableCell>
-            {LABEL_LOCALES.map((locale) => (
+            {LOCALES.map((locale) => (
               <TableCell key={locale}>{localeNames[locale]}</TableCell>
             ))}
           </TableRow>
@@ -73,7 +72,7 @@ export function LabelsTable({
                       : caption}
                   </Typography>
                 </TableCell>
-                {LABEL_LOCALES.map((locale) => (
+                {LOCALES.map((locale) => (
                   <TableCell key={locale} sx={{ minWidth: 160 }}>
                     <TextField
                       size="small"

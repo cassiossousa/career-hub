@@ -1,115 +1,74 @@
-export type JobSource =
-  | 'gupy'
-  | 'solides'
-  | 'empregos_com_br'
-  | 'sine_bahia'
-  | 'casa_do_trabalhador'
-  | 'remote'
-  | 'google_jobs'
-  | 'manual'
-  | 'other';
+import type { Schemas, Wire } from './contract';
 
-export type JobLevel =
-  | 'intern'
-  | 'junior'
-  | 'mid'
-  | 'senior'
-  | 'lead'
-  | 'unknown';
+export const JOB_SOURCES = [
+  'gupy',
+  'solides',
+  'empregos_com_br',
+  'sine_bahia',
+  'casa_do_trabalhador',
+  'remote',
+  'google_jobs',
+  'manual',
+  'other',
+] as const satisfies readonly Schemas['JobSource'][];
 
-export type JobArea =
-  | 'frontend'
-  | 'backend'
-  | 'fullstack'
-  | 'data'
-  | 'devops'
-  | 'mobile'
-  | 'qa'
-  | 'management'
-  | 'other';
+export type JobSource = Schemas['JobSource'];
 
-export type JobFilterResult =
-  | 'unevaluated'
-  | 'passed'
-  | 'filtered_level'
-  | 'filtered_location'
-  | 'filtered_area'
-  | 'filtered_remote'
-  | 'filtered_age';
+export const JOB_LEVELS = [
+  'intern',
+  'junior',
+  'mid',
+  'senior',
+  'lead',
+  'unknown',
+] as const satisfies readonly Schemas['JobLevel'][];
 
-export type RequirementClassification =
-  | 'proven'
-  | 'equivalent'
-  | 'partial'
-  | 'unproven';
+export type JobLevel = Schemas['JobLevel'];
 
-export interface Requirement {
-  text: string;
-  classification: RequirementClassification;
-  weight?: number | undefined; // 1-10, backend default 5
-}
+export const JOB_AREAS = [
+  'frontend',
+  'backend',
+  'fullstack',
+  'data',
+  'devops',
+  'mobile',
+  'qa',
+  'management',
+  'other',
+] as const satisfies readonly Schemas['JobArea'][];
 
-export interface Job {
-  id: number;
-  source: JobSource;
-  externalId: string | null;
-  url: string;
-  title: string;
-  company: string;
-  location: string;
-  area: JobArea;
-  level: JobLevel;
-  contractType: string | null;
-  description: string;
-  remote: boolean;
-  salaryMin: number | null;
-  salaryMax: number | null;
-  currency: string;
-  postedAt: string | null;
-  lastSeenAt: string | null;
-  closedAt?: string | null | undefined;
-  requirements: Requirement[];
-  filterResult: JobFilterResult;
-  createdAt: string;
-}
+export type JobArea = Schemas['JobArea'];
 
-export interface JobCreate {
-  source: JobSource;
-  externalId?: string | null | undefined;
-  url: string;
-  title: string;
-  company: string;
-  location: string;
-  area: JobArea;
-  level: JobLevel;
-  contractType?: string | null | undefined;
-  description?: string | undefined;
-  remote?: boolean | undefined;
-  salaryMin?: number | null | undefined;
-  salaryMax?: number | null | undefined;
-  currency?: string | undefined;
-  postedAt?: string | null | undefined;
-  requirements?: Requirement[] | undefined;
-  filterResult?: JobFilterResult | undefined;
-}
+export const JOB_FILTER_RESULTS = [
+  'unevaluated',
+  'passed',
+  'filtered_level',
+  'filtered_location',
+  'filtered_area',
+  'filtered_remote',
+  'filtered_age',
+] as const satisfies readonly Schemas['JobFilterResult'][];
 
-export interface JobPatch {
-  title?: string | null | undefined;
-  company?: string | null | undefined;
-  location?: string | null | undefined;
-  area?: JobArea | null | undefined;
-  level?: JobLevel | null | undefined;
-  contractType?: string | null | undefined;
-  description?: string | null | undefined;
-  remote?: boolean | null | undefined;
-  salaryMin?: number | null | undefined;
-  salaryMax?: number | null | undefined;
-  currency?: string | null | undefined;
-  postedAt?: string | null | undefined;
-  requirements?: Requirement[] | null | undefined;
-  filterResult?: JobFilterResult | null | undefined;
-}
+export type JobFilterResult = Schemas['JobFilterResult'];
 
+export const REQUIREMENT_CLASSIFICATIONS = [
+  'proven',
+  'equivalent',
+  'partial',
+  'unproven',
+] as const satisfies readonly Schemas['RequirementClassification'][];
+
+export type RequirementClassification = Schemas['RequirementClassification'];
+
+export type Requirement = Wire<Schemas['RequirementSchema']>;
+
+export type Job = Wire<Schemas['JobResponse']>;
+
+export type JobCreate = Wire<Schemas['JobCreate']>;
+
+export type JobPatch = Wire<Schemas['JobPatch']>;
+
+/** Query parameters for GET /api/jobs — not part of the JSON contract. */
 export interface JobFilter {
   source?: JobSource | undefined;
   level?: JobLevel | undefined;
@@ -120,19 +79,6 @@ export interface JobFilter {
   preset?: 'profile' | null | undefined;
 }
 
-export interface JobListPage {
-  jobs: Job[];
-  total: number;
-}
+export type JobListPage = Wire<Schemas['JobListResponse']>;
 
-type JobAgeBucket = 'unknown' | '<1d' | '1-7d' | '7-30d' | '>30d';
-
-export interface JobStats {
-  total: number;
-  bySource: Partial<Record<JobSource, number>>;
-  byLevel: Partial<Record<JobLevel, number>>;
-  byArea: Partial<Record<JobArea, number>>;
-  filtered: Partial<Record<JobFilterResult, number>>;
-  applicationsByStatus: Record<string, number>;
-  jobsByAge: Partial<Record<JobAgeBucket, number>>;
-}
+export type JobStats = Wire<Schemas['JobStatsResponse']>;

@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import { create } from 'zustand';
-import { JOB_AREAS, JOB_LEVELS } from '../services/jobOptions';
-import type { JobArea, JobLevel } from '../services/types/job';
+import {
+  JOB_AREAS,
+  JOB_LEVELS,
+  type JobArea,
+  type JobLevel,
+} from '../services/types/job';
 import { loadPersistedState, savePersistedState } from './persistedState';
 
 const persistedFilterStateSchema = z.object({

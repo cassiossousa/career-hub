@@ -20,6 +20,8 @@ function makeJob(overrides: Partial<Job> = {}): Job {
     currency: 'BRL',
     postedAt: null,
     lastSeenAt: null,
+    closedAt: null,
+    tags: [],
     requirements: [],
     filterResult: 'unevaluated',
     createdAt: '2024-01-01T00:00:00Z',

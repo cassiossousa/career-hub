@@ -11,17 +11,8 @@ import { FilterBar } from '../../components/FilterBar/FilterBar';
 import { JobCard } from '../../components/JobCard/JobCard';
 import { useTranslation } from '../../i18n/Provider';
 import { useJobs } from '../../services/api/jobs';
+import { jobMatchesSearch } from '../../services/jobMeta';
 import { useFilterStore } from '../../store/filterStore';
-
-function matchesSearch(
-  job: { title: string; company: string; location: string },
-  query: string,
-): boolean {
-  if (query === '') return true;
-  return [job.title, job.company, job.location].some((field) =>
-    field.toLowerCase().includes(query),
-  );
-}
 
 export function JobList() {
   const navigate = useNavigate();
@@ -58,7 +49,7 @@ export function JobList() {
 
   const query = search?.trim().toLowerCase() ?? '';
   const visibleJobs = useMemo(
-    () => jobsQuery.data?.jobs.filter((job) => matchesSearch(job, query)),
+    () => jobsQuery.data?.jobs.filter((job) => jobMatchesSearch(job, query)),
     [jobsQuery.data, query],
   );
 

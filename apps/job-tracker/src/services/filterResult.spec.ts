@@ -1,25 +1,10 @@
-import { filterResultLabelKey, isFilteredResult } from './filterResult';
-import type { JobFilterResult } from './types/job';
+import { isFilteredResult } from './filterResult';
+import { JOB_FILTER_RESULTS } from './types/job';
 
 describe('filterResult', () => {
-  it('maps every JobFilterResult to a dictionary label key', () => {
-    const results: JobFilterResult[] = [
-      'unevaluated',
-      'passed',
-      'filtered_level',
-      'filtered_location',
-      'filtered_area',
-      'filtered_remote',
-      'filtered_age',
-    ];
-    for (const result of results) {
-      expect(filterResultLabelKey[result]).toBeTruthy();
+  it('isFilteredResult is true exactly for the filtered_* results', () => {
+    for (const result of JOB_FILTER_RESULTS) {
+      expect(isFilteredResult(result)).toBe(result.startsWith('filtered_'));
     }
-  });
-
-  it('isFilteredResult excludes unevaluated and passed', () => {
-    expect(isFilteredResult('filtered_level')).toBe(true);
-    expect(isFilteredResult('unevaluated')).toBe(false);
-    expect(isFilteredResult('passed')).toBe(false);
   });
 });

@@ -31,8 +31,7 @@ import { isApiError } from '../../services/api/client';
 import { useUpsertApplicationResume } from '../../services/api/resumes';
 import { toResumePdfDocument } from '../../services/resumePreview';
 import type { ResumeDocument } from '../../services/types/resume';
-
-const LOCALES = ['en', 'pt-BR'] as const;
+import { LOCALES } from '../../types/i18n';
 
 interface ResumeFormProps {
   applicationId: number;

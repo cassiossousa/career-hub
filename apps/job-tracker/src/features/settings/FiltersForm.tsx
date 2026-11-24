@@ -16,7 +16,7 @@ import { FormCard } from '../../components/FormCard/FormCard';
 import { UnsavedChangesDialog } from '../../components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useTranslation } from '../../i18n/Provider';
 import { useUpsertPortfolio } from '../../services/api/portfolio';
-import { JOB_AREAS, JOB_LEVELS } from '../../services/jobOptions';
+import { JOB_AREAS, JOB_LEVELS } from '../../services/types/job';
 import type {
   PortfolioContent,
   PortfolioFilters,
@@ -40,11 +40,11 @@ export function FiltersForm({ locale, content, filters }: FiltersFormProps) {
   const { mutate: upsertPortfolio, isPending } = useUpsertPortfolio();
   const [draft, setDraft] = useState<PortfolioFilters>(filters);
   const [locationsText, setLocationsText] = useState(
-    filters.locations.join(', '),
+    (filters.locations ?? []).join(', '),
   );
   const [feedback, setFeedback] = useState<FormFeedback | null>(null);
 
-  const locationsDirty = locationsText !== filters.locations.join(', ');
+  const locationsDirty = locationsText !== (filters.locations ?? []).join(', ');
   const dirty =
     JSON.stringify(draft) !== JSON.stringify(filters) || locationsDirty;
   const blocker = useUnsavedChangesGuard(dirty);
@@ -65,7 +65,7 @@ export function FiltersForm({ locale, content, filters }: FiltersFormProps) {
         setFeedback,
         onSaved: () => {
           setDraft(next);
-          setLocationsText(next.locations.join(', '));
+          setLocationsText((next.locations ?? []).join(', '));
         },
       }),
     );
@@ -84,7 +84,7 @@ export function FiltersForm({ locale, content, filters }: FiltersFormProps) {
         <OptionGroup
           label={t.levels}
           options={JOB_LEVELS}
-          selected={draft.levels}
+          selected={draft.levels ?? []}
           optionLabel={(level) => messages.jobs.levels[level]}
           onChange={(levels) => {
             setDraft({ ...draft, levels });
@@ -93,7 +93,7 @@ export function FiltersForm({ locale, content, filters }: FiltersFormProps) {
         <OptionGroup
           label={t.areas}
           options={JOB_AREAS}
-          selected={draft.areas}
+          selected={draft.areas ?? []}
           optionLabel={(area) => messages.jobs.areas[area]}
           onChange={(areas) => {
             setDraft({ ...draft, areas });
@@ -112,7 +112,7 @@ export function FiltersForm({ locale, content, filters }: FiltersFormProps) {
         <FormControlLabel
           control={
             <Switch
-              checked={draft.remoteOnly}
+              checked={draft.remoteOnly ?? false}
               onChange={(e) => {
                 setDraft({ ...draft, remoteOnly: e.target.checked });
               }}

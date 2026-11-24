@@ -72,11 +72,11 @@ const en: Translation = {
     filterResult: {
       unevaluated: 'Unevaluated',
       passed: 'Passed',
-      filteredLevel: 'Filtered (Level)',
-      filteredLocation: 'Filtered (Location)',
-      filteredArea: 'Filtered (Area)',
-      filteredRemote: 'Filtered (Remote)',
-      filteredAge: 'Filtered (Age)',
+      filtered_level: 'Filtered (Level)',
+      filtered_location: 'Filtered (Location)',
+      filtered_area: 'Filtered (Area)',
+      filtered_remote: 'Filtered (Remote)',
+      filtered_age: 'Filtered (Age)',
     },
     levels: {
       intern: 'Intern',

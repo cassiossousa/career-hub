@@ -10,6 +10,8 @@ export function makeApplication(
     status: 'applied',
     notes: null,
     appliedAt: '2024-01-01',
+    followUpAt: null,
+    tags: [],
     statusChangedAt: '2024-01-02',
     createdAt: '2024-01-01',
     ...overrides,

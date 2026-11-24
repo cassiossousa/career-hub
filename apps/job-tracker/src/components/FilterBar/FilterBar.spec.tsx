@@ -1,8 +1,20 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useFilterStore } from '../../store/filterStore';
 import { renderWithProviders } from '../../test/TestUtils';
 import { FilterBar } from './FilterBar';
+
+let lastSearch = '';
+
+function SearchProbe() {
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    lastSearch = searchParams.toString();
+  }, [searchParams]);
+  return null;
+}
 
 describe('FilterBar', () => {
   beforeEach(() => {
@@ -53,6 +65,33 @@ describe('FilterBar', () => {
     await user.click(presetSwitch);
     expect(useFilterStore.getState().preset).toBe('profile');
   }, 30000);
+
+  it('hydrates filters from the URL on mount', async () => {
+    renderWithProviders(<FilterBar />, {
+      route: '/?level=senior&remote=1&area=frontend',
+    });
+    await waitFor(() => {
+      expect(useFilterStore.getState().level).toBe('senior');
+      expect(useFilterStore.getState().remoteOnly).toBe(true);
+      expect(useFilterStore.getState().area).toBe('frontend');
+    });
+  });
+
+  it('writes active filters to the URL query string', async () => {
+    lastSearch = '';
+    renderWithProviders(
+      <>
+        <FilterBar />
+        <SearchProbe />
+      </>,
+    );
+    act(() => {
+      useFilterStore.getState().setLevel('senior');
+    });
+    await waitFor(() => {
+      expect(lastSearch).toContain('level=senior');
+    });
+  });
 
   it('resets filters via the reset button', async () => {
     const user = userEvent.setup();

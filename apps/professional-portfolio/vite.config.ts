@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import type { ContentEntry, ContentType } from './src/types/content';
-import type { Locale } from './src/types/i18n';
+import { LOCALES } from './src/types/i18n';
 
 const virtualModuleId = 'virtual:portfolio-content';
 const resolvedVirtualModuleId = `\0${virtualModuleId}`;
-const locales: Locale[] = ['en', 'pt-BR'];
+const locales = LOCALES;
 
 type GetAllEntries = (type: ContentType, locale: string) => ContentEntry[];
 

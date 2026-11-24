@@ -1,13 +1,6 @@
-export type ApplicationStatus =
-  | 'saved'
-  | 'applied'
-  | 'screening'
-  | 'interview'
-  | 'offer'
-  | 'rejected'
-  | 'withdrawn';
+import type { Schemas, Wire } from './contract';
 
-export const APPLICATION_STATUS_ORDER: readonly ApplicationStatus[] = [
+export const APPLICATION_STATUS_ORDER = [
   'saved',
   'applied',
   'screening',
@@ -15,7 +8,9 @@ export const APPLICATION_STATUS_ORDER: readonly ApplicationStatus[] = [
   'offer',
   'rejected',
   'withdrawn',
-];
+] as const satisfies readonly Schemas['ApplicationStatus'][];
+
+export type ApplicationStatus = Schemas['ApplicationStatus'];
 
 export const TERMINAL_APPLICATION_STATUSES: ReadonlySet<ApplicationStatus> =
   new Set(['rejected', 'withdrawn']);
@@ -30,31 +25,10 @@ export const NEXT_APPLICATION_STATUS: Partial<
   offer: 'rejected',
 };
 
-export interface Application {
-  id: number;
-  jobId: number;
-  portfolioId: number;
-  status: ApplicationStatus;
-  notes: string | null;
-  appliedAt: string | null;
-  statusChangedAt: string;
-  createdAt: string;
-}
+export type Application = Wire<Schemas['ApplicationResponse']>;
 
-export interface ApplicationListPage {
-  applications: Application[];
-  total: number;
-}
+export type ApplicationListPage = Wire<Schemas['ApplicationListResponse']>;
 
-export interface ApplicationCreate {
-  jobId: number;
-  status?: ApplicationStatus | undefined;
-  notes?: string | undefined;
-  appliedAt?: string | undefined;
-}
+export type ApplicationCreate = Wire<Schemas['ApplicationCreate']>;
 
-export interface ApplicationUpdate {
-  status?: ApplicationStatus | null | undefined;
-  notes?: string | null | undefined;
-  appliedAt?: string | null | undefined;
-}
+export type ApplicationUpdate = Wire<Schemas['ApplicationPatch']>;

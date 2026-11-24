@@ -11,6 +11,8 @@ const appliedApp: Application = {
   status: 'applied',
   notes: 'Tailor resume before the interview.',
   appliedAt: '2025-01-10',
+  followUpAt: null,
+  tags: [],
   statusChangedAt: '2025-01-10T10:00:00.000Z',
   createdAt: '2025-01-09T10:00:00.000Z',
 };

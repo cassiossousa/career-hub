@@ -34,6 +34,10 @@ npm run audit:deep           # verify:all + browser/memlab/lighthouse runtime ch
 
 See `AGENTS.md` for the targeted definition of done — routine changes do not require `verify:all` locally; CI runs it on every push/PR.
 
+### API contract (job-tracker)
+
+The backend (`job-tracker-api`, a sibling repo) owns the API contract. Its committed `openapi.json` is mirrored into `apps/job-tracker/contract/` and compiled to TypeScript types under `src/services/api/generated/`. Clone both repos side by side; after backend API changes run `npm run sync:api-contract --workspace job-tracker` and commit the regenerated artifacts — type drift then fails `tsc` instead of breaking at runtime.
+
 ## Commits and PRs
 
 - Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `test:` (see `git log`).

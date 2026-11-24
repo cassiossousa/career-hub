@@ -24,10 +24,7 @@ import {
   useUpdateApplication,
 } from '../../services/api/applications';
 import { useJob } from '../../services/api/jobs';
-import {
-  filterResultLabelKey,
-  isFilteredResult,
-} from '../../services/filterResult';
+import { isFilteredResult } from '../../services/filterResult';
 import { formatJobSalary, isJobStale } from '../../services/jobMeta';
 import type { Application } from '../../services/types/application';
 
@@ -164,11 +161,7 @@ export function JobDetail() {
                   </Stack>
                   {isFilteredResult(job.filterResult) && (
                     <Typography variant="body2" color="warning.main">
-                      {
-                        messages.jobs.filterResult[
-                          filterResultLabelKey[job.filterResult]
-                        ]
-                      }
+                      {messages.jobs.filterResult[job.filterResult]}
                     </Typography>
                   )}
                   <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>

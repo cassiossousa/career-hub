@@ -88,13 +88,15 @@ const conflictJson = (code: string, message: string) =>
   HttpResponse.json({ error: { code, message } }, { status: 409 });
 
 function applyProfilePreset(result: Job[], rules: Portfolio['filters']): Job[] {
-  if (rules.levels.length > 0)
-    result = result.filter((j) => rules.levels.includes(j.level));
-  if (rules.areas.length > 0)
-    result = result.filter((j) => rules.areas.includes(j.area));
-  if (rules.locations.length > 0)
+  const levels = rules.levels ?? [];
+  const areas = rules.areas ?? [];
+  const locations = rules.locations ?? [];
+  if (levels.length > 0)
+    result = result.filter((j) => levels.includes(j.level));
+  if (areas.length > 0) result = result.filter((j) => areas.includes(j.area));
+  if (locations.length > 0)
     result = result.filter((j) =>
-      rules.locations.some((loc) =>
+      locations.some((loc) =>
         j.location.toLowerCase().includes(loc.toLowerCase()),
       ),
     );
@@ -185,7 +187,7 @@ function docSearchText(content: PortfolioContent | ResumeDocument): string {
     content.basics.fullName,
     content.basics.headline ?? '',
     content.basics.subtitle ?? '',
-    ...content.basics.links.map((l) => l.url),
+    ...(content.basics.links ?? []).map((l) => l.url),
   ];
   for (const group of content.skillGroups ?? []) {
     parts.push(group.category, ...(group.items ?? []));
@@ -484,6 +486,8 @@ export const handlers = [
       status: body.status ?? 'saved',
       notes: body.notes ?? null,
       appliedAt: body.appliedAt ?? null,
+      followUpAt: body.followUpAt ?? null,
+      tags: body.tags ?? [],
       portfolioId: portfolio?.id ?? 1,
       statusChangedAt: now,
       createdAt: now,
@@ -704,7 +708,7 @@ export const handlers = [
       return notFoundJson('Skill not found');
     }
     const body = (await request.json()) as SkillPatch;
-    if (body.name !== undefined) {
+    if (body.name != null) {
       const name = body.name.trim().replace(/\s+/g, ' ');
       const clash = skills.some(
         (s) => s.id !== skill.id && skillNameKey(s.name) === skillNameKey(name),
@@ -714,8 +718,8 @@ export const handlers = [
       }
       skill.name = name;
     }
-    if (body.group !== undefined) skill.group = body.group;
-    if (body.labels !== undefined) skill.labels = { ...body.labels };
+    if (body.group != null) skill.group = body.group;
+    if (body.labels != null) skill.labels = { ...body.labels };
     skill.updatedAt = new Date().toISOString();
     return HttpResponse.json(skill);
   }),

@@ -72,11 +72,11 @@ const ptBR: Translation = {
     filterResult: {
       unevaluated: 'Não Avaliado',
       passed: 'Aprovado',
-      filteredLevel: 'Filtrado (Nível)',
-      filteredLocation: 'Filtrado (Localização)',
-      filteredArea: 'Filtrado (Área)',
-      filteredRemote: 'Filtrado (Remoto)',
-      filteredAge: 'Filtrado (Idade)',
+      filtered_level: 'Filtrado (Nível)',
+      filtered_location: 'Filtrado (Localização)',
+      filtered_area: 'Filtrado (Área)',
+      filtered_remote: 'Filtrado (Remoto)',
+      filtered_age: 'Filtrado (Idade)',
     },
     levels: {
       intern: 'Estagiário',

@@ -1,12 +1,21 @@
+import type { ApplicationStatus } from '../services/types/application';
 import type { IngestionRunStatus } from '../services/types/ingestion';
 import type {
+  JobArea,
+  JobFilterResult,
+  JobLevel,
   JobSource,
   RequirementClassification,
 } from '../services/types/job';
-import type { SkillCategory } from '../services/types/portfolio';
+import type {
+  MatchAlgorithm,
+  MatchBaselineKind,
+} from '../services/types/match';
+import type { LinkKind, SkillCategory } from '../services/types/portfolio';
 
-export type Locale = 'en' | 'pt-BR';
-type LinkKind = 'github' | 'linkedin' | 'website' | 'email' | 'other';
+export const LOCALES = ['en', 'pt-BR'] as const;
+
+export type Locale = (typeof LOCALES)[number];
 
 export interface Translation {
   navigation: {
@@ -77,34 +86,9 @@ export interface Translation {
       weeksAgo: string;
       monthsAgo: string;
     };
-    filterResult: {
-      unevaluated: string;
-      passed: string;
-      filteredLevel: string;
-      filteredLocation: string;
-      filteredArea: string;
-      filteredRemote: string;
-      filteredAge: string;
-    };
-    levels: {
-      intern: string;
-      junior: string;
-      mid: string;
-      senior: string;
-      lead: string;
-      unknown: string;
-    };
-    areas: {
-      frontend: string;
-      backend: string;
-      fullstack: string;
-      data: string;
-      devops: string;
-      mobile: string;
-      qa: string;
-      management: string;
-      other: string;
-    };
+    filterResult: Record<JobFilterResult, string>;
+    levels: Record<JobLevel, string>;
+    areas: Record<JobArea, string>;
     sources: Record<JobSource, string>;
     possiblyExpired: string;
     viewPosting: string;
@@ -132,15 +116,8 @@ export interface Translation {
     tiers: Record<RequirementClassification, string>;
     portfolioRequired: string;
     setupPortfolio: string;
-    algorithms: {
-      keyword: string;
-      tfidf: string;
-      hybrid: string;
-    };
-    baseline: {
-      resume: string;
-      portfolio: string;
-    };
+    algorithms: Record<MatchAlgorithm, string>;
+    baseline: Record<MatchBaselineKind, string>;
     componentNames: Record<string, string>;
   };
 
@@ -165,15 +142,7 @@ export interface Translation {
   applications: {
     title: string;
     noApplications: string;
-    status: {
-      saved: string;
-      applied: string;
-      screening: string;
-      interview: string;
-      offer: string;
-      rejected: string;
-      withdrawn: string;
-    };
+    status: Record<ApplicationStatus, string>;
     appliedAt: string;
     statusChangedAt: string;
     notes: string;

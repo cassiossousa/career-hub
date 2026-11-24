@@ -1,3 +1,4 @@
+import { resumePrintPageSx } from '@career-hub/ui/components';
 import { Paper, Stack, Typography } from '@mui/material';
 import BulletList from '../../components/BulletList';
 import { useTranslation } from '../../i18n/Provider';
@@ -28,24 +29,10 @@ export default function ResumeDocument({
       square
       elevation={0}
       sx={{
-        boxSizing: 'border-box',
         mx: 'auto',
         maxWidth: 768,
         p: 4,
-        boxShadow: 1,
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: 13,
-        lineHeight: 1.5,
-        '@media print': {
-          width: '100%',
-          maxWidth: 'none',
-          m: 0,
-          border: 0,
-          p: '14mm',
-          boxShadow: 'none',
-          WebkitBoxDecorationBreak: 'clone',
-          boxDecorationBreak: 'clone',
-        },
+        ...resumePrintPageSx,
       }}
     >
       <Stack spacing={3}>

@@ -14,8 +14,8 @@ import { JOB_STATS_QUERY_KEY, JOBS_QUERY_KEY } from './jobs';
 import { paginationParams } from './pagination';
 import { ingestionRunListResponseSchema } from './schemas';
 
-export const INGESTION_RUNS_QUERY_KEY = ['ingestionRuns'];
-export const INGESTION_RUNS_PAGE_SIZE = 50;
+const INGESTION_RUNS_QUERY_KEY = ['ingestionRuns'];
+const INGESTION_RUNS_PAGE_SIZE = 50;
 
 export interface IngestionRunsQueryOptions {
   limit?: number | undefined;

@@ -123,6 +123,7 @@ const eslintConfig = defineConfig([
             'expectJobTitlesRendered',
             'expectApiErrorCode',
             'waitForQuerySuccess',
+            'saveAndExpectSuccess',
             'fc.assert',
           ],
         },

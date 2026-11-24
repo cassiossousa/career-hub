@@ -4,8 +4,18 @@ import { TranslationProvider } from '../../i18n/Provider';
 import type { Project } from '../../types/project';
 import ResumeDocument from './ResumeDocument';
 
+const mockUsePortfolioLanguages = jest.fn(() => ({
+  status: 'ready' as const,
+  languages: [] as {
+    language: string;
+    proficiency: string;
+    name: string;
+    proficiencyLabel: string;
+  }[],
+}));
+
 jest.mock('../../services/portfolio/languages', () => ({
-  usePortfolioLanguages: () => ({ status: 'ready', languages: [] }),
+  usePortfolioLanguages: () => mockUsePortfolioLanguages(),
 }));
 
 describe('ResumeDocument', () => {
@@ -58,5 +68,27 @@ describe('ResumeDocument', () => {
     expect(
       screen.getByText(messages.resume.languages.portuguese),
     ).toBeInTheDocument();
+  });
+
+  it('renders API-provided languages when available', () => {
+    mockUsePortfolioLanguages.mockReturnValueOnce({
+      status: 'ready',
+      languages: [
+        {
+          language: 'english',
+          proficiency: 'c2',
+          name: 'English',
+          proficiencyLabel: 'Fluent',
+        },
+      ],
+    });
+
+    render(
+      <TranslationProvider>
+        <ResumeDocument roles={[]} projects={[]} />
+      </TranslationProvider>,
+    );
+
+    expect(screen.getByText('English — Fluent')).toBeInTheDocument();
   });
 });

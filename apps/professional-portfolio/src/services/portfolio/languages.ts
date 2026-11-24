@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react';
 import { apiBaseUrl } from '../../app/env';
 import type { Locale } from '../../types/i18n';
 
-export interface PortfolioLanguageView {
+interface PortfolioLanguageView {
   language: string;
   proficiency: string;
   name: string;

@@ -17,6 +17,13 @@ import tseslint from 'typescript-eslint';
 const STORAGE_MESSAGE =
   'Use storageGetItem/storageSetItem from app/storage — raw Web Storage throws when disabled.';
 
+const BANNED_FIELD_WRAPPER_SELECTOR = {
+  selector:
+    "JSXOpeningElement[name.name='RequiredField'], JSXOpeningElement[name.name='NullableField']",
+  message:
+    'RequiredField/NullableField are banned — use EntryField (required prop, emptyToNull for nullable values) or BoundFields req/nul/num spec flags.',
+};
+
 const APP_SOURCE_FILES = [
   'apps/*/src/**/*.{ts,tsx}',
   'packages/ui/**/*.{ts,tsx}',
@@ -164,6 +171,7 @@ const eslintConfig = defineConfig([
             "MemberExpression[property.name='localStorage'], MemberExpression[property.name='sessionStorage']",
           message: STORAGE_MESSAGE,
         },
+        BANNED_FIELD_WRAPPER_SELECTOR,
       ],
     },
   },
@@ -184,6 +192,7 @@ const eslintConfig = defineConfig([
           message:
             "Don't re-declare parsing/business-rule patterns in tests — import the constant from source.",
         },
+        BANNED_FIELD_WRAPPER_SELECTOR,
       ],
     },
   },
@@ -215,6 +224,7 @@ const eslintConfig = defineConfig([
           message:
             "Don't re-declare parsing/business-rule patterns in tests — import the constant from source.",
         },
+        BANNED_FIELD_WRAPPER_SELECTOR,
       ],
     },
   },

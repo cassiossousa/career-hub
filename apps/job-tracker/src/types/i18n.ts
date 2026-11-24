@@ -222,7 +222,6 @@ export interface Translation {
       fullName: string;
       headline: string;
       subtitle: string;
-      username: string;
       location: string;
       avatarUrl: string;
       links: string;
@@ -304,7 +303,6 @@ export interface Translation {
       fullName: string;
       headline: string;
       subtitle: string;
-      username: string;
       location: string;
       links: string;
     };

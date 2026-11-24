@@ -106,8 +106,9 @@ export const lightSemantic: SemanticColors = {
   },
   border: {
     subtle: neutralLight[200],
-    // ~3.5:1 on white — clears WCAG 1.4.11 for component boundaries.
-    default: '#7c8aa5',
+    // ~4.8:1 on white — inputs/cards need a clearly visible boundary,
+    // not a hairline that reads as missing.
+    default: neutralLight[500],
     strong: neutralLight[600],
   },
   accent: {
@@ -184,9 +185,10 @@ export const darkSemantic: SemanticColors = {
   },
   border: {
     subtle: neutralDark[400],
-    // ~3.5:1 on the paper surface — borders carry separation on dark.
-    default: neutralDark[600],
-    strong: neutralDark[700],
+    // One step lighter than the dark surface ladder — borders carry
+    // separation on dark, so default must read clearly, not as a hairline.
+    default: neutralDark[700],
+    strong: neutralDark[800],
   },
   accent: {
     default: brand[400],

@@ -21,10 +21,6 @@ const LOCALES = ['en', 'pt-BR'] as const;
 const EMPTY_CONTENT: PortfolioContent = {
   basics: {
     fullName: '',
-    headline: '',
-    subtitle: '',
-    username: '',
-    location: '',
     links: [],
   },
   experience: [],
@@ -51,7 +47,7 @@ export function PortfolioEditor() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-                rowGap: 1,
+                rowGap: 2,
               }}
             >
               <Typography component="h1" variant="h5">

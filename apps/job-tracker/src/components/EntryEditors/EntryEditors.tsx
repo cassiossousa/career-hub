@@ -194,29 +194,6 @@ function BoundFields<T extends object>({
   );
 }
 
-type ScalarFieldProps = Omit<EntryFieldProps, 'required' | 'fullWidth'>;
-
-function RequiredField(props: ScalarFieldProps) {
-  return <EntryField {...props} required fullWidth />;
-}
-
-type NullableFieldBase = Omit<EntryFieldProps, 'required' | 'onValue'>;
-
-interface NullableFieldProps extends NullableFieldBase {
-  onValue: (value: string | null) => void;
-}
-
-function NullableField({ onValue, ...rest }: NullableFieldProps) {
-  return (
-    <EntryField
-      {...rest}
-      onValue={(v) => {
-        onValue(emptyToNull(v));
-      }}
-    />
-  );
-}
-
 interface RemoveButtonProps {
   disabled?: boolean | undefined;
   onClick: () => void;
@@ -432,7 +409,7 @@ function EntryList<T extends object>({
         </Box>
       ))}
       <Button
-        variant="outlined"
+        variant="text"
         size="small"
         startIcon={<AddIcon />}
         onClick={() => {
@@ -464,6 +441,18 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
     onChange({ ...value, [key]: v });
   };
 
+  const updateBasics: EntryUpdater<PortfolioBasics> = (key, v) => {
+    onChange(Object.assign({}, value, { [key]: v }));
+  };
+
+  const basicsSpecs: BoundFieldSpec<PortfolioBasics>[] = [
+    { f: 'fullName', l: basics.fullName, req: true, fw: true },
+    { f: 'headline', l: basics.headline, nul: true, fw: true },
+    { f: 'subtitle', l: basics.subtitle, nul: true, fw: true },
+    { f: 'location', l: basics.location, nul: true, fw: true },
+    { f: 'avatarUrl', l: basics.avatarUrl, nul: true, fw: true },
+  ];
+
   const updateLink = (index: number, patch: Partial<PortfolioLink>) => {
     set(
       'links',
@@ -475,54 +464,10 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
 
   return (
     <Stack spacing={2}>
-      <RequiredField
-        label={basics.fullName}
-        value={value.fullName}
-        onValue={(v) => {
-          set('fullName', v);
-        }}
-        disabled={disabled}
-      />
-      <RequiredField
-        label={basics.headline}
-        value={value.headline}
-        onValue={(v) => {
-          set('headline', v);
-        }}
-        disabled={disabled}
-      />
-      <EntryField
-        label={basics.subtitle}
-        value={value.subtitle}
-        onValue={(v) => {
-          set('subtitle', v);
-        }}
-        fullWidth
-        disabled={disabled}
-      />
-      <RequiredField
-        label={basics.username}
-        value={value.username}
-        onValue={(v) => {
-          set('username', v);
-        }}
-        disabled={disabled}
-      />
-      <RequiredField
-        label={basics.location}
-        value={value.location}
-        onValue={(v) => {
-          set('location', v);
-        }}
-        disabled={disabled}
-      />
-      <NullableField
-        label={basics.avatarUrl}
-        value={value.avatarUrl}
-        onValue={(v) => {
-          set('avatarUrl', v);
-        }}
-        fullWidth
+      <BoundFields
+        entry={value}
+        update={updateBasics}
+        specs={basicsSpecs}
         disabled={disabled}
       />
       <Typography variant="subtitle2">{basics.links}</Typography>
@@ -561,12 +506,12 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
             }}
             sx={fieldFlexWide}
           />
-          <NullableField
+          <EntryField
             label={basics.linkLabel}
             value={link.label}
             disabled={disabled}
             onValue={(v) => {
-              updateLink(index, { label: v });
+              updateLink(index, { label: emptyToNull(v) });
             }}
             sx={fieldFlex}
           />
@@ -1083,7 +1028,10 @@ export function PortfolioLanguagesEditor({
       onChange={onChange}
       addLabel={t.add}
       disabled={disabled}
-      renderItem={(entry, update) => (
+      renderItem={(
+        entry: PortfolioLanguage,
+        update: EntryUpdater<PortfolioLanguage>,
+      ) => (
         <>
           <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
             <FormControl size="small" sx={fieldFixed}>

@@ -654,7 +654,6 @@ const enContent: PortfolioContent = {
     fullName: 'Cassio Sousa',
     headline: 'Senior Frontend Engineer',
     subtitle: 'React · TypeScript · Design systems',
-    username: 'cassiossousa',
     location: 'Remote',
     avatarUrl: null,
     links: [

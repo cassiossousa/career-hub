@@ -33,7 +33,6 @@ const basics: PortfolioBasics = {
   fullName: 'Cassio Sousa',
   headline: 'Senior Frontend Engineer',
   subtitle: 'React · TypeScript',
-  username: 'cassiossousa',
   location: 'Remote',
   avatarUrl: null,
   links: [

@@ -183,8 +183,8 @@ function jobStats() {
 function docSearchText(content: PortfolioContent | ResumeDocument): string {
   const parts: string[] = [
     content.basics.fullName,
-    content.basics.headline,
-    content.basics.subtitle,
+    content.basics.headline ?? '',
+    content.basics.subtitle ?? '',
     ...content.basics.links.map((l) => l.url),
   ];
   for (const group of content.skillGroups ?? []) {

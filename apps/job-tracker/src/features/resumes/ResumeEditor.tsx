@@ -43,15 +43,11 @@ function seedDocumentFromPortfolio(
   const content = documents[locale] ?? Object.values(documents)[0];
   const basics = content?.basics ?? {
     fullName: '',
-    headline: '',
-    subtitle: '',
-    username: '',
-    location: '',
     links: [],
   };
   return {
     locale,
-    summary: basics.headline,
+    summary: basics.headline ?? '',
     basics,
     experience: content?.experience ?? [],
     skillGroups: content?.skillGroups ?? [],

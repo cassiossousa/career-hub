@@ -16,10 +16,9 @@ export interface PortfolioLink {
 
 export interface PortfolioBasics {
   fullName: string;
-  headline: string;
-  subtitle: string;
-  username: string;
-  location: string;
+  headline?: string | null | undefined;
+  subtitle?: string | null | undefined;
+  location?: string | null | undefined;
   avatarUrl?: string | null | undefined;
   links: PortfolioLink[];
 }

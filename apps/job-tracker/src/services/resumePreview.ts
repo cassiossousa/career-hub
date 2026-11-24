@@ -1,4 +1,5 @@
 import type { ResumePdfDocument } from '@career-hub/ui/components';
+import { resumePdfDocumentSchema } from '@career-hub/ui/pdf';
 import type {
   ExperienceEntry,
   PortfolioBasics,
@@ -202,7 +203,7 @@ export function toResumePdfDocument(
   copy: ResumePreviewCopy,
 ): ResumePdfDocument {
   const formatMonthYear = createMonthYearFormat(locale);
-  return {
+  return resumePdfDocumentSchema.parse({
     basics: toBasics(doc.basics, copy),
     summary: doc.summary.trim() === '' ? undefined : doc.summary,
     experience: (doc.experience ?? []).map((entry) =>
@@ -217,7 +218,7 @@ export function toResumePdfDocument(
     ),
     certifications: (doc.certifications ?? []).map(toCertification),
     languages: (doc.languages ?? []).map(toLanguage),
-  };
+  });
 }
 
 /** Maps the editable portfolio document into the viewer's presentation model. */

@@ -1,5 +1,6 @@
 import { Link, Paper, Stack, Typography } from '@mui/material';
 import { Fragment } from 'react';
+import { resumePrintPageSx } from './printPage';
 import {
   CertificationsSection,
   EducationSection,
@@ -98,23 +99,9 @@ export function ResumePdfViewer({ document, labels }: ResumePdfViewerProps) {
       square
       elevation={0}
       sx={{
-        boxSizing: 'border-box',
         width: '100%',
         p: { xs: 2.5, sm: 4 },
-        boxShadow: 1,
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: 13,
-        lineHeight: 1.5,
-        '@media print': {
-          width: '100%',
-          maxWidth: 'none',
-          m: 0,
-          border: 0,
-          p: '14mm',
-          boxShadow: 'none',
-          WebkitBoxDecorationBreak: 'clone',
-          boxDecorationBreak: 'clone',
-        },
+        ...resumePrintPageSx,
       }}
     >
       <Stack spacing={3}>

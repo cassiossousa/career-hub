@@ -1,62 +1,28 @@
-export interface ResumePdfBasics {
-  fullName: string;
-  headline?: string | undefined;
-  subtitle?: string | undefined;
-  location?: string | undefined;
-  links: { label: string; url: string }[];
-}
+import type { z } from 'zod';
+import type { resumePdfDocumentSchema } from '../../pdf/schema';
 
-export interface ResumePdfExperienceEntry {
-  company: string;
-  role: string;
-  location?: string | undefined;
-  period: string;
-  bullets: string[];
-}
-
-export interface ResumePdfProjectEntry {
-  title: string;
-  technologies?: string[] | undefined;
-  repoUrl?: string | null | undefined;
-  demoUrl?: string | null | undefined;
-  highlights: string[];
-}
-
-export interface ResumePdfSkillGroup {
-  category: string;
-  items: string[];
-}
-
-export interface ResumePdfEducationEntry {
-  institution: string;
-  degree: string;
-  fieldOfStudy?: string | undefined;
-  period?: string | undefined;
-  details?: string | undefined;
-}
-
-export interface ResumePdfCertificationEntry {
-  name: string;
-  issuer?: string | undefined;
-  year?: string | undefined;
-}
-
-export interface ResumePdfLanguageEntry {
-  name: string;
-  proficiency?: string | undefined;
-}
-
-/** Presentation-ready resume document consumed by ResumePdfViewer. */
-export interface ResumePdfDocument {
-  basics: ResumePdfBasics;
-  summary?: string | undefined;
-  experience?: ResumePdfExperienceEntry[] | undefined;
-  projects?: ResumePdfProjectEntry[] | undefined;
-  skillGroups?: ResumePdfSkillGroup[] | undefined;
-  education?: ResumePdfEducationEntry[] | undefined;
-  certifications?: ResumePdfCertificationEntry[] | undefined;
-  languages?: ResumePdfLanguageEntry[] | undefined;
-}
+// The zod schema in `pdf/schema.ts` is the single source of truth for the
+// preview document contract; these aliases keep the component-facing names.
+export type ResumePdfDocument = z.infer<typeof resumePdfDocumentSchema>;
+export type ResumePdfBasics = ResumePdfDocument['basics'];
+export type ResumePdfExperienceEntry = NonNullable<
+  ResumePdfDocument['experience']
+>[number];
+export type ResumePdfProjectEntry = NonNullable<
+  ResumePdfDocument['projects']
+>[number];
+export type ResumePdfSkillGroup = NonNullable<
+  ResumePdfDocument['skillGroups']
+>[number];
+export type ResumePdfEducationEntry = NonNullable<
+  ResumePdfDocument['education']
+>[number];
+export type ResumePdfCertificationEntry = NonNullable<
+  ResumePdfDocument['certifications']
+>[number];
+export type ResumePdfLanguageEntry = NonNullable<
+  ResumePdfDocument['languages']
+>[number];
 
 export interface ResumePdfViewerLabels {
   summary: string;

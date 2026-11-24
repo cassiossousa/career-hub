@@ -92,6 +92,7 @@ export interface Translation {
       mid: string;
       senior: string;
       lead: string;
+      unknown: string;
     };
     areas: {
       frontend: string;
@@ -221,7 +222,6 @@ export interface Translation {
       fullName: string;
       headline: string;
       subtitle: string;
-      username: string;
       location: string;
       avatarUrl: string;
       links: string;
@@ -297,14 +297,22 @@ export interface Translation {
       experience: string;
       skillGroups: string;
       projects: string;
+      languages: string;
     };
     basics: {
       fullName: string;
       headline: string;
       subtitle: string;
-      username: string;
       location: string;
       links: string;
+    };
+    languages: {
+      add: string;
+      language: string;
+      proficiency: string;
+      labels: string;
+      nameFor: string;
+      proficiencyFor: string;
     };
     save: string;
     cancel: string;
@@ -343,7 +351,6 @@ export interface Translation {
 
   ingestion: {
     title: string;
-    description: string;
     runAll: string;
     running: string;
     jobsBySource: string;

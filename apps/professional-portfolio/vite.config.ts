@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import type { ContentEntry, ContentType } from './src/types/content';
 import type { Locale } from './src/types/i18n';
@@ -36,16 +36,23 @@ function portfolioContent(getAllEntries: GetAllEntries): Plugin {
   };
 }
 
-const apiProxy = {
-  '/api': {
-    target: process.env.API_PROXY_TARGET ?? 'http://localhost:8000',
-    changeOrigin: true,
-  },
-};
-
-export default defineConfig(async () => {
+// vite.config.ts runs before Vite loads .env files into import.meta.env, and
+// only VITE_* vars are exposed there anyway — so API_PROXY_TARGET (a Node-side,
+// non-VITE var) must be read from the env files explicitly. Empty prefix
+// returns every parsed var; real shell env vars still take precedence.
+export default defineConfig(async ({ mode }) => {
   const webRoot = path.dirname(fileURLToPath(import.meta.url));
   process.env.PORTFOLIO_ROOT = path.resolve(webRoot, '../..');
+  const fileEnv = loadEnv(mode, webRoot, '');
+  const apiProxy = {
+    '/api': {
+      target:
+        process.env.API_PROXY_TARGET ??
+        fileEnv.API_PROXY_TARGET ??
+        'http://localhost:8000',
+      changeOrigin: true,
+    },
+  };
 
   const { getAllEntries } = await import('./src/services/content');
 

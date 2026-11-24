@@ -1,6 +1,6 @@
+import { OptionGroup } from '@career-hub/ui/components';
 import {
   Alert,
-  Autocomplete,
   Button,
   FormControlLabel,
   Stack,
@@ -17,7 +17,6 @@ import { UnsavedChangesDialog } from '../../components/UnsavedChangesDialog/Unsa
 import { useTranslation } from '../../i18n/Provider';
 import { useUpsertPortfolio } from '../../services/api/portfolio';
 import { JOB_AREAS, JOB_LEVELS } from '../../services/jobOptions';
-import type { JobArea, JobLevel } from '../../services/types/job';
 import type {
   PortfolioContent,
   PortfolioFilters,
@@ -82,33 +81,23 @@ export function FiltersForm({ locale, content, filters }: FiltersFormProps) {
           </Typography>
         </Stack>
         {feedback && <Alert severity={feedback.type}>{feedback.text}</Alert>}
-        <Autocomplete
-          multiple
-          fullWidth
-          disableCloseOnSelect
+        <OptionGroup
+          label={t.levels}
           options={JOB_LEVELS}
-          value={draft.levels}
-          onChange={(_e, value: JobLevel[]) => {
-            setDraft({ ...draft, levels: value });
+          selected={draft.levels}
+          optionLabel={(level) => messages.jobs.levels[level]}
+          onChange={(levels) => {
+            setDraft({ ...draft, levels });
           }}
-          getOptionLabel={(level) => messages.jobs.levels[level]}
-          renderInput={(params) => (
-            <TextField {...params} label={t.levels} size="small" />
-          )}
         />
-        <Autocomplete
-          multiple
-          fullWidth
-          disableCloseOnSelect
+        <OptionGroup
+          label={t.areas}
           options={JOB_AREAS}
-          value={draft.areas}
-          onChange={(_e, value: JobArea[]) => {
-            setDraft({ ...draft, areas: value });
+          selected={draft.areas}
+          optionLabel={(area) => messages.jobs.areas[area]}
+          onChange={(areas) => {
+            setDraft({ ...draft, areas });
           }}
-          getOptionLabel={(area) => messages.jobs.areas[area]}
-          renderInput={(params) => (
-            <TextField {...params} label={t.areas} size="small" />
-          )}
         />
         <TextField
           label={t.locations}

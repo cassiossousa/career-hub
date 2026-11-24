@@ -9,7 +9,13 @@ export type JobSource =
   | 'manual'
   | 'other';
 
-export type JobLevel = 'intern' | 'junior' | 'mid' | 'senior' | 'lead';
+export type JobLevel =
+  | 'intern'
+  | 'junior'
+  | 'mid'
+  | 'senior'
+  | 'lead'
+  | 'unknown';
 
 export type JobArea =
   | 'frontend'

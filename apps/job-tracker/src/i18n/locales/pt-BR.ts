@@ -84,6 +84,7 @@ const ptBR: Translation = {
       mid: 'Pleno',
       senior: 'Sênior',
       lead: 'Líder',
+      unknown: 'Não informado',
     },
     areas: {
       frontend: 'Frontend',
@@ -240,7 +241,6 @@ const ptBR: Translation = {
       fullName: 'Nome Completo',
       headline: 'Título',
       subtitle: 'Subtítulo',
-      username: 'Nome de usuário',
       location: 'Localização',
       avatarUrl: 'URL do avatar',
       links: 'Links',
@@ -330,14 +330,22 @@ const ptBR: Translation = {
       experience: 'Experiência',
       skillGroups: 'Habilidades',
       projects: 'Projetos',
+      languages: 'Idiomas',
     },
     basics: {
       fullName: 'Nome Completo',
       headline: 'Título',
       subtitle: 'Subtítulo',
-      username: 'Nome de usuário',
       location: 'Localização',
       links: 'Links',
+    },
+    languages: {
+      add: 'Adicionar idioma',
+      language: 'Idioma',
+      proficiency: 'Nível',
+      labels: 'Rótulos por idioma',
+      nameFor: 'Nome em {locale}',
+      proficiencyFor: 'Nível em {locale}',
     },
     save: 'Salvar Portfólio',
     cancel: 'Cancelar',
@@ -380,8 +388,6 @@ const ptBR: Translation = {
 
   ingestion: {
     title: 'Ingestão de vagas',
-    description:
-      'Execuções do pipeline de scraping em todas as fontes configuradas. As execuções são síncronas e podem levar alguns minutos.',
     runAll: 'Executar todas as fontes',
     running: 'Executando…',
     jobsBySource: 'Vagas por fonte',

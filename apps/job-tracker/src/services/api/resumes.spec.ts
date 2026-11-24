@@ -13,7 +13,6 @@ const resumeDocument: ResumeDocument = {
     fullName: 'Test User',
     headline: 'Engineer',
     subtitle: '',
-    username: 'testuser',
     location: 'Remote',
     avatarUrl: null,
     links: [],

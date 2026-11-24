@@ -16,6 +16,24 @@ describe('PortfolioEditor', () => {
     expect(screen.getByLabelText(/headline/i)).toBeInTheDocument();
   });
 
+  it('renders the languages section with per-locale label fields', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<PortfolioEditor />);
+    await screen.findByLabelText(/full name/i);
+    await user.click(screen.getByRole('button', { name: /^languages$/i }));
+    // Seeded en document carries two languages; each exposes label fields
+    // for every UI locale.
+    expect(
+      (await screen.findAllByLabelText(/english name/i)).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/português name/i).length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      screen.getAllByLabelText(/english proficiency/i).length,
+    ).toBeGreaterThan(0);
+  });
+
   it('shows the PDF preview in a Preview tab', async () => {
     const user = userEvent.setup();
     renderWithProviders(<PortfolioEditor />);

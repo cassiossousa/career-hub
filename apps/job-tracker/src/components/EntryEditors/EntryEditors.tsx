@@ -18,11 +18,16 @@ import {
 } from '@mui/material';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from '../../i18n/Provider';
-import { SKILL_CATEGORIES } from '../../services/jobOptions';
+import {
+  LANGUAGE_NAMES,
+  LANGUAGE_PROFICIENCIES,
+  SKILL_CATEGORIES,
+} from '../../services/jobOptions';
 import type {
   ExperienceBullet,
   ExperienceEntry,
   PortfolioBasics,
+  PortfolioLanguage,
   PortfolioLink,
   ProjectEntry,
   SkillGroup,
@@ -32,6 +37,7 @@ import type {
   EducationEntry,
   LanguageEntry,
 } from '../../services/types/resume';
+import type { Locale } from '../../types/i18n';
 
 const LINK_KINDS = ['github', 'linkedin', 'website', 'email', 'other'] as const;
 
@@ -185,29 +191,6 @@ function BoundFields<T extends object>({
         );
       })}
     </>
-  );
-}
-
-type ScalarFieldProps = Omit<EntryFieldProps, 'required' | 'fullWidth'>;
-
-function RequiredField(props: ScalarFieldProps) {
-  return <EntryField {...props} required fullWidth />;
-}
-
-type NullableFieldBase = Omit<EntryFieldProps, 'required' | 'onValue'>;
-
-interface NullableFieldProps extends NullableFieldBase {
-  onValue: (value: string | null) => void;
-}
-
-function NullableField({ onValue, ...rest }: NullableFieldProps) {
-  return (
-    <EntryField
-      {...rest}
-      onValue={(v) => {
-        onValue(emptyToNull(v));
-      }}
-    />
   );
 }
 
@@ -426,7 +409,7 @@ function EntryList<T extends object>({
         </Box>
       ))}
       <Button
-        variant="outlined"
+        variant="text"
         size="small"
         startIcon={<AddIcon />}
         onClick={() => {
@@ -458,6 +441,18 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
     onChange({ ...value, [key]: v });
   };
 
+  const updateBasics: EntryUpdater<PortfolioBasics> = (key, v) => {
+    onChange(Object.assign({}, value, { [key]: v }));
+  };
+
+  const basicsSpecs: BoundFieldSpec<PortfolioBasics>[] = [
+    { f: 'fullName', l: basics.fullName, req: true, fw: true },
+    { f: 'headline', l: basics.headline, nul: true, fw: true },
+    { f: 'subtitle', l: basics.subtitle, nul: true, fw: true },
+    { f: 'location', l: basics.location, nul: true, fw: true },
+    { f: 'avatarUrl', l: basics.avatarUrl, nul: true, fw: true },
+  ];
+
   const updateLink = (index: number, patch: Partial<PortfolioLink>) => {
     set(
       'links',
@@ -469,54 +464,10 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
 
   return (
     <Stack spacing={2}>
-      <RequiredField
-        label={basics.fullName}
-        value={value.fullName}
-        onValue={(v) => {
-          set('fullName', v);
-        }}
-        disabled={disabled}
-      />
-      <RequiredField
-        label={basics.headline}
-        value={value.headline}
-        onValue={(v) => {
-          set('headline', v);
-        }}
-        disabled={disabled}
-      />
-      <EntryField
-        label={basics.subtitle}
-        value={value.subtitle}
-        onValue={(v) => {
-          set('subtitle', v);
-        }}
-        fullWidth
-        disabled={disabled}
-      />
-      <RequiredField
-        label={basics.username}
-        value={value.username}
-        onValue={(v) => {
-          set('username', v);
-        }}
-        disabled={disabled}
-      />
-      <RequiredField
-        label={basics.location}
-        value={value.location}
-        onValue={(v) => {
-          set('location', v);
-        }}
-        disabled={disabled}
-      />
-      <NullableField
-        label={basics.avatarUrl}
-        value={value.avatarUrl}
-        onValue={(v) => {
-          set('avatarUrl', v);
-        }}
-        fullWidth
+      <BoundFields
+        entry={value}
+        update={updateBasics}
+        specs={basicsSpecs}
         disabled={disabled}
       />
       <Typography variant="subtitle2">{basics.links}</Typography>
@@ -555,12 +506,12 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
             }}
             sx={fieldFlexWide}
           />
-          <NullableField
+          <EntryField
             label={basics.linkLabel}
             value={link.label}
             disabled={disabled}
             onValue={(v) => {
-              updateLink(index, { label: v });
+              updateLink(index, { label: emptyToNull(v) });
             }}
             sx={fieldFlex}
           />
@@ -1027,6 +978,139 @@ export function SkillGroupsEditor({
               update('items', items);
             }}
           />
+        </>
+      )}
+    />
+  );
+}
+
+function humanizeEnum(value: string): string {
+  return value.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
+}
+
+function updateLanguageLabel(
+  update: EntryUpdater<PortfolioLanguage>,
+  entry: PortfolioLanguage,
+  locale: Locale,
+  field: 'name' | 'proficiency',
+  raw: string,
+) {
+  const current = entry.labels?.[locale] ?? {};
+  update('labels', {
+    ...entry.labels,
+    [locale]: { ...current, [field]: raw === '' ? null : raw },
+  });
+}
+
+interface PortfolioLanguagesEditorProps {
+  value: PortfolioLanguage[] | undefined;
+  onChange: (entries: PortfolioLanguage[]) => void;
+  disabled?: boolean | undefined;
+}
+
+export function PortfolioLanguagesEditor({
+  value,
+  onChange,
+  disabled,
+}: PortfolioLanguagesEditorProps) {
+  const { messages } = useTranslation();
+  const t = messages.portfolio.languages;
+  const locales = Object.keys(messages.common.locales) as Locale[];
+
+  return (
+    <EntryList<PortfolioLanguage>
+      items={value}
+      createItem={() => ({
+        language: 'english',
+        proficiency: 'c1',
+        labels: {},
+      })}
+      onChange={onChange}
+      addLabel={t.add}
+      disabled={disabled}
+      renderItem={(
+        entry: PortfolioLanguage,
+        update: EntryUpdater<PortfolioLanguage>,
+      ) => (
+        <>
+          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
+            <FormControl size="small" sx={fieldFixed}>
+              <InputLabel>{t.language}</InputLabel>
+              <Select
+                value={entry.language}
+                label={t.language}
+                disabled={disabled}
+                onChange={(e) => {
+                  update('language', e.target.value);
+                }}
+              >
+                {LANGUAGE_NAMES.map((name) => (
+                  <MenuItem key={name} value={name}>
+                    {humanizeEnum(name)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={fieldFixed}>
+              <InputLabel>{t.proficiency}</InputLabel>
+              <Select
+                value={entry.proficiency}
+                label={t.proficiency}
+                disabled={disabled}
+                onChange={(e) => {
+                  update('proficiency', e.target.value);
+                }}
+              >
+                {LANGUAGE_PROFICIENCIES.map((level) => (
+                  <MenuItem key={level} value={level}>
+                    {humanizeEnum(level)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+          <Typography variant="subtitle2">{t.labels}</Typography>
+          {locales.map((locale) => {
+            const labels = entry.labels?.[locale];
+            return (
+              <Stack
+                key={locale}
+                direction="row"
+                sx={{ flexWrap: 'wrap', gap: 2 }}
+              >
+                <EntryField
+                  label={t.nameFor.replace(
+                    '{locale}',
+                    messages.common.locales[locale],
+                  )}
+                  value={labels?.name ?? ''}
+                  disabled={disabled}
+                  sx={fieldFlex}
+                  onValue={(v) => {
+                    updateLanguageLabel(update, entry, locale, 'name', v);
+                  }}
+                />
+                <EntryField
+                  label={t.proficiencyFor.replace(
+                    '{locale}',
+                    messages.common.locales[locale],
+                  )}
+                  value={labels?.proficiency ?? ''}
+                  disabled={disabled}
+                  sx={fieldFlex}
+                  onValue={(v) => {
+                    updateLanguageLabel(
+                      update,
+                      entry,
+                      locale,
+                      'proficiency',
+                      v,
+                    );
+                  }}
+                />
+              </Stack>
+            );
+          })}
         </>
       )}
     />

@@ -1,3 +1,4 @@
+import { jsonResponse } from '../test/fetchMock';
 import type * as githubModule from './github';
 
 const VALID_REPO = {
@@ -30,17 +31,9 @@ async function loadModule(username?: string, token?: string) {
   getRepoReadme = mod.getRepoReadme;
 }
 
-function mockResponse(ok: boolean, status: number, payload: unknown): Response {
-  return {
-    ok,
-    status,
-    json: () => Promise.resolve(payload),
-  } as Response;
-}
-
 function mockFetchOk(payload: unknown) {
   const fetchMock = jest.fn() as jest.MockedFunction<typeof fetch>;
-  fetchMock.mockResolvedValue(mockResponse(true, 200, payload));
+  fetchMock.mockResolvedValue(jsonResponse(true, 200, payload));
   global.fetch = fetchMock;
   return fetchMock;
 }
@@ -92,7 +85,7 @@ describe('github service', () => {
 
     it('throws on non-ok responses', async () => {
       const fetchMock = jest.fn() as jest.MockedFunction<typeof fetch>;
-      fetchMock.mockResolvedValue(mockResponse(false, 403, {}));
+      fetchMock.mockResolvedValue(jsonResponse(false, 403, {}));
       global.fetch = fetchMock;
 
       await expect(getRepos(true)).rejects.toThrow(

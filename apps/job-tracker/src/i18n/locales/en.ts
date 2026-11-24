@@ -84,6 +84,7 @@ const en: Translation = {
       mid: 'Mid',
       senior: 'Senior',
       lead: 'Lead',
+      unknown: 'Unknown',
     },
     areas: {
       frontend: 'Frontend',
@@ -240,7 +241,6 @@ const en: Translation = {
       fullName: 'Full Name',
       headline: 'Headline',
       subtitle: 'Subtitle',
-      username: 'Username',
       location: 'Location',
       avatarUrl: 'Avatar URL',
       links: 'Links',
@@ -330,14 +330,22 @@ const en: Translation = {
       experience: 'Experience',
       skillGroups: 'Skills',
       projects: 'Projects',
+      languages: 'Languages',
     },
     basics: {
       fullName: 'Full Name',
       headline: 'Headline',
       subtitle: 'Subtitle',
-      username: 'Username',
       location: 'Location',
       links: 'Links',
+    },
+    languages: {
+      add: 'Add language',
+      language: 'Language',
+      proficiency: 'Proficiency',
+      labels: 'Localized labels',
+      nameFor: '{locale} name',
+      proficiencyFor: '{locale} proficiency',
     },
     save: 'Save Portfolio',
     cancel: 'Cancel',
@@ -379,8 +387,6 @@ const en: Translation = {
 
   ingestion: {
     title: 'Job ingestion',
-    description:
-      'Scraper pipeline runs across every configured job source. Runs execute synchronously and may take a few minutes.',
     runAll: 'Run all sources',
     running: 'Running…',
     jobsBySource: 'Jobs by source',

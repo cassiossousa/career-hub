@@ -1,5 +1,5 @@
 import { Box, Divider, Link, Stack, Typography } from '@mui/material';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import type {
   ResumePdfCertificationEntry,
   ResumePdfEducationEntry,
@@ -73,6 +73,31 @@ function ResumeEntry({
   );
 }
 
+function ResumeEntrySection<T>({
+  title,
+  entries,
+  spacing = 2,
+  entryKey,
+  renderEntry,
+}: {
+  title: string;
+  entries?: T[] | undefined;
+  spacing?: number;
+  entryKey: (entry: T) => string;
+  renderEntry: (entry: T) => ReactNode;
+}) {
+  if (!entries?.length) return null;
+  return (
+    <ResumePdfSection title={title}>
+      <Stack spacing={spacing}>
+        {entries.map((entry) => (
+          <Fragment key={entryKey(entry)}>{renderEntry(entry)}</Fragment>
+        ))}
+      </Stack>
+    </ResumePdfSection>
+  );
+}
+
 export function ExperienceSection({
   title,
   entries,
@@ -80,22 +105,21 @@ export function ExperienceSection({
   title: string;
   entries?: ResumePdfExperienceEntry[] | undefined;
 }) {
-  if (!entries?.length) return null;
   return (
-    <ResumePdfSection title={title}>
-      <Stack spacing={2}>
-        {entries.map((entry) => (
-          <ResumeEntry
-            key={`${entry.company}-${entry.role}-${entry.period}`}
-            title={entry.role}
-            subtitle={entry.company}
-            meta={[entry.location, entry.period]}
-          >
-            <BulletList items={entry.bullets} />
-          </ResumeEntry>
-        ))}
-      </Stack>
-    </ResumePdfSection>
+    <ResumeEntrySection
+      title={title}
+      entries={entries}
+      entryKey={(entry) => `${entry.company}-${entry.role}-${entry.period}`}
+      renderEntry={(entry) => (
+        <ResumeEntry
+          title={entry.role}
+          subtitle={entry.company}
+          meta={[entry.location, entry.period]}
+        >
+          <BulletList items={entry.bullets} />
+        </ResumeEntry>
+      )}
+    />
   );
 }
 
@@ -110,65 +134,64 @@ export function ProjectsSection({
   repositoryLabel: string;
   demoLabel: string;
 }) {
-  if (!entries?.length) return null;
   return (
-    <ResumePdfSection title={title}>
-      <Stack spacing={2}>
-        {entries.map((entry) => (
-          <ResumeEntry
-            key={entry.title}
-            title={entry.title}
-            meta={
-              entry.technologies?.length
-                ? [entry.technologies.join(', ')]
-                : undefined
-            }
-          >
-            <Stack spacing={0.5}>
-              {entry.repoUrl || entry.demoUrl ? (
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ alignItems: 'center', flexWrap: 'wrap' }}
-                >
-                  {entry.repoUrl ? (
-                    <Link
-                      href={entry.repoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      color="inherit"
-                      variant="caption"
-                    >
-                      {repositoryLabel}
-                    </Link>
-                  ) : null}
-                  {entry.repoUrl && entry.demoUrl ? (
-                    <Typography
-                      variant="caption"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      •
-                    </Typography>
-                  ) : null}
-                  {entry.demoUrl ? (
-                    <Link
-                      href={entry.demoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      color="inherit"
-                      variant="caption"
-                    >
-                      {demoLabel}
-                    </Link>
-                  ) : null}
-                </Stack>
-              ) : null}
-              <BulletList items={entry.highlights} />
-            </Stack>
-          </ResumeEntry>
-        ))}
-      </Stack>
-    </ResumePdfSection>
+    <ResumeEntrySection
+      title={title}
+      entries={entries}
+      entryKey={(entry) => entry.title}
+      renderEntry={(entry) => (
+        <ResumeEntry
+          title={entry.title}
+          meta={
+            entry.technologies?.length
+              ? [entry.technologies.join(', ')]
+              : undefined
+          }
+        >
+          <Stack spacing={0.5}>
+            {entry.repoUrl || entry.demoUrl ? (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'center', flexWrap: 'wrap' }}
+              >
+                {entry.repoUrl ? (
+                  <Link
+                    href={entry.repoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    color="inherit"
+                    variant="caption"
+                  >
+                    {repositoryLabel}
+                  </Link>
+                ) : null}
+                {entry.repoUrl && entry.demoUrl ? (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary' }}
+                  >
+                    •
+                  </Typography>
+                ) : null}
+                {entry.demoUrl ? (
+                  <Link
+                    href={entry.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    color="inherit"
+                    variant="caption"
+                  >
+                    {demoLabel}
+                  </Link>
+                ) : null}
+              </Stack>
+            ) : null}
+            <BulletList items={entry.highlights} />
+          </Stack>
+        </ResumeEntry>
+      )}
+    />
   );
 }
 
@@ -197,28 +220,27 @@ export function EducationSection({
   title: string;
   entries?: ResumePdfEducationEntry[] | undefined;
 }) {
-  if (!entries?.length) return null;
   return (
-    <ResumePdfSection title={title}>
-      <Stack spacing={2}>
-        {entries.map((entry) => (
-          <ResumeEntry
-            key={`${entry.institution}-${entry.degree}`}
-            title={
-              entry.fieldOfStudy
-                ? `${entry.degree} — ${entry.fieldOfStudy}`
-                : entry.degree
-            }
-            subtitle={entry.institution}
-            meta={entry.period ? [entry.period] : undefined}
-          >
-            {entry.details ? (
-              <Typography variant="body2">{entry.details}</Typography>
-            ) : null}
-          </ResumeEntry>
-        ))}
-      </Stack>
-    </ResumePdfSection>
+    <ResumeEntrySection
+      title={title}
+      entries={entries}
+      entryKey={(entry) => `${entry.institution}-${entry.degree}`}
+      renderEntry={(entry) => (
+        <ResumeEntry
+          title={
+            entry.fieldOfStudy
+              ? `${entry.degree} — ${entry.fieldOfStudy}`
+              : entry.degree
+          }
+          subtitle={entry.institution}
+          meta={entry.period ? [entry.period] : undefined}
+        >
+          {entry.details ? (
+            <Typography variant="body2">{entry.details}</Typography>
+          ) : null}
+        </ResumeEntry>
+      )}
+    />
   );
 }
 
@@ -229,20 +251,20 @@ export function CertificationsSection({
   title: string;
   entries?: ResumePdfCertificationEntry[] | undefined;
 }) {
-  if (!entries?.length) return null;
   return (
-    <ResumePdfSection title={title}>
-      <Stack spacing={1}>
-        {entries.map((entry) => (
-          <ResumeEntry
-            key={entry.name}
-            title={entry.name}
-            subtitle={entry.issuer}
-            meta={entry.year ? [entry.year] : undefined}
-          />
-        ))}
-      </Stack>
-    </ResumePdfSection>
+    <ResumeEntrySection
+      title={title}
+      entries={entries}
+      spacing={1}
+      entryKey={(entry) => entry.name}
+      renderEntry={(entry) => (
+        <ResumeEntry
+          title={entry.name}
+          subtitle={entry.issuer}
+          meta={entry.year ? [entry.year] : undefined}
+        />
+      )}
+    />
   );
 }
 

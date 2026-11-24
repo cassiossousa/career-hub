@@ -98,6 +98,25 @@ export const brandedComponents: ThemeOptions['components'] = {
       }),
     },
   },
+  MuiAccordion: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        // Full containment: a bordered box instead of MUI's floating Paper +
+        // top hairline, which read as "only a top border" when divider was faint.
+        border: `1px solid ${theme.palette.divider}`,
+        // Accordions render as separated cards (Stack gap), not a joined
+        // list — every corner rounds, not just first-top/last-bottom.
+        borderRadius: theme.shape.borderRadius,
+        // The ::before hairline and the expanded-state 16px margins fight the
+        // parent Stack's rhythm — borders + stack spacing own separation now.
+        '&::before': { display: 'none' },
+        // MUI adds margin '16px 0' when expanded; the bottom half doubles the
+        // parent Stack's gap. Keep the top (Stack/MUI agree on 16px) and drop
+        // only the extra bottom so rhythm stays uniform collapsed or open.
+        '&.MuiAccordion-expanded, &.Mui-expanded': { marginBottom: 0 },
+      }),
+    },
+  },
   MuiCard: {
     styleOverrides: {
       root: ({ theme }) => ({

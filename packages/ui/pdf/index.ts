@@ -1,0 +1,1 @@
+export { resumePdfDocumentSchema } from './schema';

@@ -1,8 +1,10 @@
 import type { ResumePdfDocument } from '@career-hub/ui/components';
+import { resumePdfDocumentSchema } from '@career-hub/ui/pdf';
 import type {
   ExperienceEntry,
   PortfolioBasics,
   PortfolioContent,
+  PortfolioLanguage,
   PortfolioLink,
   ProjectEntry,
   SkillCategory,
@@ -162,6 +164,38 @@ function toLanguage(
   };
 }
 
+const LABEL_FALLBACK_LOCALE = 'en';
+
+function humanizeEnum(value: string): string {
+  return value.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
+}
+
+function resolveLanguageLabel(
+  entry: PortfolioLanguage,
+  locale: string,
+  field: 'name' | 'proficiency',
+): string | undefined {
+  for (const candidate of [locale, LABEL_FALLBACK_LOCALE]) {
+    const value = entry.labels?.[candidate]?.[field];
+    if (typeof value === 'string' && value !== '') return value;
+  }
+  return undefined;
+}
+
+function toPortfolioLanguage(
+  entry: PortfolioLanguage,
+  locale: string,
+): LanguageEntry {
+  return {
+    name:
+      resolveLanguageLabel(entry, locale, 'name') ??
+      humanizeEnum(entry.language),
+    proficiency:
+      resolveLanguageLabel(entry, locale, 'proficiency') ??
+      humanizeEnum(entry.proficiency),
+  };
+}
+
 /** Maps the editable resume document into the viewer's presentation model. */
 export function toResumePdfDocument(
   doc: ResumeDocument,
@@ -169,7 +203,7 @@ export function toResumePdfDocument(
   copy: ResumePreviewCopy,
 ): ResumePdfDocument {
   const formatMonthYear = createMonthYearFormat(locale);
-  return {
+  return resumePdfDocumentSchema.parse({
     basics: toBasics(doc.basics, copy),
     summary: doc.summary.trim() === '' ? undefined : doc.summary,
     experience: (doc.experience ?? []).map((entry) =>
@@ -184,7 +218,7 @@ export function toResumePdfDocument(
     ),
     certifications: (doc.certifications ?? []).map(toCertification),
     languages: (doc.languages ?? []).map(toLanguage),
-  };
+  });
 }
 
 /** Maps the editable portfolio document into the viewer's presentation model. */
@@ -201,6 +235,9 @@ export function toPortfolioPdfDocument(
       experience: content.experience,
       skillGroups: content.skillGroups,
       projects: content.projects,
+      languages: (content.languages ?? []).map((entry) =>
+        toPortfolioLanguage(entry, locale),
+      ),
     },
     locale,
     copy,

@@ -19,10 +19,14 @@ import type { MatchResult } from '../types/match';
 import type {
   ExperienceBullet,
   ExperienceEntry,
+  LanguageName,
+  LanguageProficiency,
   Portfolio,
   PortfolioBasics,
   PortfolioContent,
   PortfolioFilters,
+  PortfolioLanguage,
+  PortfolioLanguageLabels,
   PortfolioLink,
   ProjectEntry,
   SkillCategory,
@@ -58,6 +62,7 @@ const jobLevelSchema = z.enum([
   'mid',
   'senior',
   'lead',
+  'unknown',
 ]) satisfies z.ZodType<JobLevel>;
 
 const jobAreaSchema = z.enum([
@@ -160,10 +165,9 @@ const portfolioLinkSchema = z.object({
 
 const portfolioBasicsSchema = z.object({
   fullName: z.string(),
-  headline: z.string(),
-  subtitle: z.string(),
-  username: z.string(),
-  location: z.string(),
+  headline: z.string().nullish(),
+  subtitle: z.string().nullish(),
+  location: z.string().nullish(),
   avatarUrl: z.string().nullish(),
   links: z.array(portfolioLinkSchema),
 }) satisfies z.ZodType<PortfolioBasics>;
@@ -231,11 +235,41 @@ const languageEntrySchema = z.object({
   proficiency: z.string().nullish(),
 }) satisfies z.ZodType<LanguageEntry>;
 
+const languageNameSchema = z.enum([
+  'english',
+  'portuguese',
+  'spanish',
+  'french',
+  'german',
+]) satisfies z.ZodType<LanguageName>;
+
+const languageProficiencySchema = z.enum([
+  'native',
+  'c2',
+  'c1',
+  'b2',
+  'b1',
+  'a2',
+  'a1',
+]) satisfies z.ZodType<LanguageProficiency>;
+
+const portfolioLanguageLabelsSchema = z.object({
+  name: z.string().nullish(),
+  proficiency: z.string().nullish(),
+}) satisfies z.ZodType<PortfolioLanguageLabels>;
+
+const portfolioLanguageSchema = z.object({
+  language: languageNameSchema,
+  proficiency: languageProficiencySchema,
+  labels: z.record(z.string(), portfolioLanguageLabelsSchema).optional(),
+}) satisfies z.ZodType<PortfolioLanguage>;
+
 const portfolioContentSchema = z.object({
   basics: portfolioBasicsSchema,
   experience: z.array(experienceEntrySchema).optional(),
   skillGroups: z.array(skillGroupSchema).optional(),
   projects: z.array(projectEntrySchema).optional(),
+  languages: z.array(portfolioLanguageSchema).optional(),
 }) satisfies z.ZodType<PortfolioContent>;
 
 const portfolioFiltersSchema = z.object({

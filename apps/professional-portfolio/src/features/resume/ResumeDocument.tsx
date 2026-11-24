@@ -1,6 +1,8 @@
+import { resumePrintPageSx } from '@career-hub/ui/components';
 import { Paper, Stack, Typography } from '@mui/material';
 import BulletList from '../../components/BulletList';
 import { useTranslation } from '../../i18n/Provider';
+import { usePortfolioLanguages } from '../../services/portfolio/languages';
 import type { WorkRole } from '../../services/work-experience/workModel';
 import type { Project } from '../../types/project';
 import ResumeExperience from './components/ResumeExperience';
@@ -18,8 +20,12 @@ export default function ResumeDocument({
   roles,
   projects,
 }: ResumeDocumentProps) {
-  const { messages: t } = useTranslation();
-  const languages = [t.resume.languages.portuguese, t.resume.languages.english];
+  const { messages: t, locale } = useTranslation();
+  const { languages: apiLanguages } = usePortfolioLanguages(locale);
+  const languages =
+    apiLanguages.length > 0
+      ? apiLanguages.map((l) => `${l.name} — ${l.proficiencyLabel}`)
+      : [t.resume.languages.portuguese, t.resume.languages.english];
 
   return (
     <Paper
@@ -28,24 +34,10 @@ export default function ResumeDocument({
       square
       elevation={0}
       sx={{
-        boxSizing: 'border-box',
         mx: 'auto',
         maxWidth: 768,
         p: 4,
-        boxShadow: 1,
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: 13,
-        lineHeight: 1.5,
-        '@media print': {
-          width: '100%',
-          maxWidth: 'none',
-          m: 0,
-          border: 0,
-          p: '14mm',
-          boxShadow: 'none',
-          WebkitBoxDecorationBreak: 'clone',
-          boxDecorationBreak: 'clone',
-        },
+        ...resumePrintPageSx,
       }}
     >
       <Stack spacing={3}>

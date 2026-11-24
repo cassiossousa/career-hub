@@ -654,7 +654,6 @@ const enContent: PortfolioContent = {
     fullName: 'Cassio Sousa',
     headline: 'Senior Frontend Engineer',
     subtitle: 'React · TypeScript · Design systems',
-    username: 'cassiossousa',
     location: 'Remote',
     avatarUrl: null,
     links: [
@@ -712,6 +711,24 @@ const enContent: PortfolioContent = {
       topics: ['portfolio', 'job-search'],
       category: 'fullstack',
       stars: 12,
+    },
+  ],
+  languages: [
+    {
+      language: 'portuguese',
+      proficiency: 'native',
+      labels: {
+        'pt-BR': { name: 'Português', proficiency: 'Nativo' },
+        en: { name: 'Portuguese', proficiency: 'Native' },
+      },
+    },
+    {
+      language: 'english',
+      proficiency: 'c1',
+      labels: {
+        'pt-BR': { name: 'Inglês', proficiency: 'C1' },
+        en: { name: 'English', proficiency: 'C1' },
+      },
     },
   ],
 };

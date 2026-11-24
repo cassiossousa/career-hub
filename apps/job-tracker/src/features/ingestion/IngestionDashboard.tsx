@@ -32,9 +32,6 @@ export function IngestionDashboard() {
           <Typography component="h1" variant="h5">
             {t.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t.description}
-          </Typography>
         </Stack>
         <Button
           variant="contained"

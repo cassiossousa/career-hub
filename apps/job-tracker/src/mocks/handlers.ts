@@ -29,6 +29,7 @@ import {
   seedJobs,
   seedPortfolio,
   seedResume,
+  seedResumeDraft,
   seedSkillGroupLabels,
   seedSkills,
   toJob,
@@ -37,7 +38,7 @@ import {
 let jobs = [...seedJobs];
 let applications = [...seedApplications];
 let portfolio: Portfolio | null = { ...seedPortfolio };
-let resumes: Resume[] = [seedResume];
+let resumes: Resume[] = [seedResume, seedResumeDraft];
 let skills: Skill[] = [...seedSkills];
 let skillGroupLabels: SkillGroupLabels[] = seedSkillGroupLabels.map(
   (entry) => ({
@@ -54,7 +55,7 @@ export function resetMockData() {
   jobs = [...seedJobs];
   applications = [...seedApplications];
   portfolio = { ...seedPortfolio };
-  resumes = [seedResume];
+  resumes = [seedResume, seedResumeDraft];
   skills = [...seedSkills];
   skillGroupLabels = seedSkillGroupLabels.map((entry) => ({
     ...entry,
@@ -683,3 +684,9 @@ export const handlers = [
     });
   }),
 ];
+
+// Appended last by the browser worker in production builds only: any /api/*
+// request without a real handler fails as a network error, so the public demo
+// can never reach the backend. First-match wins, so real handlers take
+// precedence.
+export const unhandledApiGuard = http.all('/api/*', () => HttpResponse.error());

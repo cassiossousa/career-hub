@@ -117,6 +117,15 @@ export function Sidebar({
               </ListItemButton>
             </ListItem>
           )}
+          {!env.isDev && mockEnabled && (
+            <ListItem disablePadding>
+              <ListItemText
+                primary={messages.navigation.mockData}
+                secondary={messages.navigation.mockDataOn}
+                sx={{ px: 2, py: 1 }}
+              />
+            </ListItem>
+          )}
         </List>
       </Drawer>
     </Box>

@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { seedApplications } from '../../mocks/data';
 import {
   expectErrorWithRetry,
   expectJobTitlesRendered,
@@ -61,10 +62,13 @@ describe('ApplicationPipeline', () => {
     expect(advanceButtons.length).toBeGreaterThan(0);
     const firstAdvance = advanceButtons[0];
     if (!firstAdvance) throw new Error('expected at least one advance button');
+    // Count before clicking: the mock PATCH mutates the shared seed objects.
+    const expectedApplied =
+      seedApplications.filter((a) => a.status === 'applied').length + 1;
     await user.click(firstAdvance);
     await waitFor(() => {
       expect(
-        screen.getByRole('tab', { name: 'Applied (2)' }),
+        screen.getByRole('tab', { name: `Applied (${expectedApplied})` }),
       ).toBeInTheDocument();
     });
   });

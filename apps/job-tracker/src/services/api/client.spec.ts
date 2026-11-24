@@ -120,7 +120,7 @@ describe('mock api parity', () => {
       },
     });
     const preset = await apiClient.get('/api/jobs?preset=profile&limit=10');
-    expect(jobsResponseSchema.parse(preset.data).total).toBe(1);
+    expect(jobsResponseSchema.parse(preset.data).total).toBe(2);
 
     const located = await apiClient.get('/api/jobs?location=remote&limit=10');
     expect(jobsResponseSchema.parse(located.data).total).toBeGreaterThan(0);

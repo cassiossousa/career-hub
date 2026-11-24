@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
+import { seedJobs } from '../../mocks/data';
 import { ApiTestWrapper, waitForQuerySuccess } from '../../test/TestUtils';
 import type { Job, JobListPage, JobStats } from '../types/job';
 import { useCreateJob, useJob, useJobStats, useJobs } from './jobs';
@@ -23,7 +24,9 @@ describe('useJobs', () => {
     await waitForQuerySuccess(() => result.current.isSuccess);
     const jobs = currentJobs(result.current);
     expect(jobs.every((j) => j.level === 'junior')).toBe(true);
-    expect(jobs.length).toBe(1);
+    expect(jobs.length).toBe(
+      seedJobs.filter((j) => j.level === 'junior').length,
+    );
   });
 
   it('passes remoteOnly=false and maxAgeDays params', async () => {

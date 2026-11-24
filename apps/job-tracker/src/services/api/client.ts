@@ -1,8 +1,10 @@
 import axios, { type AxiosError } from 'axios';
 import { env } from '../../app/env';
+import { isMockApiEnabled } from '../../app/mockApi';
 
-const API_URL = env.apiUrl;
-const API_KEY = env.apiKey;
+const usingMockApi = isMockApiEnabled(env);
+const API_URL = usingMockApi ? '' : env.apiUrl;
+const API_KEY = usingMockApi ? '' : env.apiKey;
 
 interface ApiError {
   code: string;

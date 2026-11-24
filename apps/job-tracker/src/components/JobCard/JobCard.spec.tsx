@@ -24,8 +24,8 @@ describe('JobCard', () => {
 
   it('renders job title, company and chips', () => {
     renderWithProviders(<JobCard job={seedJob(0)} />);
-    expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
-    expect(screen.getByText('Nubank')).toBeInTheDocument();
+    expect(screen.getByText(seedJob(0).title)).toBeInTheDocument();
+    expect(screen.getByText(seedJob(0).company)).toBeInTheDocument();
     expect(screen.getAllByText('Remote').length).toBeGreaterThan(0);
   });
 

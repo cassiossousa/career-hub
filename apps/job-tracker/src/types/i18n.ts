@@ -302,7 +302,6 @@ export interface Translation {
       headline: string;
       subtitle: string;
       location: string;
-      avatarUrl: string;
       links: string;
       linkKind: string;
       linkUrl: string;

@@ -1591,8 +1591,6 @@ export interface components {
       'received' | 'negotiating' | 'accepted' | 'declined' | 'expired';
     /** PortfolioBasicsSchema */
     PortfolioBasicsSchema: {
-      /** Avatarurl */
-      avatarUrl?: string | null;
       /** Fullname */
       fullName: string;
       /** Headline */

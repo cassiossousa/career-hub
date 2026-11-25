@@ -14,7 +14,6 @@ const resumeDocument: ResumeDocument = {
     headline: 'Engineer',
     subtitle: '',
     location: 'Remote',
-    avatarUrl: null,
     links: [],
   },
 };

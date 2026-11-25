@@ -367,7 +367,6 @@ const en: Translation = {
       headline: 'Headline',
       subtitle: 'Subtitle',
       location: 'Location',
-      avatarUrl: 'Avatar URL',
       links: 'Links',
       linkKind: 'Kind',
       linkUrl: 'URL',

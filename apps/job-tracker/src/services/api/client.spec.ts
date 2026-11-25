@@ -136,7 +136,6 @@ describe('mock api parity', () => {
         headline: 'Engineer',
         subtitle: '',
         location: 'Remote',
-        avatarUrl: null,
         links: [],
       },
       filters: {
@@ -165,7 +164,6 @@ describe('mock api parity', () => {
           headline: 'Frontend Engineer',
           subtitle: '',
           location: 'Remote',
-          avatarUrl: null,
           links: [],
         },
       },
@@ -185,7 +183,6 @@ describe('mock api parity', () => {
           headline: 'B',
           subtitle: '',
           location: '',
-          avatarUrl: null,
           links: [],
         },
       }),

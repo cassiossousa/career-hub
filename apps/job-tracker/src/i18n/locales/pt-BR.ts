@@ -367,7 +367,6 @@ const ptBR: Translation = {
       headline: 'Título',
       subtitle: 'Subtítulo',
       location: 'Localização',
-      avatarUrl: 'URL do avatar',
       links: 'Links',
       linkKind: 'Tipo',
       linkUrl: 'URL',

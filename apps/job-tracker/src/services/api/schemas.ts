@@ -189,7 +189,6 @@ const portfolioBasicsSchema = z.object({
   headline: z.string().nullish(),
   subtitle: z.string().nullish(),
   location: z.string().nullish(),
-  avatarUrl: z.string().nullish(),
   links: z.array(portfolioLinkSchema).optional(),
 }) satisfies z.ZodType<PortfolioBasics>;
 

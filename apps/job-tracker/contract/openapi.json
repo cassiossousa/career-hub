@@ -2874,18 +2874,6 @@
       "PortfolioBasicsSchema": {
         "additionalProperties": false,
         "properties": {
-          "avatarUrl": {
-            "anyOf": [
-              {
-                "maxLength": 2000,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Avatarurl"
-          },
           "fullName": {
             "maxLength": 200,
             "minLength": 1,

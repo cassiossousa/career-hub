@@ -34,7 +34,6 @@ const basics: PortfolioBasics = {
   headline: 'Senior Frontend Engineer',
   subtitle: 'React · TypeScript',
   location: 'Remote',
-  avatarUrl: null,
   links: [
     { kind: 'github', url: 'https://github.com/cassiossousa', label: null },
   ],
@@ -149,7 +148,7 @@ describe('BasicsEditor', () => {
     expect(lastCall(calls).links).toHaveLength(1);
   });
 
-  it('edits link fields and the nullable avatar url', () => {
+  it('edits link fields', () => {
     const { Harness, calls } = makeHarness(basics, BasicsEditor);
     renderWithProviders(<Harness />);
 
@@ -162,14 +161,6 @@ describe('BasicsEditor', () => {
       target: { value: 'Work' },
     });
     expect(lastCall(calls).links?.[0]?.label).toBe('Work');
-
-    const avatar = screen.getByLabelText(/avatar url/i);
-    fireEvent.change(avatar, {
-      target: { value: 'https://example.com/a.png' },
-    });
-    expect(lastCall(calls).avatarUrl).toBe('https://example.com/a.png');
-    fireEvent.change(avatar, { target: { value: '' } });
-    expect(lastCall(calls).avatarUrl).toBeNull();
   });
 
   it('reorders links by dragging the handle onto another row', () => {

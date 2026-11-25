@@ -455,7 +455,6 @@ export function BasicsEditor({ value, onChange, disabled }: BasicsEditorProps) {
     { f: 'headline', l: basics.headline, nul: true, fw: true },
     { f: 'subtitle', l: basics.subtitle, nul: true, fw: true },
     { f: 'location', l: basics.location, nul: true, fw: true },
-    { f: 'avatarUrl', l: basics.avatarUrl, nul: true, fw: true },
   ];
 
   const updateLink = (index: number, patch: Partial<PortfolioLink>) => {

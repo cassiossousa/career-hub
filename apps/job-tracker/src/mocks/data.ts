@@ -749,7 +749,6 @@ const enContent: PortfolioContent = {
     headline: 'Senior Frontend Engineer',
     subtitle: 'React · TypeScript · Design systems',
     location: 'Remote',
-    avatarUrl: null,
     links: [
       { kind: 'github', url: 'https://github.com/cassiossousa', label: null },
       {

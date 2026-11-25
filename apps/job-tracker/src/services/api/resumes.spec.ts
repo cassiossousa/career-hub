@@ -126,4 +126,23 @@ describe('standalone resumes api', () => {
     );
     await expectApiErrorCode(apiClient.get('/api/resumes/99999'), 'not_found');
   });
+
+  it('updates standalone resumes and enforces the lock', async () => {
+    await expectApiErrorCode(
+      apiClient.put('/api/resumes/99999', resumeDocument),
+      'not_found',
+    );
+    await expectApiErrorCode(
+      apiClient.put('/api/resumes/1', resumeDocument),
+      'resume_locked',
+    );
+
+    const updated = await apiClient.put('/api/resumes/2', {
+      ...resumeDocument,
+      summary: 'Standalone update',
+    });
+    expect(resumeResponseSchema.parse(updated.data).summary).toBe(
+      'Standalone update',
+    );
+  });
 });

@@ -1,10 +1,12 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { seedSkills } from '../../mocks/data';
+import { expectApiErrorCode } from '../../test/apiError';
 import {
   ApiTestWrapper,
   mockApiJson,
   waitForQuerySuccess,
 } from '../../test/TestUtils';
+import { apiClient } from './client';
 import {
   useCreateSkill,
   useDeleteSkill,
@@ -113,6 +115,22 @@ describe('skills api', () => {
     });
     await waitForQuerySuccess(() => result.current.isError);
   });
+
+  it('surfaces not_found and conflict on missing or clashing skills', async () => {
+    await expectApiErrorCode(apiClient.get('/api/skills/99999'), 'not_found');
+    await expectApiErrorCode(
+      apiClient.patch('/api/skills/99999', { group: 'backend' }),
+      'not_found',
+    );
+    await expectApiErrorCode(
+      apiClient.delete('/api/skills/99999'),
+      'not_found',
+    );
+    await expectApiErrorCode(
+      apiClient.patch('/api/skills/2', { name: '  react  ' }),
+      'conflict',
+    );
+  });
 });
 
 describe('skill group labels api', () => {
@@ -150,5 +168,12 @@ describe('skill group labels api', () => {
       );
       expect(testing?.labels['pt-BR']).toBe('Testes');
     });
+  });
+
+  it('surfaces not_found for an unknown skill group', async () => {
+    await expectApiErrorCode(
+      apiClient.put('/api/skill-group-labels/bogus', { labels: {} }),
+      'not_found',
+    );
   });
 });

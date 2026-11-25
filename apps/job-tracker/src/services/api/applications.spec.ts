@@ -87,4 +87,22 @@ describe('applications api', () => {
       expect(updated?.status).toBe('applied');
     });
   });
+
+  it('sets and clears followUpAt on an application', async () => {
+    const { result } = renderHook(() => useUpdateApplication(), {
+      wrapper: ApiTestWrapper,
+    });
+    const target = seedApplications.find((a) => a.followUpAt === null);
+    if (!target) throw new Error('expected an application without followUpAt');
+
+    const followUpAt = new Date(Date.now() + 86400000).toISOString();
+    result.current.mutate({ id: target.id, data: { followUpAt } });
+    await waitForQuerySuccess(() => result.current.isSuccess);
+    expect(result.current.data?.followUpAt).toBe(followUpAt);
+
+    result.current.mutate({ id: target.id, data: { followUpAt: null } });
+    await waitFor(() => {
+      expect(result.current.data?.followUpAt).toBeNull();
+    });
+  });
 });

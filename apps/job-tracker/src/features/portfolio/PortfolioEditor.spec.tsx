@@ -55,10 +55,12 @@ describe('PortfolioEditor', () => {
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole('tab', { name: /^edit$/i }));
-    expect(screen.getByRole('tab', { name: /^edit$/i })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: /^edit$/i })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+    });
   });
 
   it('opens the pt-BR document from the ?locale=pt-BR route', async () => {

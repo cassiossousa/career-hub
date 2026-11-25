@@ -29,9 +29,11 @@ describe('Layout', () => {
     const user = userEvent.setup();
     renderLayout();
     await user.click(screen.getByRole('link', { name: 'Job openings' }));
-    expect(screen.getByRole('link', { name: 'Job openings' })).toHaveClass(
-      'Mui-selected',
-    );
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Job openings' })).toHaveClass(
+        'Mui-selected',
+      );
+    });
   });
 
   it('toggles the mobile drawer via the menu button', async () => {

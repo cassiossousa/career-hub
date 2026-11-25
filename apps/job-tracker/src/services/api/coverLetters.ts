@@ -23,7 +23,7 @@ export function useCoverLetter(
     queryKey: [...COVER_LETTERS_QUERY_KEY, applicationId],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<unknown>(
+        const response = await apiClient.get(
           `/api/applications/${applicationId}/cover-letter`,
         );
         return coverLetterResponseSchema.parse(response.data);
@@ -45,7 +45,7 @@ export function useUpsertCoverLetter(
 ) {
   return useInvalidatingMutation(
     async (data: CoverLetterUpsert) => {
-      const response = await apiClient.put<unknown>(
+      const response = await apiClient.put(
         `/api/applications/${applicationId}/cover-letter`,
         data,
       );

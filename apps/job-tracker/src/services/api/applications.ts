@@ -56,7 +56,7 @@ export function useApplications(
   return useQuery({
     queryKey: [...APPLICATIONS_QUERY_KEY, filter],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/applications?${params.toString()}`,
       );
       return applicationsResponseSchema.parse(response.data);
@@ -72,7 +72,7 @@ export function useApplication(
   return useQuery({
     queryKey: [...APPLICATIONS_QUERY_KEY, id],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(`/api/applications/${id}`);
+      const response = await apiClient.get(`/api/applications/${id}`);
       return applicationResponseSchema.parse(response.data);
     },
     ...options,
@@ -89,7 +89,7 @@ export function useApplicationEvents(
   return useQuery({
     queryKey: [...APPLICATIONS_QUERY_KEY, applicationId, 'events'],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/applications/${applicationId}/events`,
       );
       return applicationEventsResponseSchema.parse(response.data);
@@ -108,7 +108,7 @@ export function useCreateApplication(
 
   return useMutation({
     mutationFn: async (data: ApplicationCreate) => {
-      const response = await apiClient.post<unknown>('/api/applications', data);
+      const response = await apiClient.post('/api/applications', data);
       return applicationResponseSchema.parse(response.data);
     },
     onSuccess: () => {
@@ -140,10 +140,7 @@ export function useUpdateApplication(
       id: number;
       data: ApplicationUpdate;
     }) => {
-      const response = await apiClient.patch<unknown>(
-        `/api/applications/${id}`,
-        data,
-      );
+      const response = await apiClient.patch(`/api/applications/${id}`, data);
       return applicationResponseSchema.parse(response.data);
     },
     onSuccess: (_, { id }) => {

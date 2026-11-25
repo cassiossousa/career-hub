@@ -8,12 +8,9 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const ROOT = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '..',
-);
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-export const MUTATION_WORKSPACES = {
+const MUTATION_WORKSPACES = {
   'apps/job-tracker': {
     // Repo-root-relative prefix `git diff --name-only` must match.
     srcPrefix: 'apps/job-tracker/src/',

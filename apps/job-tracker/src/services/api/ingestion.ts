@@ -39,7 +39,7 @@ export function useIngestionRuns(
   return useQuery({
     queryKey: [...INGESTION_RUNS_QUERY_KEY, limit, offset],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/ingestion/runs?${params.toString()}`,
       );
       return ingestionRunListResponseSchema.parse(response.data);
@@ -59,10 +59,7 @@ export function useTriggerIngestionRuns(
   return useMutation({
     mutationFn: async (trigger: IngestionRunTrigger) => {
       const body = trigger.source ? { source: trigger.source } : {};
-      const response = await apiClient.post<unknown>(
-        '/api/ingestion/runs',
-        body,
-      );
+      const response = await apiClient.post('/api/ingestion/runs', body);
       return ingestionRunListResponseSchema.parse(response.data);
     },
     onSuccess: () => {

@@ -38,7 +38,7 @@ export function useContacts(
   return useQuery({
     queryKey: CONTACTS_QUERY_KEY,
     queryFn: async () => {
-      const response = await apiClient.get<unknown>('/api/contacts');
+      const response = await apiClient.get('/api/contacts');
       return contactsResponseSchema.parse(response.data);
     },
     ...options,
@@ -53,7 +53,7 @@ export function useApplicationContacts(
   return useQuery({
     queryKey: applicationContactsKey(applicationId),
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/applications/${applicationId}/contacts`,
       );
       return applicationContactsResponseSchema.parse(response.data);
@@ -70,7 +70,7 @@ export function useCreateContact(
 ) {
   return useInvalidatingMutation(
     async (data: ContactCreate) => {
-      const response = await apiClient.post<unknown>('/api/contacts', data);
+      const response = await apiClient.post('/api/contacts', data);
       return contactResponseSchema.parse(response.data);
     },
     () => [CONTACTS_QUERY_KEY],
@@ -94,7 +94,7 @@ export function useAttachContact(
       const params = new URLSearchParams();
       if (primary === true) params.set('primary', 'true');
       const query = params.size > 0 ? `?${params.toString()}` : '';
-      const response = await apiClient.post<unknown>(
+      const response = await apiClient.post(
         `/api/applications/${applicationId}/contacts/${contactId}${query}`,
         {},
       );

@@ -27,6 +27,7 @@ playwright-report/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # local env files — Vite loads .env, .env.local, .env.<mode> and
 # .env.<mode>.local; only *.local variants and .env.example may exist.

@@ -11,7 +11,7 @@ npm workspaces monorepo (`apps/*`, `packages/*`). Node >= 22.12 (`.nvmrc` = 24, 
 | Path                          | What it is                                                                                           | Workspace rules                         |
 | ----------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------- |
 | `apps/professional-portfolio` | Public Vite + React portfolio (MUI 9, Emotion, MDX content)                                          | `apps/professional-portfolio/AGENTS.md` |
-| `apps/job-tracker`            | Vite + React job tracker (react-query, axios, zod, zustand, MSW)                                     | `apps/job-tracker/AGENTS.md`            |
+| `apps/job-tracker`            | Vite + React job tracker (react-query, zod, zustand, MSW)                                            | `apps/job-tracker/AGENTS.md`            |
 | `packages/ui`                 | `@career-hub/ui` — private shared component library, raw TS source                                   | `packages/ui/AGENTS.md`                 |
 | `scripts/`                    | Cross-workspace gates (case-sensitivity, bundle budget, mutation diff/core, visual-baseline helpers) | —                                       |
 | `apps/*/scripts/`             | App-local gates                                                                                      | covered by each app's AGENTS.md         |

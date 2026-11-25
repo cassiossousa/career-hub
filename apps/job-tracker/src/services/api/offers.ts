@@ -29,7 +29,7 @@ export function useApplicationOffers(
   return useQuery({
     queryKey: applicationOffersKey(applicationId),
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/applications/${applicationId}/offers`,
       );
       return offersResponseSchema.parse(response.data);
@@ -44,7 +44,7 @@ export function useCreateOffer(
 ) {
   return useInvalidatingMutation(
     async (data: OfferCreate) => {
-      const response = await apiClient.post<unknown>(
+      const response = await apiClient.post(
         `/api/applications/${applicationId}/offers`,
         data,
       );
@@ -64,10 +64,7 @@ export function useUpdateOffer(
 ) {
   return useInvalidatingMutation(
     async ({ id, data }: { id: number; data: OfferUpdate }) => {
-      const response = await apiClient.patch<unknown>(
-        `/api/offers/${id}`,
-        data,
-      );
+      const response = await apiClient.patch(`/api/offers/${id}`, data);
       return offerResponseSchema.parse(response.data);
     },
     () => [applicationOffersKey(applicationId)],

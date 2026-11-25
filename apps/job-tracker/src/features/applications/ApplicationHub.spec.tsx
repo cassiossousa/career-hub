@@ -2,8 +2,32 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
+import { apiClient } from '../../services/api/client';
 import { renderWithProviders } from '../../test/TestUtils';
 import { ApplicationHub } from './ApplicationHub';
+
+type User = ReturnType<typeof userEvent.setup>;
+
+async function linkExistingContact(user: User) {
+  await user.click(
+    screen.getByRole('button', { name: 'Link existing contact' }),
+  );
+  await user.click(screen.getByRole('combobox'));
+  await user.click(await screen.findByRole('option', { name: /Rafael Nunes/ }));
+  await user.click(screen.getByRole('button', { name: 'Link' }));
+}
+
+async function renderEmptyCoverLetter() {
+  renderHub('2', 'coverLetter');
+  await screen.findByText('No cover letter yet — write one below.');
+}
+
+async function typeCoverLetterBody(user: User) {
+  await user.type(
+    screen.getByLabelText('Body'),
+    'I am excited to apply for this role.',
+  );
+}
 
 function renderHub(applicationId: string, tab?: string) {
   const route =
@@ -22,6 +46,10 @@ function renderHub(applicationId: string, tab?: string) {
 }
 
 describe('ApplicationHub', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('renders the overview tab with job link, status, and notes', async () => {
     renderHub('1');
     expect(
@@ -174,7 +202,7 @@ describe('ApplicationHub', () => {
     });
   });
 
-  it('creates a contact and links it as primary', async () => {
+  it('creates and links contacts on the contacts tab', async () => {
     const user = userEvent.setup();
     renderHub('3', 'contacts');
     await screen.findByText('No contacts linked to this application yet.');
@@ -191,43 +219,65 @@ describe('ApplicationHub', () => {
 
     expect(await screen.findByText('New Person')).toBeInTheDocument();
     expect(screen.getByText('Primary')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Unlink' }));
+    await waitFor(() => {
+      expect(screen.queryByText('New Person')).not.toBeInTheDocument();
+    });
+
+    await linkExistingContact(user);
+    expect(await screen.findByText('Rafael Nunes')).toBeInTheDocument();
   });
 
-  it('links an existing contact and unlinks it again', async () => {
+  it('shows an error state with retry when the application fails to load', async () => {
+    jest
+      .spyOn(apiClient, 'get')
+      .mockImplementation(() => Promise.reject(new Error('Server exploded')));
+    renderHub('1');
+    expect(
+      (await screen.findAllByText('Server exploded')).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+  });
+
+  it('surfaces an error when linking a contact fails', async () => {
+    jest
+      .spyOn(apiClient, 'post')
+      .mockImplementation(() => Promise.reject(new Error('Link failed')));
     const user = userEvent.setup();
     renderHub('3', 'contacts');
     await screen.findByText('No contacts linked to this application yet.');
 
-    await user.click(
-      screen.getByRole('button', { name: 'Link existing contact' }),
-    );
-    await user.click(screen.getByRole('combobox'));
-    await user.click(
-      await screen.findByRole('option', { name: /Rafael Nunes/ }),
-    );
-    await user.click(screen.getByRole('button', { name: 'Link' }));
-    expect(await screen.findByText('Rafael Nunes')).toBeInTheDocument();
+    await linkExistingContact(user);
 
-    await user.click(screen.getByRole('button', { name: 'Unlink' }));
-    await waitFor(() => {
-      expect(screen.queryByText('Rafael Nunes')).not.toBeInTheDocument();
-    });
+    expect(
+      (await screen.findAllByText('An error occurred.')).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('surfaces an error when saving a cover letter fails', async () => {
+    jest
+      .spyOn(apiClient, 'put')
+      .mockImplementation(() => Promise.reject(new Error('Save failed')));
+    const user = userEvent.setup();
+    await renderEmptyCoverLetter();
+
+    await typeCoverLetterBody(user);
+    await user.click(screen.getByRole('button', { name: 'Save cover letter' }));
+
+    expect(await screen.findByText('An error occurred.')).toBeInTheDocument();
   });
 
   it('validates, saves, and deletes a cover letter', async () => {
     const user = userEvent.setup();
-    renderHub('2', 'coverLetter');
-    await screen.findByText('No cover letter yet — write one below.');
+    await renderEmptyCoverLetter();
 
     await user.click(screen.getByRole('button', { name: 'Save cover letter' }));
     expect(
       await screen.findByText('Cover letter body cannot be empty.'),
     ).toBeInTheDocument();
 
-    await user.type(
-      screen.getByLabelText('Body'),
-      'I am excited to apply for this role.',
-    );
+    await typeCoverLetterBody(user);
     await user.click(screen.getByRole('button', { name: 'Save cover letter' }));
     expect(await screen.findByText('Saved')).toBeInTheDocument();
 

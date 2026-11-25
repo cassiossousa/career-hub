@@ -7,10 +7,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { isAxiosError } from 'axios';
 import type { ReactNode } from 'react';
 import { useTranslation } from '../../i18n/Provider';
-import { isApiError } from '../../services/api/client';
+import { isApiError, isUnreachableError } from '../../services/api/client';
 import type { Translation } from '../../types/i18n';
 
 export function LoadingState({ label }: { label?: string }) {
@@ -182,7 +181,7 @@ function describeQueryError(
   if (isApiError(error) && error.code.toLowerCase() === 'unauthorized') {
     return { message: messages.common.errors.unauthorized, detail };
   }
-  if (isAxiosError(error) && error.response === undefined) {
+  if (isUnreachableError(error)) {
     return { message: messages.common.errors.unreachable, detail };
   }
   return { message: detail };

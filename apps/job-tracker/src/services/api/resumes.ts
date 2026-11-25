@@ -24,7 +24,7 @@ export function useApplicationResume(
     queryKey: [...RESUMES_QUERY_KEY, 'application', applicationId],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<unknown>(
+        const response = await apiClient.get(
           `/api/applications/${applicationId}/resume`,
         );
         return resumeResponseSchema.parse(response.data);
@@ -48,7 +48,7 @@ export function useUpsertApplicationResume(
 
   return useMutation({
     mutationFn: async (data: ResumeDocument) => {
-      const response = await apiClient.put<unknown>(
+      const response = await apiClient.put(
         `/api/applications/${applicationId}/resume`,
         data,
       );

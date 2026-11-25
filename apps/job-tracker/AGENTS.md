@@ -4,9 +4,9 @@ App-specific rules for the job tracker. Every rule in the root `AGENTS.md` still
 
 ## Stack and layout
 
-- Vite + React SPA: `react-router-dom`, `@tanstack/react-query`, `axios`, `zod`, `zustand`. Mocked API via MSW in demo mode.
+- Vite + React SPA: `react-router-dom`, `@tanstack/react-query`, `zod`, `zustand`. Mocked API via MSW in demo mode.
 - `src/features/` — `applications`, `dashboard`, `ingestion`, `jobs`, `portfolio`, `resumes`, `settings`, `skills`.
-- `src/services/api/` — `apiClient` (axios wrapper); every call site must have a matching MSW handler.
+- `src/services/api/` — `apiClient` (dependency-free XHR wrapper); every call site must have a matching MSW handler.
 - `src/mocks/` — MSW setup: `browser.ts`, `server.ts`, `handlers.ts`, `data.ts` (fabricated demo data).
 - `src/store/` — zustand stores (`filterStore`, `uiStore`, `persistedState`).
 - `src/app/env.ts` — resolves `dataMode` (`demo` | `live`). `src/app/storage.ts` is the ONLY module allowed to touch Web Storage.

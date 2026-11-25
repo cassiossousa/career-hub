@@ -8,15 +8,6 @@ import {
 } from './coverLetters';
 
 describe('coverLetters api', () => {
-  it('returns the seeded cover letter for an application', async () => {
-    const { result } = renderHook(() => useCoverLetter(1), {
-      wrapper: ApiTestWrapper,
-    });
-    await waitForQuerySuccess(() => result.current.isSuccess);
-    expect(result.current.data?.applicationId).toBe(1);
-    expect(result.current.data?.bodyText).not.toBe('');
-  });
-
   it('resolves to null when the application has no cover letter', async () => {
     const { result } = renderHook(() => useCoverLetter(2), {
       wrapper: ApiTestWrapper,

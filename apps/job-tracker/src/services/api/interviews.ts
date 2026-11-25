@@ -25,7 +25,7 @@ export function useInterviews(
   return useQuery({
     queryKey: [...INTERVIEWS_QUERY_KEY, applicationId],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/applications/${applicationId}/interviews`,
       );
       return interviewsResponseSchema.parse(response.data);
@@ -43,7 +43,7 @@ export function useCreateInterview(
 ) {
   return useInvalidatingMutation(
     async (data: InterviewCreate) => {
-      const response = await apiClient.post<unknown>(
+      const response = await apiClient.post(
         `/api/applications/${applicationId}/interviews`,
         data,
       );
@@ -63,10 +63,7 @@ export function useUpdateInterview(
 ) {
   return useInvalidatingMutation(
     async ({ id, data }: { id: number; data: InterviewUpdate }) => {
-      const response = await apiClient.patch<unknown>(
-        `/api/interviews/${id}`,
-        data,
-      );
+      const response = await apiClient.patch(`/api/interviews/${id}`, data);
       return interviewResponseSchema.parse(response.data);
     },
     () => [[...INTERVIEWS_QUERY_KEY, applicationId]],

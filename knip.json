@@ -22,6 +22,9 @@
         "src/services/api/generated/**"
       ],
       "ignoreDependencies": ["openapi-typescript"]
+    },
+    "packages/ui": {
+      "entry": ["stryker.core.config.mjs"]
     }
   }
 }

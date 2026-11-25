@@ -52,9 +52,7 @@ export function useJobs(
   return useQuery({
     queryKey: [...JOBS_QUERY_KEY, filter, limit, offset],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
-        `/api/jobs?${params.toString()}`,
-      );
+      const response = await apiClient.get(`/api/jobs?${params.toString()}`);
       return jobsResponseSchema.parse(response.data);
     },
     ...queryOptions,
@@ -68,7 +66,7 @@ export function useJob(
   return useQuery({
     queryKey: [...JOBS_QUERY_KEY, id],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(`/api/jobs/${id}`);
+      const response = await apiClient.get(`/api/jobs/${id}`);
       return jobResponseSchema.parse(response.data);
     },
     ...options,
@@ -81,7 +79,7 @@ export function useJobStats(
   return useQuery({
     queryKey: JOB_STATS_QUERY_KEY,
     queryFn: async () => {
-      const response = await apiClient.get<unknown>('/api/jobs/stats');
+      const response = await apiClient.get('/api/jobs/stats');
       return jobStatsResponseSchema.parse(response.data);
     },
     ...options,
@@ -95,7 +93,7 @@ export function useCreateJob(
 
   return useMutation({
     mutationFn: async (data: JobCreate) => {
-      const response = await apiClient.post<unknown>('/api/jobs', data);
+      const response = await apiClient.post('/api/jobs', data);
       return jobResponseSchema.parse(response.data);
     },
     onSuccess: () => {

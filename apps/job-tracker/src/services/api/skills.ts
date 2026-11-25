@@ -37,7 +37,7 @@ export function useSkills(
       let total = Number.POSITIVE_INFINITY;
       while (skills.length < total) {
         const offset = skills.length;
-        const response = await apiClient.get<unknown>(
+        const response = await apiClient.get(
           `/api/skills?limit=${SKILLS_PAGE_SIZE}&offset=${offset}`,
         );
         const page = skillsResponseSchema.parse(response.data);
@@ -64,7 +64,7 @@ export function useCreateSkill(
   const invalidate = useInvalidateSkills();
   return useMutation({
     mutationFn: async (data: SkillCreate) => {
-      const response = await apiClient.post<unknown>('/api/skills', data);
+      const response = await apiClient.post('/api/skills', data);
       return skillResponseSchema.parse(response.data);
     },
     onSuccess: invalidate,
@@ -86,10 +86,7 @@ export function useUpdateSkill(
   const invalidate = useInvalidateSkills();
   return useMutation({
     mutationFn: async ({ id, patch }: UpdateSkillVariables) => {
-      const response = await apiClient.patch<unknown>(
-        `/api/skills/${id}`,
-        patch,
-      );
+      const response = await apiClient.patch(`/api/skills/${id}`, patch);
       return skillResponseSchema.parse(response.data);
     },
     onSuccess: invalidate,
@@ -116,7 +113,7 @@ export function useSkillGroupLabels(
   return useQuery({
     queryKey: SKILL_GROUP_LABELS_QUERY_KEY,
     queryFn: async () => {
-      const response = await apiClient.get<unknown>('/api/skill-group-labels');
+      const response = await apiClient.get('/api/skill-group-labels');
       return skillGroupLabelsListSchema.parse(response.data);
     },
     ...options,
@@ -132,10 +129,9 @@ export function useReplaceSkillGroupLabels(
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ group, labels }: SkillGroupLabels) => {
-      const response = await apiClient.put<unknown>(
-        `/api/skill-group-labels/${group}`,
-        { labels },
-      );
+      const response = await apiClient.put(`/api/skill-group-labels/${group}`, {
+        labels,
+      });
       return skillGroupLabelsResponseSchema.parse(response.data);
     },
     onSuccess: () => {

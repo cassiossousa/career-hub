@@ -6,6 +6,4 @@ export type ContactListPage = Wire<Schemas['ContactListResponse']>;
 
 export type ContactCreate = Wire<Schemas['ContactCreate']>;
 
-export type ContactUpdate = Wire<Schemas['ContactPatch']>;
-
 export type ApplicationContact = Wire<Schemas['ApplicationContactResponse']>;

@@ -1,7 +1,7 @@
 import { HttpResponse, http } from 'msw';
 import { server } from '../../mocks/server';
 import { expectApiErrorCode } from '../../test/apiError';
-import { apiClient, isApiError } from './client';
+import { apiClient, isApiError, isUnreachableError } from './client';
 import {
   jobResponseSchema,
   jobsResponseSchema,
@@ -68,12 +68,40 @@ describe('apiClient', () => {
     server.use(http.get('/api/jobs', () => HttpResponse.error()));
     const error: unknown = await captureError(apiClient.get('/api/jobs'));
     expect(isApiError(error)).toBe(false);
+    expect(isUnreachableError(error)).toBe(true);
+  });
+
+  it('rejects with a plain Error on non-envelope HTTP errors', async () => {
+    server.use(
+      http.get('/api/jobs', () => new HttpResponse('oops', { status: 500 })),
+    );
+    const error: unknown = await captureError(apiClient.get('/api/jobs'));
+    expect(isApiError(error)).toBe(false);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe('Request failed with status 500');
+  });
+
+  it('resolves null data for non-JSON success bodies', async () => {
+    server.use(
+      http.delete(
+        '/api/interviews/1',
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+    const response = await apiClient.delete('/api/interviews/1');
+    expect(response.data).toBeNull();
   });
 
   it('isApiError returns false for plain errors', () => {
     expect(isApiError(new Error('nope'))).toBe(false);
     expect(isApiError('string')).toBe(false);
     expect(isApiError(undefined)).toBe(false);
+  });
+
+  it('isUnreachableError only matches network failures', () => {
+    expect(isUnreachableError(new Error('nope'))).toBe(false);
+    expect(isUnreachableError('string')).toBe(false);
+    expect(isUnreachableError(undefined)).toBe(false);
   });
 });
 

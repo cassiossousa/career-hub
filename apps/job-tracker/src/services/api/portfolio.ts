@@ -17,7 +17,7 @@ export function usePortfolio(
   return useQuery({
     queryKey: PORTFOLIO_QUERY_KEY,
     queryFn: async () => {
-      const response = await apiClient.get<unknown>('/api/portfolio');
+      const response = await apiClient.get('/api/portfolio');
       return portfolioResponseSchema.parse(response.data);
     },
     ...options,
@@ -34,7 +34,7 @@ export function useUpsertPortfolio(
 
   return useMutation({
     mutationFn: async (data: PortfolioDocumentWrite) => {
-      const response = await apiClient.put<unknown>('/api/portfolio', data);
+      const response = await apiClient.put('/api/portfolio', data);
       return portfolioResponseSchema.parse(response.data);
     },
     onSuccess: () => {

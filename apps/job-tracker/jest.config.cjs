@@ -33,7 +33,7 @@ const REPO_ROOT = findRepoRoot(__dirname);
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  // MSW-intercepted axios calls are slow under coverage instrumentation;
+  // MSW-intercepted XHR calls are slow under coverage instrumentation;
   // the 5s default flakes on parallel workers.
   testTimeout: 30000,
   testEnvironmentOptions: {

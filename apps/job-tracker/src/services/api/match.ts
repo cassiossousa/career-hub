@@ -32,7 +32,7 @@ export function useJobMatch(
   return useQuery({
     queryKey: [MATCH_QUERY_KEY, 'job', jobId, algorithm, params.applicationId],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/jobs/${jobId}/match?${queryParams.toString()}`,
       );
       return matchResponseSchema.parse(response.data);
@@ -51,7 +51,7 @@ export function useApplicationMatch(
   return useQuery({
     queryKey: [MATCH_QUERY_KEY, 'application', applicationId, algorithm],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/api/applications/${applicationId}/match?algorithm=${algorithm}`,
       );
       return matchResponseSchema.parse(response.data);
@@ -87,7 +87,7 @@ export function useJobMatchAllAlgorithms(
         if (params.applicationId !== undefined) {
           queryParams.set('applicationId', String(params.applicationId));
         }
-        const response = await apiClient.get<unknown>(
+        const response = await apiClient.get(
           `/api/jobs/${jobId}/match?${queryParams.toString()}`,
         );
         return matchResponseSchema.parse(response.data);

@@ -13,6 +13,7 @@ const APPLICATION_STATUS_COLORS: Record<
   offer: 'success',
   rejected: 'error',
   withdrawn: 'default',
+  no_response: 'default',
 };
 
 export function ApplicationStatusChip({

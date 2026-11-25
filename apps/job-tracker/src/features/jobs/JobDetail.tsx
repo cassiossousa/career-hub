@@ -28,6 +28,8 @@ import { isFilteredResult } from '../../services/filterResult';
 import { formatJobSalary, isJobStale } from '../../services/jobMeta';
 import type { Application } from '../../services/types/application';
 
+const renderedAtMs = Date.now();
+
 export function JobDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -45,6 +47,10 @@ export function JobDetail() {
   const { mutate: updateApplication, isPending: isUpdating } =
     useUpdateApplication();
   const [confirmApplied, setConfirmApplied] = useState(false);
+
+  const handleCreateError = () => {
+    void applicationsQuery.refetch();
+  };
 
   if (jobId === null) {
     return <EmptyState title={messages.jobs.notFound} />;
@@ -64,17 +70,23 @@ export function JobDetail() {
           .join(' · ');
 
         const saveForLater = () => {
-          createApplication({ jobId: job.id, status: 'saved' });
+          createApplication(
+            { jobId: job.id, status: 'saved' },
+            { onError: handleCreateError },
+          );
         };
 
         const markAsApplied = () => {
           setConfirmApplied(false);
           if (existingApplication === undefined) {
-            createApplication({
-              jobId: job.id,
-              status: 'applied',
-              appliedAt: new Date().toISOString().slice(0, 10),
-            });
+            createApplication(
+              {
+                jobId: job.id,
+                status: 'applied',
+                appliedAt: new Date().toISOString().slice(0, 10),
+              },
+              { onError: handleCreateError },
+            );
           } else {
             updateApplication({
               id: existingApplication.id,
@@ -247,10 +259,22 @@ function ApplicationActionRow({
   onMarkApplied: () => void;
   pending: boolean;
 }) {
-  const { messages } = useTranslation();
+  const { messages, locale } = useTranslation();
+  const followUpOverdue =
+    application.followUpAt != null &&
+    new Date(application.followUpAt).getTime() <= renderedAtMs;
   return (
     <>
       <ApplicationStatusChip status={application.status} />
+      {application.followUpAt != null && (
+        <Typography
+          variant="body2"
+          color={followUpOverdue ? 'warning.main' : 'text.secondary'}
+        >
+          {messages.applications.followUp}:{' '}
+          {new Date(application.followUpAt).toLocaleString(locale)}
+        </Typography>
+      )}
       {application.status === 'saved' && (
         <Button variant="contained" onClick={onMarkApplied} disabled={pending}>
           {messages.jobs.markApplied}
@@ -261,7 +285,7 @@ function ApplicationActionRow({
         to={routePaths.applicationDetail(application.id.toString())}
         variant="outlined"
       >
-        {messages.jobs.editResume}
+        {messages.applications.viewApplication}
       </Button>
     </>
   );

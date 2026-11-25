@@ -3,30 +3,35 @@ import {
   Card,
   CardContent,
   Checkbox,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { routePaths } from '../../app/routePaths';
 import { ApplicationStatusChip } from '../../components/ApplicationStatusChip/ApplicationStatusChip';
+import { ApplicationStatusSelect } from '../../components/ApplicationStatusSelect/ApplicationStatusSelect';
+import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
 import { useUpdateApplication } from '../../services/api/applications';
 import {
-  APPLICATION_STATUS_ORDER,
+  daysInCurrentStatus,
+  isQuietApplication,
+} from '../../services/applicationStaleness';
+import {
   type Application,
   type ApplicationStatus,
   NEXT_APPLICATION_STATUS,
+  TERMINAL_APPLICATION_STATUSES,
 } from '../../services/types/application';
+import { applicationDetailPath, JobDetailLink } from './EntityLinks';
+import { NotesTextField } from './NotesTextField';
+
+const renderedAtMs = Date.now();
 
 interface ApplicationCardProps {
   application: Application;
   title: string;
+  company: string | null;
   selected: boolean;
   onToggleSelect: (id: number) => void;
   onRequestAdvance: (
@@ -38,6 +43,7 @@ interface ApplicationCardProps {
 export function ApplicationCard({
   application,
   title,
+  company,
   selected,
   onToggleSelect,
   onRequestAdvance,
@@ -78,6 +84,17 @@ export function ApplicationCard({
               <Typography component="h3" variant="h6" noWrap>
                 {title}
               </Typography>
+              {company !== null && (
+                <Typography variant="body2" color="text.secondary" noWrap>
+                  <JobDetailLink
+                    jobId={application.jobId}
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    {company}
+                  </JobDetailLink>
+                </Typography>
+              )}
               <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
                 <ApplicationStatusChip status={application.status} />
                 {application.appliedAt && (
@@ -86,28 +103,47 @@ export function ApplicationCard({
                     {new Date(application.appliedAt).toLocaleDateString(locale)}
                   </Typography>
                 )}
+                {application.followUpAt != null && (
+                  <Typography
+                    variant="caption"
+                    color={
+                      new Date(application.followUpAt).getTime() <=
+                        renderedAtMs &&
+                      !TERMINAL_APPLICATION_STATUSES.has(application.status)
+                        ? 'warning.main'
+                        : 'text.secondary'
+                    }
+                  >
+                    {messages.applications.followUp}:{' '}
+                    {new Date(application.followUpAt).toLocaleDateString(
+                      locale,
+                    )}
+                  </Typography>
+                )}
                 <Typography variant="caption" color="text.secondary">
                   {messages.applications.statusChangedAt}:{' '}
                   {new Date(application.statusChangedAt).toLocaleDateString(
                     locale,
                   )}
                 </Typography>
+                {isQuietApplication(application) && (
+                  <Typography variant="caption" color="warning.main">
+                    {interpolate(messages.applications.quietDays, {
+                      days: String(daysInCurrentStatus(application)),
+                    })}
+                  </Typography>
+                )}
               </Stack>
             </Stack>
           </Stack>
 
           {editingNotes ? (
             <Stack spacing={1}>
-              <TextField
-                multiline
+              <NotesTextField
                 minRows={2}
-                size="small"
                 label={messages.applications.notes}
                 value={notesDraft}
-                onChange={(e) => {
-                  setNotesDraft(e.target.value);
-                }}
-                slotProps={{ htmlInput: { maxLength: 2000 } }}
+                onChange={setNotesDraft}
               />
               <Stack direction="row" spacing={1}>
                 <Button size="small" variant="contained" onClick={saveNotes}>
@@ -152,22 +188,12 @@ export function ApplicationCard({
             direction="row"
             sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
           >
-            <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel>{messages.applications.statusLabel}</InputLabel>
-              <Select
-                label={messages.applications.statusLabel}
-                value={application.status}
-                onChange={(e) => {
-                  onRequestAdvance(application, e.target.value);
-                }}
-              >
-                {APPLICATION_STATUS_ORDER.map((status) => (
-                  <MenuItem key={status} value={status}>
-                    {messages.applications.status[status]}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <ApplicationStatusSelect
+              value={application.status}
+              onChange={(status) => {
+                onRequestAdvance(application, status);
+              }}
+            />
             {nextStatus && (
               <Button
                 size="small"
@@ -184,12 +210,10 @@ export function ApplicationCard({
               variant="outlined"
               sx={{ marginInlineStart: 'auto' }}
               onClick={() => {
-                void navigate(
-                  routePaths.applicationDetail(application.id.toString()),
-                );
+                void navigate(applicationDetailPath(application.id));
               }}
             >
-              {messages.applications.resume}
+              {messages.applications.viewApplication}
             </Button>
           </Stack>
         </Stack>

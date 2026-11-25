@@ -17,7 +17,7 @@ const NEXT_STATUS = NEXT_APPLICATION_STATUS;
 export function ApplicationPipeline() {
   const { locale, messages } = useTranslation();
   const [selected, setSelected] = useState(0);
-  const { applicationsQuery, updateApplication, titleForJob } =
+  const { applicationsQuery, updateApplication, titleForJob, companyForJob } =
     useApplicationTracker(messages.applications.jobFallback);
   const { mutate: updateApp } = updateApplication;
 
@@ -93,6 +93,7 @@ export function ApplicationPipeline() {
                   {items.map((app) => {
                     const nextStatus = NEXT_STATUS[app.status];
                     const title = titleForJob(app.jobId);
+                    const company = companyForJob(app.jobId);
                     return (
                       <Box
                         key={app.id}
@@ -107,6 +108,15 @@ export function ApplicationPipeline() {
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>
                           {title}
                         </Typography>
+                        {company !== null && (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ display: 'block' }}
+                          >
+                            {company}
+                          </Typography>
+                        )}
                         {app.appliedAt && (
                           <Typography
                             variant="caption"

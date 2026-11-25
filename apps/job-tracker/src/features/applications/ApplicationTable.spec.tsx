@@ -13,6 +13,7 @@ function renderTable(selected = new Set<number>()) {
       applications={seedApplications}
       selected={selected}
       titleFor={(app) => `Job ${app.jobId}`}
+      summaryForJob={() => null}
       onToggleSelect={onToggleSelect}
       onRequestAdvance={onRequestAdvance}
     />,

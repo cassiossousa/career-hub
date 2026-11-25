@@ -12,7 +12,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   EmptyState,
   QueryGate,
@@ -20,6 +20,7 @@ import {
 } from '../../components/AsyncStatus/AsyncStatus';
 import { useTranslation } from '../../i18n/Provider';
 import { useApplicationTracker } from '../../services/api/applications';
+import { isStaleApplication } from '../../services/applicationStaleness';
 import {
   APPLICATION_STATUS_ORDER,
   type Application,
@@ -61,8 +62,21 @@ function dialogTitle(
 
 export function ApplicationList() {
   const { messages } = useTranslation();
-  const { applicationsQuery, updateApplication, jobTitleById, titleForJob } =
-    useApplicationTracker(messages.applications.jobFallback);
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | ''>('');
+  const [followUpFilter, setFollowUpFilter] = useState<'' | 'due' | 'upcoming'>(
+    '',
+  );
+  const {
+    applicationsQuery,
+    updateApplication,
+    jobSummaries,
+    titleForJob,
+    companyForJob,
+    summaryForJob,
+  } = useApplicationTracker(messages.applications.jobFallback, {
+    status: statusFilter === '' ? undefined : statusFilter,
+    followUp: followUpFilter === '' ? undefined : followUpFilter,
+  });
   const { mutateAsync } = updateApplication;
 
   const [view, setView] = useState<'table' | 'list' | 'board'>('table');
@@ -77,6 +91,14 @@ export function ApplicationList() {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const titleFor = (app: Application) => titleForJob(app.jobId);
+
+  const titleByJobId = useMemo(
+    () =>
+      new Map(
+        [...jobSummaries.entries()].map(([id, summary]) => [id, summary.title]),
+      ),
+    [jobSummaries],
+  );
 
   const requestAdvance = (apps: Application[], target: ApplicationStatus) => {
     const actionable = apps.filter((app) => app.status !== target);
@@ -155,6 +177,39 @@ export function ApplicationList() {
         <Typography component="h1" variant="h5" sx={{ flexGrow: 1 }}>
           {messages.applications.title}
         </Typography>
+        <FormControl size="small" sx={{ minWidth: 140 }}>
+          <InputLabel>{messages.applications.statusLabel}</InputLabel>
+          <Select
+            label={messages.applications.statusLabel}
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+            }}
+          >
+            <MenuItem value="">{messages.applications.filterAll}</MenuItem>
+            {APPLICATION_STATUS_ORDER.map((status) => (
+              <MenuItem key={status} value={status}>
+                {messages.applications.status[status]}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl size="small" sx={{ minWidth: 140 }}>
+          <InputLabel>{messages.applications.followUp}</InputLabel>
+          <Select
+            label={messages.applications.followUp}
+            value={followUpFilter}
+            onChange={(e) => {
+              setFollowUpFilter(e.target.value);
+            }}
+          >
+            <MenuItem value="">{messages.applications.filterAll}</MenuItem>
+            <MenuItem value="due">{messages.applications.followUpDue}</MenuItem>
+            <MenuItem value="upcoming">
+              {messages.applications.followUpUpcoming}
+            </MenuItem>
+          </Select>
+        </FormControl>
         <ToggleButtonGroup
           size="small"
           exclusive
@@ -196,6 +251,9 @@ export function ApplicationList() {
         {(page) => {
           const applications = page.applications;
           const selectedAppsList = selectedApps(applications);
+          const staleApps = applications.filter((app) =>
+            isStaleApplication(app),
+          );
 
           return (
             <Stack spacing={2}>
@@ -247,11 +305,24 @@ export function ApplicationList() {
                       </Button>
                     </>
                   )}
+                  {staleApps.length > 0 && (
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="warning"
+                      onClick={() => {
+                        requestAdvance(staleApps, 'no_response');
+                      }}
+                    >
+                      {messages.applications.markStaleNoResponse} (
+                      {staleApps.length})
+                    </Button>
+                  )}
                   <Button
                     size="small"
                     variant="outlined"
                     onClick={() => {
-                      exportApplicationsCsv(applications, jobTitleById);
+                      exportApplicationsCsv(applications, titleByJobId);
                     }}
                   >
                     {messages.applications.exportCsv}
@@ -280,6 +351,7 @@ export function ApplicationList() {
                   applications={applications}
                   selected={selected}
                   titleFor={titleFor}
+                  summaryForJob={summaryForJob}
                   onToggleSelect={toggleSelect}
                   onRequestAdvance={(application, target) => {
                     requestAdvance([application], target);
@@ -292,6 +364,7 @@ export function ApplicationList() {
                       <ApplicationCard
                         application={app}
                         title={titleFor(app)}
+                        company={companyForJob(app.jobId)}
                         selected={selected.has(app.id)}
                         onToggleSelect={toggleSelect}
                         onRequestAdvance={(application, target) => {

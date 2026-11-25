@@ -17,10 +17,12 @@ interface ApplicationBoardProps {
 function BoardCard({
   application,
   title,
+  company,
   onDragStart,
 }: {
   application: Application;
   title: string;
+  company: string | null;
   onDragStart: (id: number) => void;
 }) {
   return (
@@ -36,6 +38,11 @@ function BoardCard({
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {title}
         </Typography>
+        {company !== null && (
+          <Typography variant="caption" color="text.secondary">
+            {company}
+          </Typography>
+        )}
         {application.appliedAt && (
           <Typography variant="caption" color="text.secondary">
             {application.appliedAt}
@@ -51,7 +58,7 @@ export function ApplicationBoard({
   onMove,
 }: ApplicationBoardProps) {
   const { messages } = useTranslation();
-  const { titleForJob } = useApplicationTracker(
+  const { titleForJob, companyForJob } = useApplicationTracker(
     messages.applications.jobFallback,
   );
   const [draggedId, setDraggedId] = useState<number | null>(null);
@@ -124,6 +131,7 @@ export function ApplicationBoard({
                   key={app.id}
                   application={app}
                   title={titleForJob(app.jobId)}
+                  company={companyForJob(app.jobId)}
                   onDragStart={setDraggedId}
                 />
               ))}

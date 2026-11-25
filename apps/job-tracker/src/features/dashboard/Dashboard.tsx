@@ -4,6 +4,7 @@ import { DashboardStats } from '../../components/DashboardStats/DashboardStats';
 import { FilterBar } from '../../components/FilterBar/FilterBar';
 import { Recommendations } from '../../components/Recommendations/Recommendations';
 import { useTranslation } from '../../i18n/Provider';
+import { FollowUpsCard } from './FollowUpsCard';
 
 export function Dashboard() {
   const { messages } = useTranslation();
@@ -14,6 +15,7 @@ export function Dashboard() {
         {messages.dashboard.title}
       </Typography>
       <DashboardStats />
+      <FollowUpsCard />
       <FilterBar />
       <Recommendations />
       <ApplicationPipeline />

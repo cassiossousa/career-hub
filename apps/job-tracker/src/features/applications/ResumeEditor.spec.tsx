@@ -46,7 +46,7 @@ describe('ResumeEditor', () => {
     expect(
       screen.getByText(/pre-filled from your portfolio/i),
     ).toBeInTheDocument();
-    expect(screen.getByText('Junior Frontend Developer')).toBeInTheDocument();
+    expect(screen.getByText(/Junior Frontend Developer/)).toBeInTheDocument();
 
     await expandSections(user, ['Summary']);
     const summaryFields = await screen.findAllByLabelText(/summary/i);

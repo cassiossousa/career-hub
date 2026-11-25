@@ -1,19 +1,19 @@
 import { Alert, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import {
   EmptyState,
   LoadingState,
-  QueryErrorAlert,
 } from '../../components/AsyncStatus/AsyncStatus';
 import { useTranslation } from '../../i18n/Provider';
 import { useApplication } from '../../services/api/applications';
-import { useJobTitleById } from '../../services/api/jobs';
+import { useJobSummaries } from '../../services/api/jobs';
 import { usePortfolio } from '../../services/api/portfolio';
 import { useApplicationResume } from '../../services/api/resumes';
 import type { PortfolioContent } from '../../services/types/portfolio';
 import type { Resume, ResumeDocument } from '../../services/types/resume';
+import { QueryErrorState } from './HubUi';
 import { ResumeForm } from './ResumeForm';
+import { useApplicationIdParam } from './useApplicationIdParam';
 
 function isResumeLocked(
   applicationStatus: string,
@@ -58,12 +58,9 @@ function seedDocumentFromPortfolio(
   };
 }
 
-export function ResumeEditor() {
+export function ResumeEditor({ embedded = false }: { embedded?: boolean }) {
   const { messages, locale } = useTranslation();
-  const { id } = useParams<{ id: string }>();
-  const parsedId = id ? Number.parseInt(id, 10) : Number.NaN;
-  const applicationId =
-    Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
+  const applicationId = useApplicationIdParam();
 
   const applicationQuery = useApplication(applicationId ?? 0, {
     enabled: applicationId !== null,
@@ -74,7 +71,7 @@ export function ResumeEditor() {
   const portfolioQuery = usePortfolio({
     enabled: applicationId !== null && resumeQuery.data === null,
   });
-  const jobTitleById = useJobTitleById();
+  const jobSummaries = useJobSummaries();
   const [savedNotice, setSavedNotice] = useState(false);
 
   if (applicationId === null) {
@@ -93,13 +90,15 @@ export function ResumeEditor() {
   const queryError = applicationQuery.error ?? resumeQuery.error;
   if (queryError !== null) {
     return (
-      <QueryErrorAlert
-        error={queryError}
-        subject={messages.resumes.title}
-        onRetry={() => {
-          void applicationQuery.refetch();
-          void resumeQuery.refetch();
+      <QueryErrorState
+        query={{
+          error: queryError,
+          refetch: () => {
+            void applicationQuery.refetch();
+            void resumeQuery.refetch();
+          },
         }}
+        subject={messages.resumes.title}
       />
     );
   }
@@ -115,19 +114,22 @@ export function ResumeEditor() {
     ? resumeToDocument(resume)
     : seedDocumentFromPortfolio(portfolioQuery.data?.documents ?? {}, locale);
 
-  const jobTitle = jobTitleById.get(application.jobId);
+  const jobSummary = jobSummaries.get(application.jobId);
 
   return (
     <Stack spacing={3}>
       {savedNotice && <Alert severity="success">{messages.common.saved}</Alert>}
-      <Stack spacing={0.5}>
-        <Typography component="h1" variant="h5">
-          {messages.resumes.title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {jobTitle ?? `Job #${application.jobId}`}
-        </Typography>
-      </Stack>
+      {!embedded && (
+        <Stack spacing={0.5}>
+          <Typography component="h1" variant="h5">
+            {messages.resumes.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {jobSummary?.title ?? `Job #${application.jobId}`}
+            {jobSummary != null && ` — ${jobSummary.company}`}
+          </Typography>
+        </Stack>
+      )}
       <ResumeForm
         key={`${applicationId}-${resume?.id ?? 'draft'}`}
         applicationId={applicationId}

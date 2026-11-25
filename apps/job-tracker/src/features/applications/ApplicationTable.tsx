@@ -1,10 +1,5 @@
 import {
   Checkbox,
-  FormControl,
-  InputLabel,
-  Link,
-  MenuItem,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -13,21 +8,23 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-import { routePaths } from '../../app/routePaths';
 import { ApplicationStatusChip } from '../../components/ApplicationStatusChip/ApplicationStatusChip';
+import { ApplicationStatusSelect } from '../../components/ApplicationStatusSelect/ApplicationStatusSelect';
 import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
+import type { JobSummary } from '../../services/api/jobs';
 import {
-  APPLICATION_STATUS_ORDER,
   type Application,
   type ApplicationStatus,
+  TERMINAL_APPLICATION_STATUSES,
 } from '../../services/types/application';
+import { ApplicationDetailLink, JobDetailLink } from './EntityLinks';
 
 interface ApplicationTableProps {
   applications: Application[];
   selected: ReadonlySet<number>;
   titleFor: (application: Application) => string;
+  summaryForJob: (jobId: number) => JobSummary | null;
   onToggleSelect: (id: number) => void;
   onRequestAdvance: (
     application: Application,
@@ -37,10 +34,21 @@ interface ApplicationTableProps {
 
 const EMPTY_CELL = '—';
 
+const renderedAtMs = Date.now();
+
+function isFollowUpOverdue(application: Application): boolean {
+  return (
+    application.followUpAt != null &&
+    new Date(application.followUpAt).getTime() <= renderedAtMs &&
+    !TERMINAL_APPLICATION_STATUSES.has(application.status)
+  );
+}
+
 export function ApplicationTable({
   applications,
   selected,
   titleFor,
+  summaryForJob,
   onToggleSelect,
   onRequestAdvance,
 }: ApplicationTableProps) {
@@ -61,7 +69,7 @@ export function ApplicationTable({
 
   return (
     <TableContainer sx={{ maxHeight: '70vh' }}>
-      <Table stickyHeader size="small" sx={{ minWidth: 860 }}>
+      <Table stickyHeader size="small" sx={{ minWidth: 980 }}>
         <TableHead>
           <TableRow>
             <TableCell padding="checkbox">
@@ -75,8 +83,10 @@ export function ApplicationTable({
               />
             </TableCell>
             <TableCell>{messages.applications.jobColumn}</TableCell>
+            <TableCell>{messages.applications.company}</TableCell>
             <TableCell>{messages.applications.statusLabel}</TableCell>
             <TableCell>{messages.applications.appliedAt}</TableCell>
+            <TableCell>{messages.applications.followUp}</TableCell>
             <TableCell>{messages.applications.statusChangedAt}</TableCell>
             <TableCell>{messages.applications.notes}</TableCell>
             <TableCell>{messages.applications.moveTo}</TableCell>
@@ -85,6 +95,8 @@ export function ApplicationTable({
         <TableBody>
           {applications.map((app) => {
             const title = titleFor(app);
+            const summary = summaryForJob(app.jobId);
+            const overdue = isFollowUpOverdue(app);
             return (
               <TableRow key={app.id} hover selected={selected.has(app.id)}>
                 <TableCell padding="checkbox">
@@ -104,14 +116,24 @@ export function ApplicationTable({
                   />
                 </TableCell>
                 <TableCell>
-                  <Link
-                    component={RouterLink}
-                    to={routePaths.applicationDetail(app.id.toString())}
+                  <ApplicationDetailLink
+                    applicationId={app.id}
                     variant="body2"
                     sx={{ fontWeight: 500 }}
                   >
                     {title}
-                  </Link>
+                  </ApplicationDetailLink>
+                </TableCell>
+                <TableCell>
+                  {summary === null ? (
+                    <Typography variant="body2" color="text.secondary">
+                      {EMPTY_CELL}
+                    </Typography>
+                  ) : (
+                    <JobDetailLink jobId={app.jobId} variant="body2">
+                      {summary.company}
+                    </JobDetailLink>
+                  )}
                 </TableCell>
                 <TableCell>
                   <ApplicationStatusChip status={app.status} />
@@ -121,6 +143,16 @@ export function ApplicationTable({
                     {app.appliedAt === null
                       ? EMPTY_CELL
                       : new Date(app.appliedAt).toLocaleDateString(locale)}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography
+                    variant="body2"
+                    color={overdue ? 'warning.main' : 'text.primary'}
+                  >
+                    {app.followUpAt === null
+                      ? EMPTY_CELL
+                      : new Date(app.followUpAt).toLocaleDateString(locale)}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -134,22 +166,13 @@ export function ApplicationTable({
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <FormControl size="small" sx={{ minWidth: 130 }}>
-                    <InputLabel>{messages.applications.statusLabel}</InputLabel>
-                    <Select
-                      label={messages.applications.statusLabel}
-                      value={app.status}
-                      onChange={(e) => {
-                        onRequestAdvance(app, e.target.value);
-                      }}
-                    >
-                      {APPLICATION_STATUS_ORDER.map((status) => (
-                        <MenuItem key={status} value={status}>
-                          {messages.applications.status[status]}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <ApplicationStatusSelect
+                    value={app.status}
+                    sx={{ minWidth: 130 }}
+                    onChange={(status) => {
+                      onRequestAdvance(app, status);
+                    }}
+                  />
                 </TableCell>
               </TableRow>
             );

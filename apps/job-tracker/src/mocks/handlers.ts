@@ -3,12 +3,27 @@ import { skillNameKey } from '../services/skills';
 import type {
   Application,
   ApplicationCreate,
+  ApplicationEvent,
   ApplicationUpdate,
 } from '../services/types/application';
+import type {
+  ApplicationContact,
+  Contact,
+  ContactCreate,
+} from '../services/types/contact';
+import type {
+  CoverLetter,
+  CoverLetterUpsert,
+} from '../services/types/coverLetter';
 import type {
   IngestionRun,
   IngestionRunTrigger,
 } from '../services/types/ingestion';
+import type {
+  Interview,
+  InterviewCreate,
+  InterviewUpdate,
+} from '../services/types/interview';
 import type {
   Job,
   JobCreate,
@@ -16,6 +31,7 @@ import type {
   JobPatch,
 } from '../services/types/job';
 import type { MatchResult } from '../services/types/match';
+import type { Offer, OfferCreate, OfferUpdate } from '../services/types/offer';
 import type {
   Portfolio,
   PortfolioContent,
@@ -29,9 +45,15 @@ import type {
   SkillPatch,
 } from '../services/types/skills';
 import {
+  eventsForApplication,
+  seedApplicationContacts,
   seedApplications,
+  seedContacts,
+  seedCoverLetters,
   seedIngestionRuns,
+  seedInterviews,
   seedJobs,
+  seedOffers,
   seedPortfolio,
   seedResume,
   seedResumeDraft,
@@ -57,6 +79,41 @@ let nextJobId = 100;
 let nextApplicationId = 100;
 let nextResumeId = 100;
 let nextSkillId = 100;
+let interviews: Interview[] = [...seedInterviews];
+let contacts: Contact[] = [...seedContacts];
+let applicationContacts = [...seedApplicationContacts];
+let offers: Offer[] = [...seedOffers];
+let coverLetters: CoverLetter[] = [...seedCoverLetters];
+const applicationEvents = new Map<number, ApplicationEvent[]>();
+let nextInterviewId = 100;
+let nextContactId = 100;
+let nextOfferId = 100;
+let nextCoverLetterId = 100;
+let nextEventId = 1000;
+
+function eventsForApp(applicationId: number): ApplicationEvent[] {
+  const cached = applicationEvents.get(applicationId);
+  if (cached !== undefined) return cached;
+  const app = applications.find((a) => a.id === applicationId);
+  const events =
+    app === undefined ? [] : eventsForApplication(app, applicationId * 100);
+  applicationEvents.set(applicationId, events);
+  return events;
+}
+
+function pushAppEvent(
+  applicationId: number,
+  kind: ApplicationEvent['kind'],
+  payload: Record<string, unknown>,
+) {
+  const events = eventsForApp(applicationId);
+  events.push({
+    id: nextEventId++,
+    kind,
+    payload,
+    createdAt: new Date().toISOString(),
+  });
+}
 
 export function resetMockData() {
   jobs = [...seedJobs];
@@ -65,6 +122,12 @@ export function resetMockData() {
   resumes = [seedResume, seedResumeDraft];
   skills = [...seedSkills];
   ingestionRuns = [...seedIngestionRuns];
+  interviews = [...seedInterviews];
+  contacts = [...seedContacts];
+  applicationContacts = [...seedApplicationContacts];
+  offers = [...seedOffers];
+  coverLetters = [...seedCoverLetters];
+  applicationEvents.clear();
   nextIngestionRunId = 100;
   skillGroupLabels = seedSkillGroupLabels.map((entry) => ({
     ...entry,
@@ -74,6 +137,11 @@ export function resetMockData() {
   nextApplicationId = 100;
   nextResumeId = 100;
   nextSkillId = 100;
+  nextInterviewId = 100;
+  nextContactId = 100;
+  nextOfferId = 100;
+  nextCoverLetterId = 100;
+  nextEventId = 1000;
 }
 
 function ageInDays(postedAt: string | null): number {
@@ -86,6 +154,15 @@ const notFoundJson = (message: string) =>
 
 const conflictJson = (code: string, message: string) =>
   HttpResponse.json({ error: { code, message } }, { status: 409 });
+
+function withApplication(job: Job): Job {
+  const app = applications.find((a) => a.jobId === job.id);
+  return {
+    ...job,
+    applicationId: app?.id ?? null,
+    applicationStatus: app?.status ?? null,
+  };
+}
 
 function applyProfilePreset(result: Job[], rules: Portfolio['filters']): Job[] {
   const levels = rules.levels ?? [];
@@ -415,7 +492,7 @@ export const handlers = [
       preset: (params.get('preset') as JobFilter['preset']) ?? undefined,
     };
     const { items, total } = pageOf(filterJobs(filter), params);
-    return HttpResponse.json({ jobs: items, total });
+    return HttpResponse.json({ jobs: items.map(withApplication), total });
   }),
 
   http.post('/api/jobs', async ({ request }) => {
@@ -432,7 +509,7 @@ export const handlers = [
     }
     const job = toJob(body, nextJobId++);
     jobs.push(job);
-    return HttpResponse.json(job, { status: 201 });
+    return HttpResponse.json(withApplication(job), { status: 201 });
   }),
 
   http.get('/api/jobs/:id/match', ({ params, request }) => {
@@ -451,7 +528,7 @@ export const handlers = [
     if (!job) {
       return notFoundJson('Job not found');
     }
-    return HttpResponse.json(job);
+    return HttpResponse.json(withApplication(job));
   }),
 
   http.patch('/api/jobs/:id', async ({ params, request }) => {
@@ -461,7 +538,7 @@ export const handlers = [
     }
     const body = (await request.json()) as JobPatch;
     Object.assign(job, body);
-    return HttpResponse.json(job);
+    return HttpResponse.json(withApplication(job));
   }),
 
   http.get('/api/applications', ({ request }) => {
@@ -469,8 +546,19 @@ export const handlers = [
     let result = [...applications];
     const status = params.get('status');
     const jobId = params.get('jobId');
+    const followUp = params.get('followUp');
+    const tag = params.get('tag');
     if (status) result = result.filter((a) => a.status === status);
     if (jobId) result = result.filter((a) => a.jobId === Number(jobId));
+    if (tag) result = result.filter((a) => a.tags.includes(tag));
+    if (followUp === 'due' || followUp === 'upcoming') {
+      const now = Date.now();
+      result = result.filter((a) => {
+        if (a.followUpAt === null) return false;
+        const at = new Date(a.followUpAt).getTime();
+        return followUp === 'due' ? at <= now : at > now;
+      });
+    }
     const { items, total } = pageOf(result, params);
     return HttpResponse.json({ applications: items, total });
   }),
@@ -494,7 +582,19 @@ export const handlers = [
       jobId: body.jobId,
     };
     applications.push(app);
+    eventsForApp(app.id);
+    pushAppEvent(app.id, 'created', { status: app.status });
     return HttpResponse.json(app, { status: 201 });
+  }),
+
+  http.get('/api/applications/:id/events', ({ params, request }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const sorted = eventsForApp(app.id).toSorted(
+      (a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id,
+    );
+    const { items, total } = pageOf(sorted, new URL(request.url).searchParams);
+    return HttpResponse.json({ events: items, total });
   }),
 
   http.get('/api/applications/:id', ({ params }) => {
@@ -506,8 +606,28 @@ export const handlers = [
   http.patch('/api/applications/:id', async ({ params, request }) => {
     const app = findApplication(Number(params.id));
     if (app instanceof Response) return app;
+    const before = { ...app };
     const body = (await request.json()) as ApplicationUpdate;
     Object.assign(app, body, { statusChangedAt: new Date().toISOString() });
+    if (body.status !== undefined && body.status !== before.status) {
+      pushAppEvent(app.id, 'status_changed', {
+        from: before.status,
+        to: app.status,
+      });
+    }
+    if (body.notes !== undefined && body.notes !== before.notes) {
+      pushAppEvent(app.id, 'note_added', {});
+    }
+    if (
+      body.followUpAt !== undefined &&
+      body.followUpAt !== before.followUpAt
+    ) {
+      pushAppEvent(
+        app.id,
+        body.followUpAt === null ? 'follow_up_cleared' : 'follow_up_set',
+        body.followUpAt === null ? {} : { at: body.followUpAt },
+      );
+    }
     return HttpResponse.json(app);
   }),
 
@@ -554,6 +674,249 @@ export const handlers = [
       resumes.push(resume);
     }
     return HttpResponse.json(resume);
+  }),
+
+  http.get('/api/applications/:id/interviews', ({ params, request }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const result = interviews
+      .filter((i) => i.applicationId === app.id)
+      .toSorted((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
+    const { items, total } = pageOf(result, new URL(request.url).searchParams);
+    return HttpResponse.json({ interviews: items, total });
+  }),
+
+  http.post('/api/applications/:id/interviews', async ({ params, request }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const body = (await request.json()) as InterviewCreate;
+    const now = new Date().toISOString();
+    const interview: Interview = {
+      id: nextInterviewId++,
+      applicationId: app.id,
+      mode: body.mode ?? 'video',
+      outcome: body.outcome ?? 'pending',
+      scheduledAt: body.scheduledAt,
+      durationMinutes: body.durationMinutes ?? null,
+      roundLabel: body.roundLabel ?? null,
+      location: body.location ?? null,
+      notes: body.notes ?? null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    interviews.push(interview);
+    return HttpResponse.json(interview, { status: 201 });
+  }),
+
+  http.patch('/api/interviews/:id', async ({ params, request }) => {
+    const interview = interviews.find((i) => i.id === Number(params.id));
+    if (!interview) {
+      return notFoundJson('Interview not found');
+    }
+    const body = (await request.json()) as InterviewUpdate;
+    Object.assign(interview, body, { updatedAt: new Date().toISOString() });
+    return HttpResponse.json(interview);
+  }),
+
+  http.delete('/api/interviews/:id', ({ params }) => {
+    const index = interviews.findIndex((i) => i.id === Number(params.id));
+    if (index === -1) {
+      return notFoundJson('Interview not found');
+    }
+    interviews.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get('/api/contacts', ({ request }) => {
+    const { items, total } = pageOf(
+      contacts.toSorted((a, b) => a.name.localeCompare(b.name)),
+      new URL(request.url).searchParams,
+    );
+    return HttpResponse.json({ contacts: items, total });
+  }),
+
+  http.post('/api/contacts', async ({ request }) => {
+    const body = (await request.json()) as ContactCreate;
+    const now = new Date().toISOString();
+    const contact: Contact = {
+      id: nextContactId++,
+      name: body.name,
+      email: body.email ?? null,
+      phone: body.phone ?? null,
+      linkedinUrl: body.linkedinUrl ?? null,
+      company: body.company ?? null,
+      role: body.role ?? null,
+      notes: body.notes ?? null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    contacts.push(contact);
+    return HttpResponse.json(contact, { status: 201 });
+  }),
+
+  http.get('/api/applications/:id/contacts', ({ params }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const result: ApplicationContact[] = applicationContacts
+      .filter((link) => link.applicationId === app.id)
+      .flatMap((link) => {
+        const contact = contacts.find((c) => c.id === link.contactId);
+        return contact === undefined
+          ? []
+          : [
+              {
+                applicationId: app.id,
+                contact,
+                isPrimary: link.isPrimary,
+              },
+            ];
+      });
+    return HttpResponse.json(result);
+  }),
+
+  http.post(
+    '/api/applications/:id/contacts/:contactId',
+    ({ params, request }) => {
+      const app = findApplication(Number(params.id));
+      if (app instanceof Response) return app;
+      const contactId = Number(params.contactId);
+      const contact = contacts.find((c) => c.id === contactId);
+      if (!contact) {
+        return notFoundJson('Contact not found');
+      }
+      if (
+        applicationContacts.some(
+          (link) =>
+            link.applicationId === app.id && link.contactId === contactId,
+        )
+      ) {
+        return conflictJson('conflict', 'Contact already linked');
+      }
+      const primary =
+        new URL(request.url).searchParams.get('primary') === 'true';
+      applicationContacts.push({
+        applicationId: app.id,
+        contactId,
+        isPrimary: primary,
+      });
+      return HttpResponse.json(
+        { applicationId: app.id, contact, isPrimary: primary },
+        { status: 201 },
+      );
+    },
+  ),
+
+  http.delete('/api/applications/:id/contacts/:contactId', ({ params }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const contactId = Number(params.contactId);
+    const index = applicationContacts.findIndex(
+      (link) => link.applicationId === app.id && link.contactId === contactId,
+    );
+    if (index === -1) {
+      return notFoundJson('Contact link not found');
+    }
+    applicationContacts.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get('/api/applications/:id/offers', ({ params, request }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const result = offers.filter((o) => o.applicationId === app.id);
+    const { items, total } = pageOf(result, new URL(request.url).searchParams);
+    return HttpResponse.json({ offers: items, total });
+  }),
+
+  http.post('/api/applications/:id/offers', async ({ params, request }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const body = (await request.json()) as OfferCreate;
+    const now = new Date().toISOString();
+    const offer: Offer = {
+      id: nextOfferId++,
+      applicationId: app.id,
+      status: body.status ?? 'received',
+      currency: (body.currency ?? 'BRL').toUpperCase(),
+      salaryMin: body.salaryMin ?? null,
+      salaryMax: body.salaryMax ?? null,
+      equityNotes: body.equityNotes ?? null,
+      benefitsNotes: body.benefitsNotes ?? null,
+      decidedAt: body.decidedAt ?? null,
+      notes: body.notes ?? null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    offers.push(offer);
+    return HttpResponse.json(offer, { status: 201 });
+  }),
+
+  http.patch('/api/offers/:id', async ({ params, request }) => {
+    const offer = offers.find((o) => o.id === Number(params.id));
+    if (!offer) {
+      return notFoundJson('Offer not found');
+    }
+    const body = (await request.json()) as OfferUpdate;
+    Object.assign(offer, body, { updatedAt: new Date().toISOString() });
+    return HttpResponse.json(offer);
+  }),
+
+  http.delete('/api/offers/:id', ({ params }) => {
+    const index = offers.findIndex((o) => o.id === Number(params.id));
+    if (index === -1) {
+      return notFoundJson('Offer not found');
+    }
+    offers.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get('/api/applications/:id/cover-letter', ({ params }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const letter = coverLetters.find((l) => l.applicationId === app.id);
+    if (!letter) {
+      return notFoundJson('Cover letter not found');
+    }
+    return HttpResponse.json(letter);
+  }),
+
+  http.put(
+    '/api/applications/:id/cover-letter',
+    async ({ params, request }) => {
+      const app = findApplication(Number(params.id));
+      if (app instanceof Response) return app;
+      const body = (await request.json()) as CoverLetterUpsert;
+      const now = new Date().toISOString();
+      const existing = coverLetters.find((l) => l.applicationId === app.id);
+      const letter: CoverLetter = {
+        id: existing?.id ?? nextCoverLetterId++,
+        applicationId: app.id,
+        locale: body.locale,
+        subject: body.subject ?? null,
+        bodyText: body.bodyText,
+        createdAt: existing?.createdAt ?? now,
+        updatedAt: now,
+      };
+      if (existing) {
+        coverLetters = coverLetters.map((l) =>
+          l.id === letter.id ? letter : l,
+        );
+      } else {
+        coverLetters.push(letter);
+      }
+      return HttpResponse.json(letter);
+    },
+  ),
+
+  http.delete('/api/applications/:id/cover-letter', ({ params }) => {
+    const app = findApplication(Number(params.id));
+    if (app instanceof Response) return app;
+    const index = coverLetters.findIndex((l) => l.applicationId === app.id);
+    if (index === -1) {
+      return notFoundJson('Cover letter not found');
+    }
+    coverLetters.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
   }),
 
   http.post('/api/match', async ({ request }) => {

@@ -1,7 +1,12 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  testMatch: ['<rootDir>/components/**/*.spec.{ts,tsx}'],
+  // No <rootDir> in testMatch: Stryker's jest runner re-roots into
+  // .stryker-tmp/sandbox-*, where <rootDir>-based patterns stop matching.
+  testMatch: ['**/components/**/*.spec.{ts,tsx}'],
+  // Stale Stryker sandboxes contain copied specs — never let Jest see them.
+  testPathIgnorePatterns: ['<rootDir>/.stryker-tmp/'],
+  modulePathIgnorePatterns: ['<rootDir>/.stryker-tmp/'],
   setupFilesAfterEnv: ['@testing-library/jest-dom'],
   moduleNameMapper: {
     '\\.svg$': '<rootDir>/testkit/svgMock.ts',

@@ -1,13 +1,19 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { seedApplications } from '../../mocks/data';
-import type { ApplicationStatus } from '../../services/types/application';
+import {
+  APPLICATION_STATUS_ORDER,
+  type ApplicationStatus,
+} from '../../services/types/application';
 import { renderWithProviders } from '../../test/TestUtils';
 import { ApplicationBoard } from './ApplicationBoard';
 
 function columnForStatus(statusText: string): HTMLElement {
   let el = screen.getByText(statusText);
-  while (el.parentElement && el.parentElement.children.length !== 7) {
+  while (
+    el.parentElement &&
+    el.parentElement.children.length !== APPLICATION_STATUS_ORDER.length
+  ) {
     el = el.parentElement;
   }
   if (!el.parentElement) throw new Error('column not found');

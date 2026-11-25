@@ -37,6 +37,7 @@ function renderCard(
     <ApplicationCard
       application={application}
       title="Frontend Engineer"
+      company="Acme Corp"
       selected={false}
       onToggleSelect={onToggleSelect}
       onRequestAdvance={onRequestAdvance}
@@ -96,6 +97,8 @@ describe('ApplicationCard', () => {
   it('shows Add for applications without notes', () => {
     renderCard(screeningApp);
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Resume/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /View application/ }),
+    ).toBeInTheDocument();
   }, 30000);
 });

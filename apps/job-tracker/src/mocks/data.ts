@@ -1,6 +1,13 @@
-import type { Application } from '../services/types/application';
+import type {
+  Application,
+  ApplicationEvent,
+} from '../services/types/application';
+import type { Contact } from '../services/types/contact';
+import type { CoverLetter } from '../services/types/coverLetter';
 import type { IngestionRun } from '../services/types/ingestion';
+import type { Interview } from '../services/types/interview';
 import type { Job, JobCreate } from '../services/types/job';
+import type { Offer } from '../services/types/offer';
 import type {
   Portfolio,
   PortfolioContent,
@@ -992,6 +999,204 @@ export function toJob(body: JobCreate, id: number): Job {
     filterResult: body.filterResult ?? 'unevaluated',
     createdAt: now,
   };
+}
+
+export const seedContacts: Contact[] = [
+  {
+    id: 1,
+    name: 'Marina Alves',
+    email: 'marina.alves@vetta.example.com',
+    phone: '+55 11 90000-0001',
+    linkedinUrl: 'https://linkedin.com/in/marina-alves',
+    company: 'Vetta Bank',
+    role: 'Tech Recruiter',
+    notes: 'Prefers async updates; fast responder.',
+    createdAt: daysAgo(20),
+    updatedAt: daysAgo(2),
+  },
+  {
+    id: 2,
+    name: 'Rafael Nunes',
+    email: 'rafael.nunes@meridian.example.com',
+    phone: null,
+    linkedinUrl: null,
+    company: 'Meridian Pay',
+    role: 'Engineering Manager',
+    notes: null,
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(1),
+  },
+  {
+    id: 3,
+    name: 'Beatriz Lima',
+    email: 'beatriz.lima@vetta.example.com',
+    phone: null,
+    linkedinUrl: 'https://linkedin.com/in/beatriz-lima',
+    company: 'Vetta Bank',
+    role: 'Senior Frontend Engineer',
+    notes: 'Referral contact — mentioned the team is hiring.',
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
+  },
+];
+
+/** applicationId → contactId links; `isPrimary` marks the main contact. */
+export const seedApplicationContacts: {
+  applicationId: number;
+  contactId: number;
+  isPrimary: boolean;
+}[] = [
+  { applicationId: 1, contactId: 1, isPrimary: true },
+  { applicationId: 1, contactId: 3, isPrimary: false },
+  { applicationId: 5, contactId: 2, isPrimary: true },
+  { applicationId: 9, contactId: 2, isPrimary: true },
+];
+
+export const seedInterviews: Interview[] = [
+  {
+    id: 1,
+    applicationId: 1,
+    mode: 'video',
+    outcome: 'completed',
+    scheduledAt: new Date(Date.now() - 1 * 86400000).toISOString(),
+    durationMinutes: 45,
+    roundLabel: 'Screening',
+    location: null,
+    notes: 'Went well — they asked about design systems.',
+    createdAt: daysAgo(3),
+    updatedAt: daysAgo(1),
+  },
+  {
+    id: 2,
+    applicationId: 5,
+    mode: 'phone',
+    outcome: 'completed',
+    scheduledAt: new Date(Date.now() - 3 * 86400000).toISOString(),
+    durationMinutes: 30,
+    roundLabel: 'Recruiter screen',
+    location: null,
+    notes: null,
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(3),
+  },
+  {
+    id: 3,
+    applicationId: 5,
+    mode: 'onsite',
+    outcome: 'pending',
+    scheduledAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+    durationMinutes: 240,
+    roundLabel: 'Final round',
+    location: 'Meridian Pay HQ — São Paulo',
+    notes: 'Prepare Kubernetes deep dive.',
+    createdAt: daysAgo(2),
+    updatedAt: daysAgo(1),
+  },
+  {
+    id: 4,
+    applicationId: 9,
+    mode: 'video',
+    outcome: 'completed',
+    scheduledAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+    durationMinutes: 60,
+    roundLabel: 'Technical',
+    location: null,
+    notes: null,
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(6),
+  },
+];
+
+export const seedOffers: Offer[] = [
+  {
+    id: 1,
+    applicationId: 9,
+    status: 'negotiating',
+    currency: 'BRL',
+    salaryMin: 22000,
+    salaryMax: 26000,
+    equityNotes: 'RSUs vesting over 4 years.',
+    benefitsNotes: 'Health plan + 25 PTO days.',
+    decidedAt: null,
+    notes: 'Asked for remote days clarification.',
+    createdAt: daysAgo(1),
+    updatedAt: daysAgo(0),
+  },
+];
+
+export const seedCoverLetters: CoverLetter[] = [
+  {
+    id: 1,
+    applicationId: 1,
+    locale: 'en',
+    subject: 'Frontend Developer — Cassio Sousa',
+    bodyText:
+      'Dear hiring team,\n\nI am excited to apply for the Frontend Developer role at Vetta Bank. My experience building React and TypeScript products aligns closely with your needs.\n\nBest regards,\nCassio Sousa',
+    createdAt: daysAgo(2),
+    updatedAt: daysAgo(2),
+  },
+  {
+    id: 2,
+    applicationId: 10,
+    locale: 'pt-BR',
+    subject: 'Frontend Developer — Cassio Sousa',
+    bodyText:
+      'Prezado(a) responsável,\n\nTenho muito interesse na vaga de Frontend Developer na Ostra Health. Minha experiência com React e TypeScript se alinha ao que vocês buscam.\n\nAtenciosamente,\nCassio Sousa',
+    createdAt: daysAgo(1),
+    updatedAt: daysAgo(1),
+  },
+];
+
+// Events are per-application in the API; handlers synthesize a plausible
+// timeline from the application record and append on PATCH/POST.
+export function eventsForApplication(
+  application: Application,
+  baseId: number,
+): ApplicationEvent[] {
+  const events: ApplicationEvent[] = [
+    {
+      id: baseId,
+      kind: 'created',
+      payload: { status: 'saved' },
+      createdAt: application.createdAt,
+    },
+  ];
+  if (application.appliedAt !== null) {
+    events.push({
+      id: baseId + 1,
+      kind: 'status_changed',
+      payload: { from: 'saved', to: 'applied' },
+      createdAt: `${application.appliedAt}T12:00:00.000Z`,
+    });
+  }
+  if (application.status !== 'saved' && application.status !== 'applied') {
+    events.push({
+      id: baseId + 2,
+      kind: 'status_changed',
+      payload: {
+        from: application.appliedAt === null ? 'saved' : 'applied',
+        to: application.status,
+      },
+      createdAt: application.statusChangedAt,
+    });
+  }
+  if (application.followUpAt !== null) {
+    events.push({
+      id: baseId + 3,
+      kind: 'follow_up_set',
+      payload: { at: application.followUpAt },
+      createdAt: application.statusChangedAt,
+    });
+  }
+  if (application.notes !== null) {
+    events.push({
+      id: baseId + 4,
+      kind: 'note_added',
+      payload: {},
+      createdAt: application.statusChangedAt,
+    });
+  }
+  return events.toSorted((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
 
 export const seedIngestionRuns: IngestionRun[] = [

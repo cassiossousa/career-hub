@@ -1,4 +1,6 @@
+import { ToggleChip } from '@career-hub/ui/components';
 import { Button, Grid, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
 import {
@@ -46,6 +48,7 @@ export function JobList() {
   });
 
   const visibleJobs = useVisibleJobs(jobsQuery.data?.jobs, search);
+  const [trackedOnly, setTrackedOnly] = useState(false);
 
   const emptyState = hasActiveFilters ? (
     <EmptyState
@@ -73,16 +76,33 @@ export function JobList() {
         empty={emptyState}
         loading={<SkeletonGrid variant="card" count={6} />}
       >
-        {(page) =>
-          visibleJobs !== undefined && visibleJobs.length === 0 ? (
+        {(page) => {
+          const base = visibleJobs ?? page.jobs;
+          // Applies to the fetched page (≤200), same ceiling as search.
+          const shown = trackedOnly
+            ? base.filter((job) => job.applicationStatus != null)
+            : base;
+          return shown.length === 0 ? (
             emptyState
           ) : (
             <Stack spacing={2}>
-              <Typography component="h2" variant="h6">
-                {messages.jobs.title} ({visibleJobs?.length ?? page.total})
-              </Typography>
+              <Stack
+                direction="row"
+                sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
+              >
+                <Typography component="h2" variant="h6">
+                  {messages.jobs.title} ({shown.length})
+                </Typography>
+                <ToggleChip
+                  label={messages.jobs.trackedOnly}
+                  active={trackedOnly}
+                  onToggle={() => {
+                    setTrackedOnly((current) => !current);
+                  }}
+                />
+              </Stack>
               <Grid container spacing={2}>
-                {(visibleJobs ?? page.jobs).map((job) => (
+                {shown.map((job) => (
                   <Grid size={{ xs: 12, md: 6 }} key={job.id}>
                     <JobCard
                       job={job}
@@ -94,8 +114,8 @@ export function JobList() {
                 ))}
               </Grid>
             </Stack>
-          )
-        }
+          );
+        }}
       </QueryGate>
     </Stack>
   );

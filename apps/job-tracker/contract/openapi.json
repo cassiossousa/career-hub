@@ -332,7 +332,8 @@
           "interview",
           "offer",
           "rejected",
-          "withdrawn"
+          "withdrawn",
+          "no_response"
         ],
         "title": "ApplicationStatus",
         "type": "string"
@@ -2077,6 +2078,27 @@
       "JobResponse": {
         "additionalProperties": false,
         "properties": {
+          "applicationId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applicationid"
+          },
+          "applicationStatus": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "area": {
             "$ref": "#/components/schemas/JobArea"
           },

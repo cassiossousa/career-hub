@@ -36,7 +36,7 @@ describe('JobDetail', () => {
       await screen.findByText('Applied', {}, { timeout: 8000 }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: /edit resume/i }),
+      screen.getByRole('link', { name: /view application/i }),
     ).toBeInTheDocument();
   });
 

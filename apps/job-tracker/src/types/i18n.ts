@@ -1,5 +1,12 @@
-import type { ApplicationStatus } from '../services/types/application';
+import type {
+  ApplicationEventKind,
+  ApplicationStatus,
+} from '../services/types/application';
 import type { IngestionRunStatus } from '../services/types/ingestion';
+import type {
+  InterviewMode,
+  InterviewOutcome,
+} from '../services/types/interview';
 import type {
   JobArea,
   JobFilterResult,
@@ -11,6 +18,7 @@ import type {
   MatchAlgorithm,
   MatchBaselineKind,
 } from '../services/types/match';
+import type { OfferStatus } from '../services/types/offer';
 import type { LinkKind, SkillCategory } from '../services/types/portfolio';
 
 export const LOCALES = ['en', 'pt-BR'] as const;
@@ -71,6 +79,11 @@ export interface Translation {
       title: string;
       noApplications: string;
     };
+    followUps: {
+      title: string;
+      empty: string;
+      viewAll: string;
+    };
   };
 
   jobs: {
@@ -92,6 +105,8 @@ export interface Translation {
     sources: Record<JobSource, string>;
     possiblyExpired: string;
     viewPosting: string;
+    viewApplication: string;
+    trackedOnly: string;
     saveForLater: string;
     markApplied: string;
     appliedConfirmTitle: string;
@@ -163,7 +178,101 @@ export interface Translation {
     statusLabel: string;
     jobColumn: string;
     jobFallback: string;
+    company: string;
+    followUp: string;
+    viewJob: string;
+    viewApplication: string;
     resume: string;
+    filterAll: string;
+    followUpDue: string;
+    followUpUpcoming: string;
+    markStaleNoResponse: string;
+    quietDays: string;
+  };
+
+  applicationHub: {
+    tabs: {
+      overview: string;
+      resume: string;
+      coverLetter: string;
+      interviews: string;
+      contacts: string;
+      offers: string;
+      activity: string;
+    };
+    overview: {
+      job: string;
+      company: string;
+      viewPosting: string;
+      appliedAt: string;
+      statusChangedAt: string;
+      followUp: string;
+      followUpHint: string;
+      notes: string;
+      tags: string;
+      save: string;
+    };
+    coverLetter: {
+      empty: string;
+      locale: string;
+      subject: string;
+      body: string;
+      save: string;
+      delete: string;
+      bodyRequired: string;
+    };
+    interviews: {
+      empty: string;
+      add: string;
+      scheduledAt: string;
+      duration: string;
+      minutes: string;
+      mode: string;
+      outcome: string;
+      roundLabel: string;
+      location: string;
+      notes: string;
+      delete: string;
+      modes: Record<InterviewMode, string>;
+      outcomes: Record<InterviewOutcome, string>;
+    };
+    contacts: {
+      empty: string;
+      name: string;
+      role: string;
+      email: string;
+      phone: string;
+      linkedin: string;
+      company: string;
+      notes: string;
+      primary: string;
+      linkExisting: string;
+      createNew: string;
+      attach: string;
+      detach: string;
+      linkedCount: string;
+      save: string;
+      nameRequired: string;
+    };
+    offers: {
+      empty: string;
+      add: string;
+      currency: string;
+      salaryMin: string;
+      salaryMax: string;
+      equity: string;
+      benefits: string;
+      status: string;
+      decidedAt: string;
+      notes: string;
+      delete: string;
+      statuses: Record<OfferStatus, string>;
+      currencyRequired: string;
+    };
+    activity: {
+      empty: string;
+      kinds: Record<ApplicationEventKind, string>;
+    };
   };
 
   resumes: {

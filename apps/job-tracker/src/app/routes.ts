@@ -23,9 +23,9 @@ const PortfolioEditor = lazy(() =>
     default: m.PortfolioEditor,
   })),
 );
-const ResumeEditor = lazy(() =>
-  import('../features/resumes/ResumeEditor').then((m) => ({
-    default: m.ResumeEditor,
+const ApplicationHub = lazy(() =>
+  import('../features/applications/ApplicationHub').then((m) => ({
+    default: m.ApplicationHub,
   })),
 );
 const SkillsEditor = lazy(() =>
@@ -62,7 +62,7 @@ export const appRoutes: AppRoute[] = [
     navLabel: (nav) => nav.jobs,
   },
   { path: routePaths.jobDetail(':id'), Component: JobDetail },
-  { path: routePaths.applicationDetail(':id'), Component: ResumeEditor },
+  { path: routePaths.applicationDetail(':id'), Component: ApplicationHub },
   {
     path: routePaths.applications,
     Component: ApplicationList,

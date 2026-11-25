@@ -820,7 +820,8 @@ export interface components {
       | 'interview'
       | 'offer'
       | 'rejected'
-      | 'withdrawn';
+      | 'withdrawn'
+      | 'no_response';
     /** CertificationEntrySchema */
     CertificationEntrySchema: {
       /** Issuer */
@@ -1341,6 +1342,9 @@ export interface components {
     };
     /** JobResponse */
     JobResponse: {
+      /** Applicationid */
+      applicationId?: number | null;
+      applicationStatus?: components['schemas']['ApplicationStatus'] | null;
       area: components['schemas']['JobArea'];
       /** Closedat */
       closedAt: string | null;

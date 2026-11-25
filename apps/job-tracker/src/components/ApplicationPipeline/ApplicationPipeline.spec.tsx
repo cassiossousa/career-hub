@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { seedApplications } from '../../mocks/data';
+import { APPLICATION_STATUS_ORDER } from '../../services/types/application';
 import {
   expectErrorWithRetry,
   expectJobTitlesRendered,
@@ -16,7 +17,7 @@ describe('ApplicationPipeline', () => {
       expect(screen.getByText('Application Pipeline')).toBeInTheDocument();
     });
     const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(7);
+    expect(tabs).toHaveLength(APPLICATION_STATUS_ORDER.length);
     for (const label of [
       'Saved',
       'Applied',
@@ -25,6 +26,7 @@ describe('ApplicationPipeline', () => {
       'Offer',
       'Rejected',
       'Withdrawn',
+      'No response',
     ]) {
       expect(
         screen.getByRole('tab', { name: new RegExp(`^${label} \\(`) }),

@@ -106,9 +106,23 @@ export function useCreateJob(
   });
 }
 
-export function useJobTitleById(): Map<number, string> {
+export interface JobSummary {
+  title: string;
+  company: string;
+}
+
+export function useJobSummaries(): Map<number, JobSummary> {
   const { data } = useJobs();
-  return new Map(data?.jobs.map((job) => [job.id, job.title]) ?? []);
+  return useMemo(
+    () =>
+      new Map(
+        data?.jobs.map((job) => [
+          job.id,
+          { title: job.title, company: job.company },
+        ]) ?? [],
+      ),
+    [data],
+  );
 }
 
 /** Client-side title/company/location search over a fetched job page. */

@@ -32,6 +32,28 @@ const APP_SOURCE_FILES = [
 const eslintConfig = defineConfig([
   ...tseslint.configs.recommended,
   {
+    // Register every plugin globally so `<plugin>/*` eslint-disable
+    // directives resolve in any file — including zones where a plugin's
+    // rules are intentionally scoped (e2e, specs, test helpers). Without
+    // this, a disable comment outside a plugin's files scope fails with
+    // "Definition for rule ... was not found".
+    plugins: {
+      '@eslint-react': eslintReact,
+      'react-you-might-not-need-an-effect': reactYouMightNotNeedAnEffect,
+      'jsx-a11y': jsxA11y,
+      'react-hooks': reactHooks,
+      sonarjs,
+      'check-file': checkFile,
+      'no-barrel-files': noBarrelFiles,
+      jest,
+      playwright,
+      regexp,
+      'new-with-error': newWithError,
+      'no-relative-import-paths': noRelativeImportPaths,
+      security,
+    },
+  },
+  {
     files: APP_SOURCE_FILES,
     extends: [tseslint.configs.strictTypeChecked],
     languageOptions: {
@@ -48,7 +70,6 @@ const eslintConfig = defineConfig([
       'apps/*/src/**/*.spec.ts',
       'apps/*/src/test/**',
     ],
-    plugins: { security },
     rules: {
       ...security.configs.recommended.rules,
       'security/detect-object-injection': 'off',
@@ -57,23 +78,22 @@ const eslintConfig = defineConfig([
   {
     files: APP_SOURCE_FILES,
     ...eslintReact.configs['recommended-type-checked'],
+    // Plugin is registered globally above — redeclaring it here is a
+    // "Cannot redefine plugin" config error.
+    plugins: {},
   },
   {
     files: APP_SOURCE_FILES,
     ...reactYouMightNotNeedAnEffect.configs.recommended,
+    plugins: {},
   },
   {
     files: ['apps/*/src/**/*.tsx', 'packages/ui/**/*.tsx'],
     ...jsxA11y.flatConfigs.recommended,
+    plugins: {},
   },
   {
     files: APP_SOURCE_FILES,
-    plugins: {
-      'react-hooks': reactHooks,
-      sonarjs,
-      'check-file': checkFile,
-      'no-barrel-files': noBarrelFiles,
-    },
     rules: {
       ...reactHooks.configs['recommended-latest'].rules,
       'sonarjs/cognitive-complexity': ['error', 10],
@@ -107,6 +127,7 @@ const eslintConfig = defineConfig([
   {
     files: ['apps/*/e2e/**/*.ts', 'apps/*/playwright.config.ts'],
     ...playwright.configs['flat/recommended'],
+    plugins: {},
   },
   {
     files: [
@@ -115,6 +136,7 @@ const eslintConfig = defineConfig([
       'apps/*/src/test/**/*.ts',
     ],
     ...jest.configs['flat/recommended'],
+    plugins: {},
   },
   {
     files: ['apps/*/src/**/*.spec.ts', 'apps/*/src/**/*.spec.tsx'],
@@ -146,11 +168,6 @@ const eslintConfig = defineConfig([
   },
   {
     files: APP_SOURCE_FILES,
-    plugins: {
-      regexp,
-      'new-with-error': newWithError,
-      'no-relative-import-paths': noRelativeImportPaths,
-    },
     rules: {
       ...regexp.configs['flat/recommended'].rules,
       'new-with-error/new-with-error': 'error',

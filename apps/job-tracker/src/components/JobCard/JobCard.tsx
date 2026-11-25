@@ -9,10 +9,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import { useTranslation } from '../../i18n/Provider';
 import { formatJobSalary, isJobStale } from '../../services/jobMeta';
 import type { Job } from '../../services/types/job';
 import { useFilterStore } from '../../store/filterStore';
+import { ApplicationStatusChip } from '../ApplicationStatusChip/ApplicationStatusChip';
 import { JobAgeBadge } from '../JobAgeBadge/JobAgeBadge';
 
 interface JobCardProps {
@@ -129,6 +132,19 @@ function JobChips({ job }: { job: Job }) {
         >
           {messages.jobs.viewPosting}
         </Link>
+        {job.applicationStatus != null && job.applicationId != null && (
+          <>
+            <ApplicationStatusChip status={job.applicationStatus} />
+            <Link
+              component={RouterLink}
+              to={routePaths.applicationDetail(String(job.applicationId))}
+              variant="body2"
+              sx={{ alignSelf: 'center' }}
+            >
+              {messages.jobs.viewApplication}
+            </Link>
+          </>
+        )}
       </Stack>
     </Box>
   );

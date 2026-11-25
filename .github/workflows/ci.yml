@@ -35,6 +35,25 @@ jobs:
       - name: Check visual baseline drift
         if: github.event_name == 'pull_request'
         run: npm run check:visual-baseline
+      - name: Package Vercel prebuilt outputs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npm run package:vercel
+      - name: Upload portfolio Vercel output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-output-professional-portfolio
+          path: apps/professional-portfolio/.vercel/output/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Upload job-tracker Vercel output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-output-job-tracker
+          path: apps/job-tracker/.vercel/output/
+          retention-days: 1
+          if-no-files-found: error
 
   e2e:
     runs-on: ubuntu-latest

@@ -279,6 +279,7 @@ const eslintConfig = defineConfig([
   globalIgnores([
     '**/dist/**',
     '**/build/**',
+    '**/.vercel/**',
     '**/.stryker-tmp/**',
     '**/coverage/**',
     // Generated MSW worker — not hand-written source.

@@ -1588,11 +1588,7 @@ export interface components {
      * @enum {string}
      */
     OfferStatus:
-      | 'received'
-      | 'negotiating'
-      | 'accepted'
-      | 'declined'
-      | 'expired';
+      'received' | 'negotiating' | 'accepted' | 'declined' | 'expired';
     /** PortfolioBasicsSchema */
     PortfolioBasicsSchema: {
       /** Avatarurl */

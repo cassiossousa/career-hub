@@ -115,6 +115,29 @@ function pushAppEvent(
   });
 }
 
+function recordApplicationPatchEvents(
+  app: Application,
+  before: Application,
+  body: ApplicationUpdate,
+) {
+  if (body.status !== undefined && body.status !== before.status) {
+    pushAppEvent(app.id, 'status_changed', {
+      from: before.status,
+      to: app.status,
+    });
+  }
+  if (body.notes !== undefined && body.notes !== before.notes) {
+    pushAppEvent(app.id, 'note_added', {});
+  }
+  if (body.followUpAt !== undefined && body.followUpAt !== before.followUpAt) {
+    pushAppEvent(
+      app.id,
+      body.followUpAt === null ? 'follow_up_cleared' : 'follow_up_set',
+      body.followUpAt === null ? {} : { at: body.followUpAt },
+    );
+  }
+}
+
 export function resetMockData() {
   jobs = [...seedJobs];
   applications = [...seedApplications];
@@ -609,25 +632,7 @@ export const handlers = [
     const before = { ...app };
     const body = (await request.json()) as ApplicationUpdate;
     Object.assign(app, body, { statusChangedAt: new Date().toISOString() });
-    if (body.status !== undefined && body.status !== before.status) {
-      pushAppEvent(app.id, 'status_changed', {
-        from: before.status,
-        to: app.status,
-      });
-    }
-    if (body.notes !== undefined && body.notes !== before.notes) {
-      pushAppEvent(app.id, 'note_added', {});
-    }
-    if (
-      body.followUpAt !== undefined &&
-      body.followUpAt !== before.followUpAt
-    ) {
-      pushAppEvent(
-        app.id,
-        body.followUpAt === null ? 'follow_up_cleared' : 'follow_up_set',
-        body.followUpAt === null ? {} : { at: body.followUpAt },
-      );
-    }
+    recordApplicationPatchEvents(app, before, body);
     return HttpResponse.json(app);
   }),
 
@@ -837,7 +842,7 @@ export const handlers = [
       id: nextOfferId++,
       applicationId: app.id,
       status: body.status ?? 'received',
-      currency: (body.currency ?? 'BRL').toUpperCase(),
+      currency: body.currency.toUpperCase(),
       salaryMin: body.salaryMin ?? null,
       salaryMax: body.salaryMax ?? null,
       equityNotes: body.equityNotes ?? null,

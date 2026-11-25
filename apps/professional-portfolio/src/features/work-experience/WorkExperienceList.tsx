@@ -24,7 +24,7 @@ export function WorkExperienceList({
         <Typography variant="h1" component="h1">
           {t.workExperience.title}
         </Typography>
-        <Stack>
+        <Stack spacing={4}>
           {roles.map((role) => (
             <AccordionItem
               key={`${role.company}-${role.title}-${role.start ?? role.period}`}
@@ -42,7 +42,7 @@ function AccordionItem({ role }: { role: WorkRole }) {
     <Accordion
       disableGutters
       elevation={0}
-      sx={{ backgroundColor: 'transparent' }}
+      sx={{ backgroundColor: 'transparent', border: 'none', borderRadius: 0 }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
         <Stack spacing={0.5}>

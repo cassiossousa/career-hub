@@ -843,7 +843,8 @@ export interface components {
       | 'apply_approved'
       | 'apply_rejected'
       | 'apply_submitted'
-      | 'apply_failed';
+      | 'apply_failed'
+      | 'apply_llm_draft';
     /** ApplicationEventListResponse */
     ApplicationEventListResponse: {
       /** Events */
@@ -937,7 +938,8 @@ export interface components {
      * @description Where a proposed answer value came from.
      * @enum {string}
      */
-    ApplyAnswerSource: 'fact' | 'resume' | 'cover_letter' | 'manual' | 'none';
+    ApplyAnswerSource:
+      'fact' | 'resume' | 'cover_letter' | 'ai' | 'manual' | 'none';
     /** ApplyArtifactResponse */
     ApplyArtifactResponse: {
       /** Contenttype */
@@ -1243,6 +1245,8 @@ export interface components {
       end?: string | null;
       /** Location */
       location?: string | null;
+      /** Present */
+      present?: boolean | null;
       /** Role */
       role: string;
       /** Start */

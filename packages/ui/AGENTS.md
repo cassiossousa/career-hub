@@ -25,3 +25,7 @@ Shared component library consumed by both apps. Every rule in the root `AGENTS.m
 - jscpd clone scanning, knip dead-code analysis, same lint-staged/prettier/oxlint/biome fast gates.
 - **Mutation:** `stryker.config.mjs` + `stryker.core.config.mjs`; `check:mutate:diff`/`check:mutate:core` delegate to the root `scripts/check-mutation-*.mjs` via the `scripts/mutation-targets.mjs` registry. Scope is `components/` only — the sole directory with Jest specs; extend the registry globs when `theme/`/`pdf/`/`i18n/`/`testkit/` gain tests.
 - App imports go through the `exports` subpaths above — never deep-import internal files (`@career-hub/ui/components/Foo`).
+
+## Bug & regression fixes
+
+- When a bug or regression is provably found, write at least one unit test that proves it (fails on the broken code) and guards the fix, then fix the code — a fix without a failing-first test is incomplete. Same rule as root `AGENTS.md`.

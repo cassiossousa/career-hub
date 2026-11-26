@@ -2,7 +2,10 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
-      "ignoreDependencies": ["@lhci/cli"]
+      "ignoreDependencies": [
+        "@lhci/cli",
+        "@secretlint/secretlint-rule-preset-recommend"
+      ]
     },
     "apps/professional-portfolio": {
       "entry": [

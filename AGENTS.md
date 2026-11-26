@@ -50,6 +50,7 @@ npm workspaces monorepo (`apps/*`, `packages/*`). Node >= 22.12 (`.nvmrc` = 24, 
 - **NO Prop-Drilling Soup:** Components accepting > 6 props must be decomposed or backed by a bounded domain hook/context.
 - **NO Ghost Files or Unapproved Dependencies:** Do not install new `npm` packages without explicit approval. Do not leave unused exports, dead helpers, or commented-out code blocks behind.
 - **NO Tautological "Test Theater":** Never write snapshot tests or `expect(fn).toHaveBeenCalled()` mocks that pass when core business logic is broken.
+- **NO Bug Fixes Without a Regression Test:** When a bug or regression is provably found, at least one unit test must be written that (1) proves the bug — it fails on the broken code — and (2) guards the fix, and only then is the code fixed. A fix shipped without a failing-first test is incomplete.
 - **NO Re-Declared Business Constants in Tests:** Specs and e2e must not copy production constants, patterns, routes, or storage keys — import them from source (`routePaths`, `*_STORAGE_KEY`, `SKILLS_TAG_PATTERN`, …) so tests fail when the rule drifts. Regex/`new RegExp` declarators in `*.spec.*`/`e2e` are rejected by ESLint `no-restricted-syntax`; content validation should exercise the real pipeline (e.g. `getAllEntries` + `mapContentToWorkRoles`), not re-parse files with a private copy of the parser.
 - **NO Raw Web Storage:** Never call `localStorage`/`sessionStorage` directly. Use `storageGetItem`/`storageSetItem` from each app's `src/app/storage.ts` (both apps have one — raw access throws when storage is disabled; enforced by ESLint `no-restricted-syntax`). Sole exception: `src/app/storage.spec.ts`, which must touch raw storage to test the disabled-storage failure path (scoped per-file override in `eslint.config.ts`).
 - **NO Copy-Paste Sprawl:** Duplicated blocks ≥ 5 lines / 40 tokens fail `npm run check:clones` (jscpd). Extract shared helpers instead.
@@ -111,7 +112,7 @@ Do not claim a task is complete until the targeted checks above pass and `npx li
 
 **Always do:**
 
-- Ship the smallest correct change; add a failing test before fixing a bug when test infrastructure exists.
+- Ship the smallest correct change; when a bug or regression is provably found, write the failing test that proves it before fixing (see the anti-pattern above).
 - Route every plan through the skills table above before writing it.
 - Extend existing gates when adding a workspace, rule, or shared pattern — never verify something only "where it is used".
 - Update the relevant nested `AGENTS.md` when workspace conventions change.

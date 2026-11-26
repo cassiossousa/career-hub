@@ -91,14 +91,16 @@ describe('usePortfolioLanguages', () => {
   it('serves repeated hooks from the cache without refetching', async () => {
     const fetchMock = mockFetch(PAYLOAD);
 
-    const first = renderHook(() => usePortfolioLanguages('en'));
+    const { result: first, unmount } = renderHook(() =>
+      usePortfolioLanguages('en'),
+    );
     await waitFor(() => {
-      expect(first.result.current.status).toBe('ready');
+      expect(first.current.status).toBe('ready');
     });
-    first.unmount();
+    unmount();
 
-    const second = renderHook(() => usePortfolioLanguages('en'));
-    expect(second.result.current.status).toBe('ready');
+    const { result: second } = renderHook(() => usePortfolioLanguages('en'));
+    expect(second.current.status).toBe('ready');
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

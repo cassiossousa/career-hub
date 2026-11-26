@@ -5,6 +5,7 @@ import type { SxProps, Theme } from '@mui/material';
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
   FormControl,
   FormControlLabel,
@@ -238,6 +239,7 @@ interface DateRangeFieldsProps {
   startRequired?: boolean | undefined;
   startNullable?: boolean | undefined;
   endNullable?: boolean | undefined;
+  endDisabled?: boolean | undefined;
   disabled?: boolean | undefined;
   onStart: (value: string | null) => void;
   onEnd: (value: string | null) => void;
@@ -252,6 +254,7 @@ function DateRangeFields({
   startRequired,
   startNullable,
   endNullable,
+  endDisabled,
   disabled,
   onStart,
   onEnd,
@@ -272,7 +275,7 @@ function DateRangeFields({
       <EntryField
         label={labels.end}
         value={end}
-        disabled={disabled}
+        disabled={disabled || endDisabled}
         onValue={(v) => {
           onEnd(endNullable === false ? v : emptyToNull(v));
         }}
@@ -355,7 +358,11 @@ interface EntryListProps<T> {
   items: T[] | undefined;
   createItem: () => T;
   onChange: (items: T[]) => void;
-  renderItem: (item: T, update: EntryUpdater<T>) => ReactNode;
+  renderItem: (
+    item: T,
+    update: EntryUpdater<T>,
+    updateMany: (patch: Partial<T>) => void,
+  ) => ReactNode;
   addLabel: string;
   disabled?: boolean | undefined;
 }
@@ -378,6 +385,13 @@ function EntryList<T extends object>({
     onChange(
       list.map((item, i) =>
         i === index ? Object.assign({}, item, { [key]: value }) : item,
+      ),
+    );
+  };
+  const updateManyAt = (index: number, patch: Partial<T>) => {
+    onChange(
+      list.map((item, i) =>
+        i === index ? Object.assign({}, item, patch) : item,
       ),
     );
   };
@@ -404,9 +418,15 @@ function EntryList<T extends object>({
                 removeAt(index);
               }}
             />
-            {renderItem(item, (key, value) => {
-              updateAt(index, key, value);
-            })}
+            {renderItem(
+              item,
+              (key, value) => {
+                updateAt(index, key, value);
+              },
+              (patch) => {
+                updateManyAt(index, patch);
+              },
+            )}
           </Stack>
         </Box>
       ))}
@@ -638,12 +658,13 @@ export function ExperienceEditor({
         location: null,
         start: '',
         end: null,
+        present: false,
         bullets: [],
       })}
       onChange={onChange}
       addLabel={t.add}
       disabled={disabled}
-      renderItem={(entry, update) => (
+      renderItem={(entry, update, updateMany) => (
         <>
           <BoundFields
             entry={entry}
@@ -663,8 +684,9 @@ export function ExperienceEditor({
               end={entry.end}
               labels={{ start: t.start, end: t.end }}
               startPlaceholder="YYYY-MM"
-              endPlaceholder={t.present}
+              endPlaceholder="YYYY-MM"
               startRequired
+              endDisabled={entry.present === true}
               disabled={disabled}
               onStart={(v) => {
                 update('start', v ?? '');
@@ -672,6 +694,23 @@ export function ExperienceEditor({
               onEnd={(v) => {
                 update('end', v);
               }}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={entry.present === true}
+                  disabled={disabled}
+                  onChange={(e) => {
+                    updateMany(
+                      e.target.checked
+                        ? { present: true, end: null }
+                        : { present: false },
+                    );
+                  }}
+                />
+              }
+              label={t.present}
             />
           </Stack>
           <Typography variant="subtitle2">{t.bullets}</Typography>

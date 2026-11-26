@@ -8,7 +8,7 @@
   },
   "packageManager": "npm@11.11.1",
   "author": {
-    "name": "C\u00c3\u0192\u00c2\u00a1ssio dos Santos Sousa"
+    "name": "CÃƒÂ¡ssio dos Santos Sousa"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "check:env": "node scripts/check-env-vars.mjs",
     "check:api-mocks": "node apps/job-tracker/scripts/check-api-mocks.mjs",
     "check:mock-contract": "node apps/job-tracker/scripts/check-mock-contract.mjs",
+    "check:secrets": "secretlint \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,md,mdx,yml,yaml,css,html,env,example}\"",
     "check:lighthouse": "node apps/professional-portfolio/scripts/lighthouse-run.mjs",
     "check:visual-baseline": "node apps/professional-portfolio/scripts/check-visual-baseline-drift.mjs",
     "check:mutate:diff": "node scripts/check-mutation-diff.mjs apps/professional-portfolio && node scripts/check-mutation-diff.mjs apps/job-tracker && node scripts/check-mutation-diff.mjs packages/ui",
@@ -76,6 +77,7 @@
     "@lhci/cli": "0.16.1",
     "@memlab/api": "2.0.6",
     "@playwright/test": "1.65.1",
+    "@secretlint/secretlint-rule-preset-recommend": "13.1.0",
     "@stryker-mutator/core": "10.1.1",
     "@stryker-mutator/jest-runner": "10.1.1",
     "@types/jest": "30.0.0",
@@ -94,6 +96,7 @@
     "eslint-plugin-regexp": "3.3.3",
     "eslint-plugin-security": "4.2.1",
     "eslint-plugin-sonarjs": "4.2.2",
+    "eslint-plugin-testing-library": "7.16.2",
     "gray-matter": "4.0.3",
     "husky": "9.1.7",
     "jest": "29.7.0",
@@ -104,6 +107,7 @@
     "lint-staged": "17.6.1",
     "oxlint": "1.94.0",
     "prettier": "3.10.1",
+    "secretlint": "14.0.1",
     "ts-jest": "29.4.15",
     "typescript": "5.9.3",
     "typescript-eslint": "8.73.0"

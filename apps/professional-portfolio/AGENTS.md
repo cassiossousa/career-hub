@@ -42,6 +42,10 @@ Prerequisite (one-time per machine): `npx playwright install chromium`. The MemL
 4. Production-build memory-leak detection via `@memlab/api` (`scripts/memlab-run.mjs` + `scripts/memlab-portfolio.cjs`): builds the app, serves `vite preview` on port 4173, fails on leaked-object clusters. Artifacts in `.memlab/` (gitignored).
 5. `npm run check:lighthouse` — Lighthouse CI on the production build (`lighthouserc.json`): performance ≥ 0.75, accessibility ≥ 0.9, best-practices ≥ 0.9, CLS ≤ 0.1. Reports in `.lighthouseci/` (gitignored).
 
+## Bug & regression fixes
+
+- When a bug or regression is provably found, write at least one unit test that proves it (fails on the broken code) and guards the fix, then fix the code — a fix without a failing-first test is incomplete. Same rule as root `AGENTS.md`.
+
 ## Deployment
 
 - Deploys as its own Vercel project (Root Directory = `apps/professional-portfolio`). It MUST stay publicly accessible — never add Vercel Deployment Protection, and never commit real `VITE_*` values (dashboard env vars only).

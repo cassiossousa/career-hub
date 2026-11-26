@@ -95,6 +95,58 @@ describe('toResumePdfDocument', () => {
     expect(past?.period).toBe('Jan 2019 – Feb 2021');
   });
 
+  it('honors the explicit present flag and keeps legacy end-null entries ongoing', () => {
+    const doc = makeDoc({
+      experience: [
+        // New documents carry an explicit flag.
+        {
+          company: 'Current',
+          role: 'Dev',
+          start: '2021-03',
+          end: null,
+          present: true,
+        },
+        {
+          company: 'Undated end',
+          role: 'Dev',
+          start: '2020-01',
+          end: null,
+          present: false,
+        },
+        // Pre-flag documents omit ``present``; end=null stays "Present".
+        { company: 'Legacy', role: 'Dev', start: '2018-05', end: null },
+      ],
+    });
+
+    const result = toResumePdfDocument(doc, 'en', copy);
+    const [current, undated, legacy] = result.experience ?? [];
+
+    expect(current?.period).toBe('Mar 2021 – Present');
+    expect(undated?.period).toBe('Jan 2020');
+    expect(legacy?.period).toBe('May 2018 – Present');
+  });
+
+  it('drops experience entries left completely empty by the editor', () => {
+    const doc = makeDoc({
+      experience: [
+        {
+          company: '',
+          role: '',
+          location: null,
+          start: '',
+          end: null,
+          bullets: [],
+        },
+        { company: 'Acme', role: 'Dev', start: '2021-03', end: null },
+      ],
+    });
+
+    const result = toResumePdfDocument(doc, 'en', copy);
+
+    expect(result.experience).toHaveLength(1);
+    expect(result.experience?.[0]?.company).toBe('Acme');
+  });
+
   it('passes through unparseable dates instead of dropping them', () => {
     const doc = makeDoc({
       experience: [

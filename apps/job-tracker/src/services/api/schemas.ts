@@ -227,6 +227,7 @@ const experienceEntrySchema = z.object({
   location: z.string().nullish(),
   start: z.string(),
   end: z.string().nullish(),
+  present: z.boolean().nullish(),
   bullets: z.array(experienceBulletSchema).optional(),
 }) satisfies z.ZodType<ExperienceEntry>;
 

@@ -36,6 +36,7 @@ export default {
       (chunk) => `biome check --write ${chunk.join(' ')}`,
     ),
     ...chunkFiles(files).map((chunk) => `prettier --write ${chunk.join(' ')}`),
+    ...chunkFiles(files).map((chunk) => `secretlint ${chunk.join(' ')}`),
   ],
   [styleFiles[0]]: (files) => [
     ...chunkFiles(files).map(
@@ -43,6 +44,10 @@ export default {
     ),
     ...chunkFiles(files).map((chunk) => `prettier --write ${chunk.join(' ')}`),
   ],
-  [docFiles[0]]: (files) =>
-    chunkFiles(files).map((chunk) => `prettier --write ${chunk.join(' ')}`),
+  [docFiles[0]]: (files) => [
+    ...chunkFiles(files).map((chunk) => `prettier --write ${chunk.join(' ')}`),
+    ...chunkFiles(files).map((chunk) => `secretlint ${chunk.join(' ')}`),
+  ],
+  '*.env*': (files) =>
+    chunkFiles(files).map((chunk) => `secretlint ${chunk.join(' ')}`),
 };

@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import {
   applyLabelEdits,
   cleanLabelMap,
@@ -205,5 +206,26 @@ describe('diffLabelEdits', () => {
       skillUpdates: [{ id: 1, labels: { en: 'React.js' } }],
       groupUpdates: [{ group: 'frontend', labels: { en: 'Front-end' } }],
     });
+  });
+});
+
+describe('skillNameKey (property)', () => {
+  it('is idempotent for arbitrary names', () => {
+    fc.assert(
+      fc.property(fc.string(), (name) => {
+        expect(skillNameKey(skillNameKey(name))).toBe(skillNameKey(name));
+      }),
+    );
+  });
+
+  it('always returns a trimmed, single-spaced, lowercase key', () => {
+    fc.assert(
+      fc.property(fc.string(), (name) => {
+        const key = skillNameKey(name);
+        expect(key).toBe(key.trim());
+        expect(key).toBe(key.toLowerCase());
+        expect(key.includes('  ')).toBe(false);
+      }),
+    );
   });
 });

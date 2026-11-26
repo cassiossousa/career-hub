@@ -4,7 +4,7 @@ import { LOCALE_STORAGE_KEY } from '../i18n/localeStorageKey';
 import { TranslationProvider } from '../i18n/Provider';
 import LanguageSwitcher from './LanguageSwitcher';
 
-function renderSwitcher(onLocaleChange = jest.fn()) {
+function setupSwitcher(onLocaleChange = jest.fn()) {
   render(
     <TranslationProvider onLocaleChange={onLocaleChange}>
       <LanguageSwitcher />
@@ -23,7 +23,7 @@ describe('LanguageSwitcher', () => {
   });
 
   it('marks the active locale as pressed and requests the other locale on click', () => {
-    const onLocaleChange = renderSwitcher();
+    const onLocaleChange = setupSwitcher();
 
     const english = screen.getByRole('button', { name: 'Switch to English' });
     const portuguese = screen.getByRole('button', {
@@ -42,7 +42,7 @@ describe('LanguageSwitcher', () => {
 
   it('reflects a stored pt-BR locale as the active one', () => {
     storageSetItem(LOCALE_STORAGE_KEY, 'pt-BR');
-    renderSwitcher();
+    setupSwitcher();
 
     expect(
       screen.getByRole('button', { name: 'Mudar para português' }),

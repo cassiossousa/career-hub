@@ -30,6 +30,7 @@ export const APPLY_ANSWER_SOURCES = [
   'fact',
   'resume',
   'cover_letter',
+  'ai',
   'manual',
   'none',
 ] as const satisfies readonly Schemas['ApplyAnswerSource'][];

@@ -46,11 +46,18 @@ function createMonthYearFormat(locale: string): FormatMonthYear {
 function formatPeriod(
   start: string,
   end: string | null | undefined,
+  present: boolean | null | undefined,
   formatMonthYear: FormatMonthYear,
   presentLabel: string,
 ): string {
   const startLabel = start ? (formatMonthYear(start) ?? start) : '';
-  const endLabel = end ? (formatMonthYear(end) ?? end) : presentLabel;
+  // ``present`` absent means a pre-flag document: ``end: null`` keeps its
+  // legacy "ongoing" rendering; an explicit false suppresses the label.
+  const endLabel = end
+    ? (formatMonthYear(end) ?? end)
+    : present === false
+      ? ''
+      : presentLabel;
   return [startLabel, endLabel].filter(Boolean).join(' – ');
 }
 
@@ -83,6 +90,21 @@ function toBasics(
   };
 }
 
+function isBlank(value: string | null | undefined): boolean {
+  return !value || value.trim() === '';
+}
+
+function isEmptyExperience(entry: ExperienceEntry): boolean {
+  return (
+    isBlank(entry.company) &&
+    isBlank(entry.role) &&
+    isBlank(entry.location) &&
+    isBlank(entry.start) &&
+    isBlank(entry.end) &&
+    (entry.bullets ?? []).every((bullet) => isBlank(bullet.text))
+  );
+}
+
 function toExperience(
   entry: ExperienceEntry,
   formatMonthYear: FormatMonthYear,
@@ -95,6 +117,7 @@ function toExperience(
     period: formatPeriod(
       entry.start,
       entry.end,
+      entry.present,
       formatMonthYear,
       copy.presentLabel,
     ),
@@ -206,9 +229,9 @@ export function toResumePdfDocument(
   return resumePdfDocumentSchema.parse({
     basics: toBasics(doc.basics, copy),
     summary: doc.summary.trim() === '' ? undefined : doc.summary,
-    experience: (doc.experience ?? []).map((entry) =>
-      toExperience(entry, formatMonthYear, copy),
-    ),
+    experience: (doc.experience ?? [])
+      .filter((entry) => !isEmptyExperience(entry))
+      .map((entry) => toExperience(entry, formatMonthYear, copy)),
     projects: (doc.projects ?? []).map(toProject),
     skillGroups: (doc.skillGroups ?? []).map((group) =>
       toSkillGroup(group, copy),

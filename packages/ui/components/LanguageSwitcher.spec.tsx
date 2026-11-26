@@ -52,14 +52,14 @@ describe('LanguageSwitcher', () => {
   });
 
   it('shows flag icons for flagged options and text labels otherwise', () => {
-    const { container } = render(
+    render(
       <LanguageSwitcher
         locale="en"
         options={OPTIONS}
         onLocaleChange={() => {}}
       />,
     );
-    expect(container.querySelectorAll('img')).toHaveLength(1);
+    expect(screen.getAllByRole('img')).toHaveLength(1);
     expect(screen.getByText('PT')).toBeInTheDocument();
   });
 });

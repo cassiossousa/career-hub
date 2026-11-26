@@ -101,7 +101,8 @@
           "apply_approved",
           "apply_rejected",
           "apply_submitted",
-          "apply_failed"
+          "apply_failed",
+          "apply_llm_draft"
         ],
         "title": "ApplicationEventKind",
         "type": "string"
@@ -345,7 +346,7 @@
       },
       "ApplyAnswerSource": {
         "description": "Where a proposed answer value came from.",
-        "enum": ["fact", "resume", "cover_letter", "manual", "none"],
+        "enum": ["fact", "resume", "cover_letter", "ai", "manual", "none"],
         "title": "ApplyAnswerSource",
         "type": "string"
       },
@@ -1293,6 +1294,17 @@
               }
             ],
             "title": "Location"
+          },
+          "present": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Present"
           },
           "role": {
             "maxLength": 2000,

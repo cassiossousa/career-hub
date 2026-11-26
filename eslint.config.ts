@@ -12,6 +12,7 @@ import reactYouMightNotNeedAnEffect from 'eslint-plugin-react-you-might-not-need
 import regexp from 'eslint-plugin-regexp';
 import security from 'eslint-plugin-security';
 import sonarjs from 'eslint-plugin-sonarjs';
+import testingLibrary from 'eslint-plugin-testing-library';
 import tseslint from 'typescript-eslint';
 
 const STORAGE_MESSAGE =
@@ -51,6 +52,7 @@ const eslintConfig = defineConfig([
       'new-with-error': newWithError,
       'no-relative-import-paths': noRelativeImportPaths,
       security,
+      'testing-library': testingLibrary,
     },
   },
   {
@@ -136,6 +138,28 @@ const eslintConfig = defineConfig([
       'apps/*/src/test/**/*.ts',
     ],
     ...jest.configs['flat/recommended'],
+    plugins: {},
+  },
+  {
+    // Testing Library discipline on unit specs only — e2e specs drive a real
+    // browser via Playwright and must not be held to RTL query rules.
+    files: [
+      'apps/*/src/**/*.spec.ts',
+      'apps/*/src/**/*.spec.tsx',
+      'apps/*/src/test/**/*.ts',
+      'packages/ui/**/*.spec.ts',
+      'packages/ui/**/*.spec.tsx',
+    ],
+    ignores: ['apps/*/e2e/**', '**/.stryker-tmp/**'],
+    ...testingLibrary.configs['flat/react'],
+    rules: {
+      // Specs legitimately assert on DOM surfaces RTL queries can't express:
+      // MUI-internal class hooks, portaled dialogs/forms, the iframe print
+      // preview's contentDocument, and drag-drop column traversal. The
+      // high-signal rules (prefer-screen-queries, no-container,
+      // no-await-sync-events, render-result-naming) stay enabled.
+      'testing-library/no-node-access': 'off',
+    },
     plugins: {},
   },
   {

@@ -117,7 +117,7 @@ function lastCall<T>(calls: T[]): T {
   return last;
 }
 
-function renderTwoLinksBasics() {
+function setupTwoLinksBasics() {
   const twoLinks: PortfolioBasics = {
     ...basics,
     links: [
@@ -164,7 +164,7 @@ describe('BasicsEditor', () => {
   });
 
   it('reorders links by dragging the handle onto another row', () => {
-    const calls = renderTwoLinksBasics();
+    const calls = setupTwoLinksBasics();
 
     const rows = screen.getAllByRole('listitem');
     const handles = screen.getAllByRole('button', { name: /reorder link/i });
@@ -182,7 +182,7 @@ describe('BasicsEditor', () => {
   });
 
   it('moves links with arrow keys on the reorder handle', () => {
-    const calls = renderTwoLinksBasics();
+    const calls = setupTwoLinksBasics();
 
     const handles = screen.getAllByRole('button', { name: /reorder link/i });
     const [firstHandle, secondHandle] = handles;
@@ -252,6 +252,27 @@ describe('ExperienceEditor', () => {
     await user.click(screen.getByRole('button', { name: /add experience/i }));
     expect(lastCall(calls)).toHaveLength(2);
     expect(screen.getAllByLabelText(/company/i)).toHaveLength(2);
+  });
+
+  it('toggles the present flag and clears the end date', async () => {
+    const user = userEvent.setup();
+    const { Harness, calls } = makeHarness(
+      [{ ...experienceEntry, present: false, end: '2023-12' }],
+      ExperienceEditor,
+    );
+    renderWithProviders(<Harness />);
+
+    const checkbox = screen.getByRole('checkbox', { name: /present/i });
+    expect(checkbox).not.toBeChecked();
+
+    await user.click(checkbox);
+    expect(lastCall(calls)[0]?.present).toBe(true);
+    expect(lastCall(calls)[0]?.end).toBeNull();
+    expect(screen.getByLabelText(/end \(yyyy-mm/i)).toBeDisabled();
+
+    await user.click(screen.getByRole('checkbox', { name: /present/i }));
+    expect(lastCall(calls)[0]?.present).toBe(false);
+    expect(screen.getByLabelText(/end \(yyyy-mm/i)).toBeEnabled();
   });
 
   it('removes an entry', async () => {

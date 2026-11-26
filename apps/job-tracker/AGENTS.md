@@ -32,6 +32,10 @@ In demo mode MSW serves fabricated data and a catch-all handler fails any unmock
 - **`@/` alias:** same three-way sync rule (`tsconfig` paths → `vite-tsconfig-paths` → Jest `moduleNameMapper`).
 - **API contract:** `contract/openapi.json` + `src/services/api/generated/openapi.ts` are generated from the sibling `job-tracker-api` repo's committed `openapi.json` — never hand-edit. After the backend changes its API surface, run `npm run sync:api-contract --workspace job-tracker` and commit the result; `src/services/types/*` re-exports the generated component types, so drift surfaces as `tsc` errors. `npm run check:api-contract --workspace job-tracker` verifies the committed artifacts are fresh (needs the sibling checkout or pass `--from <path|url>`). The generated file is excluded from eslint/oxlint/biome/jscpd/knip.
 
+## Bug & regression fixes
+
+- When a bug or regression is provably found, write at least one unit test that proves it (fails on the broken code) and guards the fix, then fix the code — a fix without a failing-first test is incomplete. Same rule as root `AGENTS.md`.
+
 ## Deployment
 
 - Deploys as its own Vercel project (Root Directory = `apps/job-tracker`). Prod defaults to DEMO mode — that is the intended safe posture for any public URL. Live mode requires the deployment-protection setup described above.

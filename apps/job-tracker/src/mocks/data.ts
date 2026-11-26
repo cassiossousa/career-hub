@@ -767,6 +767,7 @@ const enContent: PortfolioContent = {
       location: 'Remote',
       start: '2021-03',
       end: null,
+      present: true,
       bullets: [
         {
           text: 'Led migration to React + TypeScript across 3 products',
@@ -1434,6 +1435,12 @@ export const seedApplyRuns: ApplyRun[] = [
         value: 'https://linkedin.com/in/cassiosousa',
         source: 'fact',
         confidence: 1,
+      },
+      motivation: {
+        value:
+          "Waymark's focus on reliable data infrastructure matches the systems I have spent years building. I would bring hands-on React and TypeScript experience plus a track record of shipping accessible, well-tested products.",
+        source: 'ai',
+        confidence: 0.6,
       },
     },
     artifacts: {

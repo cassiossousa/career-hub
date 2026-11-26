@@ -115,6 +115,8 @@ export function ResumeForm({
       previewTitle={messages.resumes.preview.title}
       previewDocument={previewDocument}
       previewLabels={previewLabels}
+      printLabel={messages.resumes.preview.downloadPdf}
+      paged
     >
       {seededFromPortfolio && !locked && (
         <Alert severity="info">{messages.resumes.seededNotice}</Alert>

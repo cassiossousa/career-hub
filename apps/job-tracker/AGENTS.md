@@ -24,7 +24,7 @@ In demo mode MSW serves fabricated data and a catch-all handler fails any unmock
 ## Gates that matter here
 
 - **`check:api-mocks`** (`scripts/check-api-mocks.mjs`, part of `verify:all`): every `apiClient.<method>(<url>)` call site in `src/` must have a matching MSW handler in `src/mocks/`; dynamic URLs fail the gate. When adding an API call, add the handler AND extend `src/mocks/data.ts`.
-- **Coverage:** own `jest.config.cjs` with coverage thresholds; run via `npm run test[:cov] --workspace job-tracker`.
+- **Coverage:** own `jest.config.cjs` with a package-wide `global` floor; run via `npm run test[:cov] --workspace job-tracker`. Raise the floor as coverage improves; never lower it to pass.
 - **Bundle budget:** 400 kB JS / 20 kB CSS gzip + `.bundle-baseline.json` delta ratchet (same rules as portfolio — see root `AGENTS.md` DoD).
 - **Mutation:** `stryker.config.mjs` + `stryker.core.config.mjs`; `check:mutate:diff` on PRs, `check:mutate:core` for the pure-logic core.
 - **Strictest tsconfig in the repo:** `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noUnusedLocals`/`noUnusedParameters` — portfolio alignment is pending (see `docs/tooling-effectiveness.md`).

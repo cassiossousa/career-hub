@@ -21,8 +21,7 @@ Shared component library consumed by both apps. Every rule in the root `AGENTS.m
 
 - `tsc -b` project reference from the root solution tsconfig (emits declarations to `dist/` for type-checking; consumers still use source).
 - ESLint `strictTypeChecked` + a11y/jsx rules, same as `apps/*/src`.
-- Own Jest project (`jest.config.cjs`, jsdom, `components/**/*.spec.{ts,tsx}`) run via `npm run test[:cov] --workspace @career-hub/ui` and inside `verify:all`.
-- **Coverage bar is higher than the apps':** every component file carries an explicit per-file floor (currently 80%; `ResumePdfViewer/ResumePdfSections.tsx` 90/70 until branch coverage improves). Raise floors as coverage improves — never lower them to pass.
+- **Coverage:** own Jest project (`jest.config.cjs`, jsdom, `components/**/*.spec.{ts,tsx}`) run via `npm run test[:cov] --workspace @career-hub/ui` and inside `verify:all`. Coverage is collected only over `components/` — the sole directory `testMatch` discovers specs in; `theme/`, `i18n/`, `testkit/`, and `index.ts` barrels are excluded until they gain specs (re-include a directory when it does). The threshold is a single package-wide `global` floor (same shape as the apps' job-tracker config), not per-file floors. Raise the floor as coverage improves — never lower it to pass.
 - jscpd clone scanning, knip dead-code analysis, same lint-staged/prettier/oxlint/biome fast gates.
 - **Mutation:** `stryker.config.mjs` + `stryker.core.config.mjs`; `check:mutate:diff`/`check:mutate:core` delegate to the root `scripts/check-mutation-*.mjs` via the `scripts/mutation-targets.mjs` registry. Scope is `components/` only — the sole directory with Jest specs; extend the registry globs when `theme/`/`pdf/`/`i18n/`/`testkit/` gain tests.
 - App imports go through the `exports` subpaths above — never deep-import internal files (`@career-hub/ui/components/Foo`).

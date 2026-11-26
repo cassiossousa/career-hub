@@ -270,6 +270,42 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/facts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Facts */
+    get: operations['list_facts_api_facts_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/facts/{key}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Fact */
+    get: operations['get_fact_api_facts__key__get'];
+    /** Upsert Fact */
+    put: operations['upsert_fact_api_facts__key__put'];
+    post?: never;
+    /** Delete Fact */
+    delete: operations['delete_fact_api_facts__key__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/filter-presets': {
     parameters: {
       query?: never;
@@ -1007,6 +1043,26 @@ export interface components {
       /** Start */
       start: string;
     };
+    /**
+     * FactCategory
+     * @description Grouping for profile facts, mirroring common application form sections.
+     * @enum {string}
+     */
+    FactCategory:
+      | 'identity'
+      | 'contact'
+      | 'work_authorization'
+      | 'compensation'
+      | 'logistics'
+      | 'links'
+      | 'demographics'
+      | 'preferences';
+    /**
+     * FactSensitivity
+     * @description PII facts are never sent to third parties without explicit review.
+     * @enum {string}
+     */
+    FactSensitivity: 'normal' | 'pii';
     /** FilterPresetCreate */
     FilterPresetCreate: {
       /** Name */
@@ -1712,6 +1768,40 @@ export interface components {
        * Format: date-time
        */
       updatedAt: string;
+    };
+    /** ProfileFactListResponse */
+    ProfileFactListResponse: {
+      /** Facts */
+      facts: components['schemas']['ProfileFactResponse'][];
+      /** Total */
+      total: number;
+    };
+    /** ProfileFactResponse */
+    ProfileFactResponse: {
+      category: components['schemas']['FactCategory'];
+      /**
+       * Createdat
+       * Format: date-time
+       */
+      createdAt: string;
+      /** Key */
+      key: string;
+      sensitivity: components['schemas']['FactSensitivity'];
+      /**
+       * Updatedat
+       * Format: date-time
+       */
+      updatedAt: string;
+      /** Value */
+      value: string;
+    };
+    /** ProfileFactUpsert */
+    ProfileFactUpsert: {
+      category: components['schemas']['FactCategory'];
+      /** @default normal */
+      sensitivity?: components['schemas']['FactSensitivity'];
+      /** Value */
+      value: string;
     };
     /** ProjectEntrySchema */
     ProjectEntrySchema: {
@@ -3659,6 +3749,251 @@ export interface operations {
       };
       /** @description Missing or invalid API key */
       401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  list_facts_api_facts_get: {
+    parameters: {
+      query?: {
+        category?: components['schemas']['FactCategory'] | null;
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProfileFactListResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  get_fact_api_facts__key__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        key: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProfileFactResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  upsert_fact_api_facts__key__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        key: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ProfileFactUpsert'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ProfileFactResponse'];
+        };
+      };
+      /** @description Malformed JSON body */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Payload too large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  delete_fact_api_facts__key__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        key: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
         headers: {
           [name: string]: unknown;
         };

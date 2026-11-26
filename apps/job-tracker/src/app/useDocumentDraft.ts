@@ -42,6 +42,7 @@ export function useDocumentDraft<T extends object>(
     feedback,
     setFeedback,
     blocker,
+    dirty,
     set,
     bind,
   };

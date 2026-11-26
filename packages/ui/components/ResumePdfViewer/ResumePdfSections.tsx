@@ -79,36 +79,41 @@ function ResumeEntrySection<T>({
   spacing = 2,
   entryKey,
   renderEntry,
+  bare = false,
 }: {
   title: string;
   entries?: T[] | undefined;
   spacing?: number;
   entryKey: (entry: T) => string;
   renderEntry: (entry: T) => ReactNode;
+  /** Renders only the entries — used when a section continues on a later page. */
+  bare?: boolean | undefined;
 }) {
   if (!entries?.length) return null;
-  return (
-    <ResumePdfSection title={title}>
-      <Stack spacing={spacing}>
-        {entries.map((entry) => (
-          <Fragment key={entryKey(entry)}>{renderEntry(entry)}</Fragment>
-        ))}
-      </Stack>
-    </ResumePdfSection>
+  const list = (
+    <Stack spacing={spacing}>
+      {entries.map((entry) => (
+        <Fragment key={entryKey(entry)}>{renderEntry(entry)}</Fragment>
+      ))}
+    </Stack>
   );
+  if (bare) return list;
+  return <ResumePdfSection title={title}>{list}</ResumePdfSection>;
 }
 
-export function ExperienceSection({
-  title,
-  entries,
-}: {
+interface EntrySectionProps<T> {
   title: string;
-  entries?: ResumePdfExperienceEntry[] | undefined;
-}) {
+  entries?: T[] | undefined;
+  /** Renders only the entries — used when a section continues on a later page. */
+  bare?: boolean | undefined;
+}
+
+export function ExperienceSection(
+  props: EntrySectionProps<ResumePdfExperienceEntry>,
+) {
   return (
     <ResumeEntrySection
-      title={title}
-      entries={entries}
+      {...props}
       entryKey={(entry) => `${entry.company}-${entry.role}-${entry.period}`}
       renderEntry={(entry) => (
         <ResumeEntry
@@ -128,16 +133,19 @@ export function ProjectsSection({
   entries,
   repositoryLabel,
   demoLabel,
+  bare,
 }: {
   title: string;
   entries?: ResumePdfProjectEntry[] | undefined;
   repositoryLabel: string;
   demoLabel: string;
+  bare?: boolean | undefined;
 }) {
   return (
     <ResumeEntrySection
       title={title}
       entries={entries}
+      bare={bare}
       entryKey={(entry) => entry.title}
       renderEntry={(entry) => (
         <ResumeEntry
@@ -213,17 +221,12 @@ export function SkillGroupsSection({
   );
 }
 
-export function EducationSection({
-  title,
-  entries,
-}: {
-  title: string;
-  entries?: ResumePdfEducationEntry[] | undefined;
-}) {
+export function EducationSection(
+  props: EntrySectionProps<ResumePdfEducationEntry>,
+) {
   return (
     <ResumeEntrySection
-      title={title}
-      entries={entries}
+      {...props}
       entryKey={(entry) => `${entry.institution}-${entry.degree}`}
       renderEntry={(entry) => (
         <ResumeEntry
@@ -244,17 +247,12 @@ export function EducationSection({
   );
 }
 
-export function CertificationsSection({
-  title,
-  entries,
-}: {
-  title: string;
-  entries?: ResumePdfCertificationEntry[] | undefined;
-}) {
+export function CertificationsSection(
+  props: EntrySectionProps<ResumePdfCertificationEntry>,
+) {
   return (
     <ResumeEntrySection
-      title={title}
-      entries={entries}
+      {...props}
       spacing={1}
       entryKey={(entry) => entry.name}
       renderEntry={(entry) => (

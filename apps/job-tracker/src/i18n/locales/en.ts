@@ -7,6 +7,7 @@ const en: Translation = {
     applications: 'Applications',
     portfolio: 'Portfolio',
     skills: 'Skills',
+    facts: 'Application facts',
     settings: 'Settings',
     ingestion: 'Ingestion',
     switchToEnglish: 'EN — Switch to English',
@@ -351,6 +352,7 @@ const en: Translation = {
       title: 'Preview',
       repository: 'Repository',
       demo: 'Demo',
+      downloadPdf: 'Download PDF',
     },
     sections: {
       basics: 'Basics',
@@ -491,6 +493,38 @@ const en: Translation = {
     kindSkill: 'Skill',
     kindGroup: 'Group',
     saveLabels: 'Save Labels',
+  },
+
+  facts: {
+    title: 'Application facts',
+    description:
+      'Canonical answers for the questions employers ask on application forms. Reuse them instead of retyping every time.',
+    keyColumn: 'Key',
+    categoryColumn: 'Category',
+    valueColumn: 'Answer',
+    sensitivityColumn: 'Sensitivity',
+    addFact: 'Add fact',
+    empty: 'No facts yet — add your first answer.',
+    save: 'Save Facts',
+    keyRequired: 'Every fact needs a key.',
+    invalidKey:
+      'Keys must be lowercase letters, digits and underscores (e.g. work_authorization).',
+    duplicateKey: 'Fact keys must be unique.',
+    valueRequired: 'Every fact needs an answer.',
+    categories: {
+      identity: 'Identity',
+      contact: 'Contact',
+      work_authorization: 'Work authorization',
+      compensation: 'Compensation',
+      logistics: 'Logistics',
+      links: 'Links',
+      demographics: 'Demographics',
+      preferences: 'Preferences',
+    },
+    sensitivities: {
+      normal: 'Normal',
+      pii: 'Sensitive (PII)',
+    },
   },
 
   settings: {

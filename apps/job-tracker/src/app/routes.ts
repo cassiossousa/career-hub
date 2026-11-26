@@ -33,6 +33,11 @@ const SkillsEditor = lazy(() =>
     default: m.SkillsEditor,
   })),
 );
+const FactsEditor = lazy(() =>
+  import('../features/facts/FactsEditor').then((m) => ({
+    default: m.FactsEditor,
+  })),
+);
 const SettingsEditor = lazy(() =>
   import('../features/settings/SettingsEditor').then((m) => ({
     default: m.SettingsEditor,
@@ -77,6 +82,11 @@ export const appRoutes: AppRoute[] = [
     path: routePaths.skills,
     Component: SkillsEditor,
     navLabel: (nav) => nav.skills,
+  },
+  {
+    path: routePaths.facts,
+    Component: FactsEditor,
+    navLabel: (nav) => nav.facts,
   },
   {
     path: routePaths.settings,

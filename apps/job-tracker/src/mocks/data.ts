@@ -4,6 +4,7 @@ import type {
 } from '../services/types/application';
 import type { Contact } from '../services/types/contact';
 import type { CoverLetter } from '../services/types/coverLetter';
+import type { ProfileFact } from '../services/types/facts';
 import type { IngestionRun } from '../services/types/ingestion';
 import type { Interview } from '../services/types/interview';
 import type { Job, JobCreate } from '../services/types/job';
@@ -971,6 +972,65 @@ export const seedSkillGroupLabels = SKILL_CATEGORIES.map((group, index) => ({
         ? { 'pt-BR': 'Testes' }
         : {},
 }));
+
+export const seedProfileFacts: ProfileFact[] = [
+  {
+    key: 'full_name',
+    category: 'identity',
+    value: 'Ada Lovelace',
+    sensitivity: 'pii',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+  {
+    key: 'email',
+    category: 'contact',
+    value: 'ada@example.com',
+    sensitivity: 'pii',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+  {
+    key: 'work_authorization',
+    category: 'work_authorization',
+    value: 'Authorized to work in Brazil',
+    sensitivity: 'normal',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+  {
+    key: 'requires_sponsorship',
+    category: 'work_authorization',
+    value: 'No',
+    sensitivity: 'normal',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+  {
+    key: 'salary_expectation',
+    category: 'compensation',
+    value: 'BRL 20,000/month',
+    sensitivity: 'normal',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+  {
+    key: 'work_arrangement',
+    category: 'logistics',
+    value: 'Remote only',
+    sensitivity: 'normal',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+  {
+    key: 'linkedin_url',
+    category: 'links',
+    value: 'https://linkedin.com/in/ada-lovelace',
+    sensitivity: 'normal',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+];
 
 export function toJob(body: JobCreate, id: number): Job {
   const now = new Date().toISOString();

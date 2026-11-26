@@ -1,5 +1,5 @@
 import { content } from 'virtual:portfolio-content';
-import { Button, Container, Stack, Typography } from '@mui/material';
+import { Container, Stack, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import { getProjects } from '../../services/projects/getProjects';
@@ -34,18 +34,12 @@ export default function Resume() {
           <Typography variant="h1" component="h1">
             {t.resume.title}
           </Typography>
-          <Button
-            type="button"
-            variant="contained"
-            sx={{ alignSelf: 'flex-start' }}
-            onClick={() => {
-              window.print();
-            }}
-          >
-            {t.resume.printAction}
-          </Button>
         </Stack>
-        <ResumeDocument roles={roles} projects={projects} />
+        <ResumeDocument
+          roles={roles}
+          projects={projects}
+          printLabel={t.resume.printAction}
+        />
       </Stack>
     </Container>
   );

@@ -15,6 +15,7 @@ import type {
   CoverLetter,
   CoverLetterUpsert,
 } from '../services/types/coverLetter';
+import type { ProfileFact, ProfileFactUpsert } from '../services/types/facts';
 import type {
   IngestionRun,
   IngestionRunTrigger,
@@ -55,6 +56,7 @@ import {
   seedJobs,
   seedOffers,
   seedPortfolio,
+  seedProfileFacts,
   seedResume,
   seedResumeDraft,
   seedSkillGroupLabels,
@@ -84,6 +86,7 @@ let contacts: Contact[] = [...seedContacts];
 let applicationContacts = [...seedApplicationContacts];
 let offers: Offer[] = [...seedOffers];
 let coverLetters: CoverLetter[] = [...seedCoverLetters];
+let profileFacts: ProfileFact[] = [...seedProfileFacts];
 const applicationEvents = new Map<number, ApplicationEvent[]>();
 let nextInterviewId = 100;
 let nextContactId = 100;
@@ -150,6 +153,7 @@ export function resetMockData() {
   applicationContacts = [...seedApplicationContacts];
   offers = [...seedOffers];
   coverLetters = [...seedCoverLetters];
+  profileFacts = [...seedProfileFacts];
   applicationEvents.clear();
   nextIngestionRunId = 100;
   skillGroupLabels = seedSkillGroupLabels.map((entry) => ({
@@ -1098,6 +1102,54 @@ export const handlers = [
       return notFoundJson('Skill not found');
     }
     skills.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get('/api/facts', ({ request }) => {
+    const params = new URL(request.url).searchParams;
+    const category = params.get('category');
+    const result =
+      category === null
+        ? [...profileFacts]
+        : profileFacts.filter((f) => f.category === category);
+    const { items, total } = pageOf(result, params);
+    return HttpResponse.json({ facts: items, total });
+  }),
+
+  http.get('/api/facts/:key', ({ params }) => {
+    const fact = profileFacts.find((f) => f.key === params.key);
+    if (!fact) {
+      return notFoundJson('Profile fact not found');
+    }
+    return HttpResponse.json(fact);
+  }),
+
+  http.put('/api/facts/:key', async ({ params, request }) => {
+    const body = (await request.json()) as ProfileFactUpsert;
+    const key = String(params.key).toLowerCase();
+    const now = new Date().toISOString();
+    const existing = profileFacts.find((f) => f.key === key);
+    const fact: ProfileFact = {
+      key,
+      category: body.category,
+      value: body.value,
+      sensitivity: body.sensitivity ?? 'normal',
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
+    profileFacts = [
+      ...profileFacts.filter((f) => f.key !== key),
+      fact,
+    ].toSorted((a, b) => a.key.localeCompare(b.key));
+    return HttpResponse.json(fact);
+  }),
+
+  http.delete('/api/facts/:key', ({ params }) => {
+    const index = profileFacts.findIndex((f) => f.key === params.key);
+    if (index === -1) {
+      return notFoundJson('Profile fact not found');
+    }
+    profileFacts.splice(index, 1);
     return new HttpResponse(null, { status: 204 });
   }),
 

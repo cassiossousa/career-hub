@@ -142,7 +142,12 @@ export function PortfolioForm({ locale, initial }: PortfolioFormProps) {
         hidden={activeTab !== 1}
         sx={{ pt: 2, width: '100%', maxWidth: 840, mx: 'auto' }}
       >
-        <ResumePdfViewer document={previewDocument} labels={previewLabels} />
+        <ResumePdfViewer
+          document={previewDocument}
+          labels={previewLabels}
+          printLabel={resumeMessages.preview.downloadPdf}
+          paged
+        />
       </Box>
     </Box>
   );

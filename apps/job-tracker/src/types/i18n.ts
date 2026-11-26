@@ -2,6 +2,7 @@ import type {
   ApplicationEventKind,
   ApplicationStatus,
 } from '../services/types/application';
+import type { FactCategory, FactSensitivity } from '../services/types/facts';
 import type { IngestionRunStatus } from '../services/types/ingestion';
 import type {
   InterviewMode,
@@ -32,6 +33,7 @@ export interface Translation {
     applications: string;
     portfolio: string;
     skills: string;
+    facts: string;
     settings: string;
     ingestion: string;
     switchToEnglish: string;
@@ -286,6 +288,7 @@ export interface Translation {
       title: string;
       repository: string;
       demo: string;
+      downloadPdf: string;
     };
     sections: {
       basics: string;
@@ -411,6 +414,24 @@ export interface Translation {
     kindSkill: string;
     kindGroup: string;
     saveLabels: string;
+  };
+
+  facts: {
+    title: string;
+    description: string;
+    keyColumn: string;
+    categoryColumn: string;
+    valueColumn: string;
+    sensitivityColumn: string;
+    addFact: string;
+    empty: string;
+    save: string;
+    keyRequired: string;
+    invalidKey: string;
+    duplicateKey: string;
+    valueRequired: string;
+    categories: Record<FactCategory, string>;
+    sensitivities: Record<FactSensitivity, string>;
   };
 
   settings: {

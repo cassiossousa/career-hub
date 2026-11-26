@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useDocumentDraft } from '../../app/useDocumentDraft';
+import { useDocumentForm } from '../../app/useDocumentForm';
+import { EditorForm } from '../../components/EditorForm/EditorForm';
 import { useTranslation } from '../../i18n/Provider';
 import {
   SKILLS_QUERY_KEY,
@@ -14,7 +14,6 @@ import {
   toRowDrafts,
 } from '../../services/skills';
 import type { Skill, SkillListPage } from '../../services/types/skills';
-import { SkillEditorForm } from './SkillEditorForm';
 import { SkillsTable } from './SkillsTable';
 import { runSkillSave } from './saveFlow';
 
@@ -34,15 +33,15 @@ export function SkillsForm({ skills }: SkillsFormProps) {
   const {
     doc,
     setDoc,
-    baseline,
     setBaseline,
     feedback,
     setFeedback,
     blocker,
     bind,
-  } = useDocumentDraft({ rows: toRowDrafts(skills) });
-  const [isSaving, setIsSaving] = useState(false);
-  const dirty = JSON.stringify(doc) !== JSON.stringify(baseline);
+    dirty,
+    isSaving,
+    setIsSaving,
+  } = useDocumentForm({ rows: toRowDrafts(skills) });
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -87,7 +86,7 @@ export function SkillsForm({ skills }: SkillsFormProps) {
   };
 
   return (
-    <SkillEditorForm
+    <EditorForm
       title={messages.skills.title}
       saveLabel={messages.skills.save}
       feedback={feedback}
@@ -101,6 +100,6 @@ export function SkillsForm({ skills }: SkillsFormProps) {
         onChange={bind('rows')}
         disabled={isSaving}
       />
-    </SkillEditorForm>
+    </EditorForm>
   );
 }

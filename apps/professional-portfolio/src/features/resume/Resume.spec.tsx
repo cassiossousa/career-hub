@@ -24,9 +24,7 @@ jest.mock('../../services/portfolio/languages', () => ({
 }));
 
 describe('Resume', () => {
-  it('renders the resume in the route and prints the current page', () => {
-    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
-
+  it('renders the resume in the route and prints only the document', () => {
     render(
       <MemoryRouter initialEntries={[routePaths.resume]}>
         <TranslationProvider>
@@ -55,7 +53,13 @@ describe('Resume', () => {
       screen.getByRole('button', { name: /print \/ save as pdf/i }),
     );
 
-    expect(print).toHaveBeenCalledTimes(1);
-    print.mockRestore();
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      'iframe[title="Print"]',
+    );
+    expect(iframe).toBeInTheDocument();
+    expect(iframe?.contentDocument?.body.textContent).toContain(
+      'Cássio dos Santos Sousa',
+    );
+    iframe?.remove();
   });
 });

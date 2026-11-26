@@ -14,6 +14,8 @@ interface DocumentEditorLayoutProps {
   previewTitle: string;
   previewDocument: ResumePdfDocument;
   previewLabels: ResumePdfViewerLabels;
+  printLabel?: string | undefined;
+  paged?: boolean | undefined;
   children: ReactNode;
 }
 
@@ -23,6 +25,8 @@ export function DocumentEditorLayout({
   previewTitle,
   previewDocument,
   previewLabels,
+  printLabel,
+  paged,
   children,
 }: DocumentEditorLayoutProps) {
   return (
@@ -56,7 +60,12 @@ export function DocumentEditorLayout({
         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
           {previewTitle}
         </Typography>
-        <ResumePdfViewer document={previewDocument} labels={previewLabels} />
+        <ResumePdfViewer
+          document={previewDocument}
+          labels={previewLabels}
+          printLabel={printLabel}
+          paged={paged}
+        />
       </Box>
     </Box>
   );

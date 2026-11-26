@@ -7,6 +7,7 @@ const ptBR: Translation = {
     applications: 'Candidaturas',
     portfolio: 'Portfólio',
     skills: 'Habilidades',
+    facts: 'Dados de candidatura',
     settings: 'Configurações',
     ingestion: 'Ingestão',
     switchToEnglish: 'EN — Mudar para Inglês',
@@ -351,6 +352,7 @@ const ptBR: Translation = {
       title: 'Pré-visualização',
       repository: 'Repositório',
       demo: 'Demo',
+      downloadPdf: 'Baixar PDF',
     },
     sections: {
       basics: 'Dados básicos',
@@ -491,6 +493,38 @@ const ptBR: Translation = {
     kindSkill: 'Habilidade',
     kindGroup: 'Grupo',
     saveLabels: 'Salvar Rótulos',
+  },
+
+  facts: {
+    title: 'Dados de candidatura',
+    description:
+      'Respostas canônicas para as perguntas que empregadores fazem nos formulários de candidatura. Reutilize-as em vez de redigitar toda vez.',
+    keyColumn: 'Chave',
+    categoryColumn: 'Categoria',
+    valueColumn: 'Resposta',
+    sensitivityColumn: 'Sensibilidade',
+    addFact: 'Adicionar dado',
+    empty: 'Nenhum dado ainda — adicione a primeira resposta.',
+    save: 'Salvar Dados',
+    keyRequired: 'Todo dado precisa de uma chave.',
+    invalidKey:
+      'Chaves devem usar letras minúsculas, dígitos e sublinhados (ex.: work_authorization).',
+    duplicateKey: 'As chaves dos dados devem ser únicas.',
+    valueRequired: 'Todo dado precisa de uma resposta.',
+    categories: {
+      identity: 'Identidade',
+      contact: 'Contato',
+      work_authorization: 'Autorização de trabalho',
+      compensation: 'Remuneração',
+      logistics: 'Logística',
+      links: 'Links',
+      demographics: 'Dados demográficos',
+      preferences: 'Preferências',
+    },
+    sensitivities: {
+      normal: 'Normal',
+      pii: 'Sensível (PII)',
+    },
   },
 
   settings: {

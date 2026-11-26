@@ -1,19 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ResumePdfViewer } from './ResumePdfViewer';
-import type { ResumePdfDocument, ResumePdfViewerLabels } from './types';
-
-const LABELS: ResumePdfViewerLabels = {
-  summary: 'Summary',
-  experience: 'Experience',
-  projects: 'Projects',
-  skillGroups: 'Skills',
-  education: 'Education',
-  certifications: 'Certifications',
-  languages: 'Languages',
-  repository: 'Repository',
-  demo: 'Demo',
-};
+import { RESUME_PDF_SPEC_LABELS } from './specFixtures';
+import type { ResumePdfDocument } from './types';
 
 const FULL_DOCUMENT: ResumePdfDocument = {
   basics: {
@@ -62,7 +52,12 @@ const FULL_DOCUMENT: ResumePdfDocument = {
 
 describe('ResumePdfViewer', () => {
   it('renders the header with name, title line, location and links', () => {
-    render(<ResumePdfViewer document={FULL_DOCUMENT} labels={LABELS} />);
+    render(
+      <ResumePdfViewer
+        document={FULL_DOCUMENT}
+        labels={RESUME_PDF_SPEC_LABELS}
+      />,
+    );
 
     expect(
       screen.getByRole('heading', { name: 'Ada Lovelace' }),
@@ -76,7 +71,12 @@ describe('ResumePdfViewer', () => {
   });
 
   it('renders every populated section with its entries', () => {
-    render(<ResumePdfViewer document={FULL_DOCUMENT} labels={LABELS} />);
+    render(
+      <ResumePdfViewer
+        document={FULL_DOCUMENT}
+        labels={RESUME_PDF_SPEC_LABELS}
+      />,
+    );
 
     expect(screen.getByText('First programmer.')).toBeInTheDocument();
     expect(screen.getByText('Chief Mathematician')).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('ResumePdfViewer', () => {
           experience: [],
           languages: [{ name: 'English' }],
         }}
-        labels={LABELS}
+        labels={RESUME_PDF_SPEC_LABELS}
       />,
     );
 
@@ -128,5 +128,58 @@ describe('ResumePdfViewer', () => {
     expect(screen.queryByText('Certifications')).not.toBeInTheDocument();
     expect(screen.getByText('Languages')).toBeInTheDocument();
     expect(screen.getByText('English')).toBeInTheDocument();
+  });
+
+  it('renders no print button without a printLabel', () => {
+    render(
+      <ResumePdfViewer
+        document={FULL_DOCUMENT}
+        labels={RESUME_PDF_SPEC_LABELS}
+      />,
+    );
+    expect(
+      screen.queryByRole('button', { name: /pdf/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders fixed A4 pages when paged', () => {
+    render(
+      <ResumePdfViewer
+        document={FULL_DOCUMENT}
+        labels={RESUME_PDF_SPEC_LABELS}
+        paged
+        printLabel="Download PDF"
+      />,
+    );
+
+    const pages = document.querySelectorAll('.resume-print-page');
+    expect(pages.length).toBeGreaterThanOrEqual(1);
+    expect(pages[0]?.textContent).toContain('Ada Lovelace');
+    expect(pages[0]?.textContent).toContain('Analytical Engines');
+  });
+
+  it('prints only the resume page in an isolated iframe when clicked', async () => {
+    const user = userEvent.setup();
+    render(
+      <ResumePdfViewer
+        document={FULL_DOCUMENT}
+        labels={RESUME_PDF_SPEC_LABELS}
+        printLabel="Download PDF"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Download PDF' }));
+
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      'iframe[title="Print"]',
+    );
+    expect(iframe).toBeInTheDocument();
+    const printDocument = iframe?.contentDocument;
+    expect(printDocument?.body.textContent).toContain('Ada Lovelace');
+    expect(printDocument?.body.textContent).toContain('Analytical Engines');
+    // The clone lives in the iframe's document — a different realm, so
+    // assert on the node rather than jest-dom's in-the-document matcher.
+    expect(printDocument?.querySelector('.resume-print-page')).not.toBeNull();
+    iframe?.remove();
   });
 });

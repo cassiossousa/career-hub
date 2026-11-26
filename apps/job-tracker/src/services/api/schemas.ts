@@ -18,6 +18,13 @@ import type {
 } from '../types/contact';
 import type { CoverLetter } from '../types/coverLetter';
 import type {
+  FactCategory,
+  FactSensitivity,
+  ProfileFact,
+  ProfileFactListPage,
+} from '../types/facts';
+import { FACT_CATEGORIES, FACT_SENSITIVITIES } from '../types/facts';
+import type {
   IngestionRun,
   IngestionRunListPage,
   IngestionRunStatus,
@@ -503,6 +510,30 @@ export const ingestionRunListResponseSchema = z.object({
   runs: z.array(ingestionRunSchema),
   total: z.number(),
 }) satisfies z.ZodType<IngestionRunListPage>;
+
+const factCategorySchema = z.enum(
+  FACT_CATEGORIES,
+) satisfies z.ZodType<FactCategory>;
+
+const factSensitivitySchema = z.enum(
+  FACT_SENSITIVITIES,
+) satisfies z.ZodType<FactSensitivity>;
+
+const factSchema = z.object({
+  key: z.string(),
+  category: factCategorySchema,
+  value: z.string(),
+  sensitivity: factSensitivitySchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}) satisfies z.ZodType<ProfileFact>;
+
+export const profileFactsResponseSchema = z.object({
+  facts: z.array(factSchema),
+  total: z.number(),
+}) satisfies z.ZodType<ProfileFactListPage>;
+
+export const profileFactResponseSchema = factSchema;
 
 export const matchResponseSchema = matchResultSchema;
 

@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useDocumentDraft } from '../../app/useDocumentDraft';
+import { EditorForm } from '../../components/EditorForm/EditorForm';
 import { useTranslation } from '../../i18n/Provider';
 import {
   SKILL_GROUP_LABELS_QUERY_KEY,
@@ -18,7 +19,6 @@ import {
 import type { Skill, SkillGroupLabels } from '../../services/types/skills';
 import type { Locale } from '../../types/i18n';
 import { LabelsTable } from './LabelsTable';
-import { SkillEditorForm } from './SkillEditorForm';
 import { runSkillSave } from './saveFlow';
 
 // Batch saves invalidate the skills queries once, after every mutation settles.
@@ -104,7 +104,7 @@ export function LabelsForm({ skills, groupLabels }: LabelsFormProps) {
   };
 
   return (
-    <SkillEditorForm
+    <EditorForm
       title={messages.skills.labelsTitle}
       description={messages.skills.labelsDescription}
       saveLabel={messages.skills.saveLabels}
@@ -119,6 +119,6 @@ export function LabelsForm({ skills, groupLabels }: LabelsFormProps) {
         onLabelChange={handleLabelChange}
         disabled={isSaving}
       />
-    </SkillEditorForm>
+    </EditorForm>
   );
 }

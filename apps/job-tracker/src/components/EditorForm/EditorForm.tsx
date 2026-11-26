@@ -2,13 +2,13 @@ import { Alert, Button, Stack, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 import type { FormFeedback } from '../../app/useDocumentDraft';
 import type { useUnsavedChangesGuard } from '../../app/useUnsavedChangesGuard';
-import { FormCard } from '../../components/FormCard/FormCard';
-import { UnsavedChangesDialog } from '../../components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useTranslation } from '../../i18n/Provider';
+import { FormCard } from '../FormCard/FormCard';
+import { UnsavedChangesDialog } from '../UnsavedChangesDialog/UnsavedChangesDialog';
 
 type NavigationBlocker = ReturnType<typeof useUnsavedChangesGuard>;
 
-interface SkillEditorFormProps {
+interface EditorFormProps {
   title: string;
   description?: string;
   saveLabel: string;
@@ -20,7 +20,7 @@ interface SkillEditorFormProps {
   children: ReactNode;
 }
 
-export function SkillEditorForm({
+export function EditorForm({
   title,
   description,
   saveLabel,
@@ -30,7 +30,7 @@ export function SkillEditorForm({
   blocker,
   onSubmit,
   children,
-}: SkillEditorFormProps) {
+}: EditorFormProps) {
   const { messages } = useTranslation();
   return (
     <FormCard onSubmit={onSubmit}>

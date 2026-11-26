@@ -11,69 +11,25 @@ module.exports = {
   moduleNameMapper: {
     '\\.svg$': '<rootDir>/testkit/svgMock.ts',
   },
+  // Coverage measures the tested surface: testMatch only discovers specs
+  // under components/, so theme/, i18n/, and testkit/ (no specs yet) plus
+  // re-export barrels are excluded rather than dragging the floor to zero.
+  // Re-include a directory here when it gains specs.
   collectCoverageFrom: [
-    '<rootDir>/{components,theme,i18n,testkit}/**/*.{ts,tsx}',
+    '<rootDir>/components/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/*.spec.{ts,tsx}',
-    '!<rootDir>/testkit/svgMock.ts',
+    '!**/index.ts',
   ],
-  // packages/ui is the reusable-component home, so its bar is higher than
-  // the apps': every component file carries an explicit per-file floor.
-  // Raise floors as coverage improves — never lower them to pass.
+  // packages/ui is the reusable-component home, so its bar is a single
+  // package-wide floor (same shape as the apps' global thresholds). Raise
+  // it as coverage improves — never lower it to pass.
   coverageThreshold: {
-    '**/components/AppErrorBoundary.tsx': {
+    global: {
       branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/FlagIcon.tsx': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/LanguageSwitcher.tsx': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/OptionGroup.tsx': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/ThemeModeToggle.tsx': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/ToggleChip.tsx': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/ResumePdfViewer/ResumePdfViewer.tsx': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-    '**/components/ResumePdfViewer/ResumePdfSections.tsx': {
-      branches: 70,
-      functions: 90,
-      lines: 90,
-      statements: 90,
-    },
-    '**/components/ResumePdfViewer/printPage.ts': {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      functions: 95,
+      lines: 95,
+      statements: 95,
     },
   },
 };

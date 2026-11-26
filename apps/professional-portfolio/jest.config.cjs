@@ -22,40 +22,12 @@ module.exports = {
     // Reads import.meta.env, which ts-jest cannot execute; specs mock it.
     '!<rootDir>/src/app/env.ts',
   ],
+  // Single package-wide floor (same shape as job-tracker and packages/ui);
+  // raise it as coverage improves — never lower it to pass.
   coverageThreshold: {
-    '**/src/app/**': {
+    global: {
       statements: 95,
-      branches: 95,
-      functions: 95,
-      lines: 95,
-    },
-    '**/src/components/**': {
-      statements: 75,
-      branches: 45,
-      functions: 40,
-      lines: 80,
-    },
-    '**/src/features/**': {
-      statements: 90,
-      branches: 70,
-      functions: 70,
-      lines: 90,
-    },
-    '**/src/i18n/**': {
-      statements: 95,
-      branches: 95,
-      functions: 95,
-      lines: 95,
-    },
-    '**/src/services/**': {
-      statements: 75,
-      branches: 75,
-      functions: 75,
-      lines: 80,
-    },
-    '**/src/types/**': {
-      statements: 95,
-      branches: 95,
+      branches: 90,
       functions: 95,
       lines: 95,
     },

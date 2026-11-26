@@ -5,12 +5,20 @@ export type { LanguageOption, LanguageSwitcherProps } from './LanguageSwitcher';
 export { createLanguageOptions, LanguageSwitcher } from './LanguageSwitcher';
 export type { OptionGroupProps } from './OptionGroup';
 export { OptionGroup } from './OptionGroup';
+export type { PdfViewerProps } from './PdfViewer';
+export { PdfViewer } from './PdfViewer';
+export { printElement } from './printElement';
 export type {
   ResumePdfDocument,
   ResumePdfViewerLabels,
   ResumePdfViewerProps,
 } from './ResumePdfViewer';
-export { ResumePdfViewer, resumePrintPageSx } from './ResumePdfViewer';
+export {
+  RESUME_PRINT_CLASS,
+  ResumePdfViewer,
+  resumePrintGlobalStyles,
+  resumePrintPageSx,
+} from './ResumePdfViewer';
 export type { ThemeModeToggleProps } from './ThemeModeToggle';
 export { ThemeModeToggle } from './ThemeModeToggle';
 export type { ToggleChipProps } from './ToggleChip';

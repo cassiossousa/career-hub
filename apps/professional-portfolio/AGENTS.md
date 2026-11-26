@@ -14,7 +14,7 @@ App-specific rules for the public portfolio. Every rule in the root `AGENTS.md` 
 
 ## Gates that matter here
 
-- **Coverage:** `jest.config.cjs` — global floor plus per-directory floors for `app/`, `components/`, `features/`, `i18n/`, `services/`, `types/`. Raise floors when coverage improves; never lower them to pass.
+- **Coverage:** `jest.config.cjs` — a single package-wide `global` floor (same shape as job-tracker and `packages/ui`), not per-directory floors. Raise it when coverage improves; never lower it to pass.
 - **Bundle budget:** 150 kB JS / 20 kB CSS gzip via `scripts/audit-bundle-budget.mjs`, plus `.bundle-baseline.json` delta ratchet — growth > 5 kB fails; intentional growth requires `node scripts/audit-bundle-budget.mjs apps/professional-portfolio --update-baseline` committed in the same PR.
 - **Architecture:** both `check:arch` (dependency-cruiser, cycles forbidden) and `architecture.spec.ts` (feature isolation + shared-component purity) must stay green.
 - **Mutation:** `check:mutate:core` runs Stryker over the pure-logic core (`services/`, `types/`, `i18n/dictionaries.ts`, `app/storage.ts`, `app/routePaths.ts`) with static mutants ignored — break score < 85 fails. `check:mutate:diff` runs on PRs.

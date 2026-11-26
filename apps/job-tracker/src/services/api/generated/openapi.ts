@@ -40,6 +40,23 @@ export interface paths {
     patch: operations['update_application_api_applications__application_id__patch'];
     trace?: never;
   };
+  '/api/applications/{application_id}/apply': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Enqueue Apply */
+    post: operations['enqueue_apply_api_applications__application_id__apply_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/applications/{application_id}/contacts': {
     parameters: {
       query?: never;
@@ -191,6 +208,58 @@ export interface paths {
     };
     /** Derive Resume Skills */
     get: operations['derive_resume_skills_api_applications__application_id__resume_skills_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/apply-runs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Apply Runs */
+    get: operations['list_apply_runs_api_apply_runs_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/apply-runs/{run_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Apply Run */
+    get: operations['get_apply_run_api_apply_runs__run_id__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Review Apply Run */
+    patch: operations['review_apply_run_api_apply_runs__run_id__patch'];
+    trace?: never;
+  };
+  '/api/apply-runs/{run_id}/artifacts/{name}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Apply Artifact */
+    get: operations['get_apply_artifact_api_apply_runs__run_id__artifacts__name__get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -769,7 +838,12 @@ export interface components {
       | 'status_changed'
       | 'note_added'
       | 'follow_up_set'
-      | 'follow_up_cleared';
+      | 'follow_up_cleared'
+      | 'apply_enqueued'
+      | 'apply_approved'
+      | 'apply_rejected'
+      | 'apply_submitted'
+      | 'apply_failed';
     /** ApplicationEventListResponse */
     ApplicationEventListResponse: {
       /** Events */
@@ -858,6 +932,137 @@ export interface components {
       | 'rejected'
       | 'withdrawn'
       | 'no_response';
+    /**
+     * ApplyAnswerSource
+     * @description Where a proposed answer value came from.
+     * @enum {string}
+     */
+    ApplyAnswerSource: 'fact' | 'resume' | 'cover_letter' | 'manual' | 'none';
+    /** ApplyArtifactResponse */
+    ApplyArtifactResponse: {
+      /** Contenttype */
+      contentType: string;
+      /** Text */
+      text: string;
+    };
+    /**
+     * ApplyFormFieldKind
+     * @description Input control kinds an ATS application form can present.
+     * @enum {string}
+     */
+    ApplyFormFieldKind:
+      | 'text'
+      | 'textarea'
+      | 'select'
+      | 'multiselect'
+      | 'file'
+      | 'boolean'
+      | 'date'
+      | 'unknown';
+    /** ApplyFormFieldResponse */
+    ApplyFormFieldResponse: {
+      /** Key */
+      key: string;
+      kind: components['schemas']['ApplyFormFieldKind'];
+      /** Label */
+      label: string;
+      /** Options */
+      options: string[];
+      /** Required */
+      required: boolean;
+      /** Section */
+      section: string | null;
+    };
+    /**
+     * ApplyProvider
+     * @description Detected applicant-tracking system behind a job URL.
+     * @enum {string}
+     */
+    ApplyProvider:
+      | 'greenhouse'
+      | 'lever'
+      | 'ashby'
+      | 'workable'
+      | 'smartrecruiters'
+      | 'generic'
+      | 'unknown';
+    /**
+     * ApplyReviewAction
+     * @description Human decisions on a run in ``ready_for_review``/``needs_human``.
+     * @enum {string}
+     */
+    ApplyReviewAction: 'approve' | 'reject' | 'edit' | 'retry';
+    /** ApplyRunListResponse */
+    ApplyRunListResponse: {
+      /** Runs */
+      runs: components['schemas']['ApplyRunResponse'][];
+      /** Total */
+      total: number;
+    };
+    /** ApplyRunResponse */
+    ApplyRunResponse: {
+      /** Applicationid */
+      applicationId: number;
+      /** Artifacts */
+      artifacts: {
+        [key: string]: unknown;
+      };
+      /** Attempt */
+      attempt: number;
+      /**
+       * Createdat
+       * Format: date-time
+       */
+      createdAt: string;
+      /** Error */
+      error: string | null;
+      /** Formfields */
+      formFields: components['schemas']['ApplyFormFieldResponse'][];
+      /** Id */
+      id: number;
+      /** Jobid */
+      jobId: number;
+      /** Proposedanswers */
+      proposedAnswers: {
+        [key: string]: components['schemas']['ProposedAnswerResponse'];
+      };
+      provider: components['schemas']['ApplyProvider'];
+      /** Result */
+      result: {
+        [key: string]: unknown;
+      } | null;
+      status: components['schemas']['ApplyRunStatus'];
+      /** Submittedat */
+      submittedAt: string | null;
+      /**
+       * Updatedat
+       * Format: date-time
+       */
+      updatedAt: string;
+    };
+    /** ApplyRunReview */
+    ApplyRunReview: {
+      action: components['schemas']['ApplyReviewAction'];
+      /** Answers */
+      answers?: {
+        [key: string]: string;
+      } | null;
+    };
+    /**
+     * ApplyRunStatus
+     * @description Lifecycle of one apply run; terminal states have no outgoing edges.
+     * @enum {string}
+     */
+    ApplyRunStatus:
+      | 'queued'
+      | 'inspecting'
+      | 'ready_for_review'
+      | 'approved'
+      | 'submitting'
+      | 'submitted'
+      | 'failed'
+      | 'skipped'
+      | 'needs_human';
     /** CertificationEntrySchema */
     CertificationEntrySchema: {
       /** Issuer */
@@ -1831,6 +2036,14 @@ export interface components {
       /** Topics */
       topics?: string[];
     };
+    /** ProposedAnswerResponse */
+    ProposedAnswerResponse: {
+      /** Confidence */
+      confidence: number;
+      source: components['schemas']['ApplyAnswerSource'];
+      /** Value */
+      value: string;
+    };
     /**
      * RequirementClassification
      * @description Wilson's 4-tier adherence classification.
@@ -2310,6 +2523,91 @@ export interface operations {
       };
       /** @description Resource not found */
       404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Payload too large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  enqueue_apply_api_applications__application_id__apply_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        application_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ApplyRunResponse'];
+        };
+      };
+      /** @description Malformed JSON body */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Conflict */
+      409: {
         headers: {
           [name: string]: unknown;
         };
@@ -3321,6 +3619,264 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['SkillsDerivationResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  list_apply_runs_api_apply_runs_get: {
+    parameters: {
+      query?: {
+        status?: components['schemas']['ApplyRunStatus'] | null;
+        application_id?: number | null;
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ApplyRunListResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  get_apply_run_api_apply_runs__run_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ApplyRunResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  review_apply_run_api_apply_runs__run_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ApplyRunReview'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ApplyRunResponse'];
+        };
+      };
+      /** @description Malformed JSON body */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Payload too large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  get_apply_artifact_api_apply_runs__run_id__artifacts__name__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: number;
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ApplyArtifactResponse'];
         };
       };
       /** @description Missing or invalid API key */

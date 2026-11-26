@@ -7,6 +7,11 @@ import type {
   ApplicationUpdate,
 } from '../services/types/application';
 import type {
+  ApplyRun,
+  ApplyRunReview,
+  ProposedAnswer,
+} from '../services/types/applyRun';
+import type {
   ApplicationContact,
   Contact,
   ContactCreate,
@@ -49,6 +54,8 @@ import {
   eventsForApplication,
   seedApplicationContacts,
   seedApplications,
+  seedApplyArtifacts,
+  seedApplyRuns,
   seedContacts,
   seedCoverLetters,
   seedIngestionRuns,
@@ -87,6 +94,12 @@ let applicationContacts = [...seedApplicationContacts];
 let offers: Offer[] = [...seedOffers];
 let coverLetters: CoverLetter[] = [...seedCoverLetters];
 let profileFacts: ProfileFact[] = [...seedProfileFacts];
+let applyRuns: ApplyRun[] = [...seedApplyRuns];
+const applyArtifactTexts = new Map<
+  string,
+  { contentType: string; text: string }
+>(Object.entries(seedApplyArtifacts));
+let nextApplyRunId = 100;
 const applicationEvents = new Map<number, ApplicationEvent[]>();
 let nextInterviewId = 100;
 let nextContactId = 100;
@@ -154,6 +167,12 @@ export function resetMockData() {
   offers = [...seedOffers];
   coverLetters = [...seedCoverLetters];
   profileFacts = [...seedProfileFacts];
+  applyRuns = [...seedApplyRuns];
+  applyArtifactTexts.clear();
+  for (const [key, value] of Object.entries(seedApplyArtifacts)) {
+    applyArtifactTexts.set(key, value);
+  }
+  nextApplyRunId = 100;
   applicationEvents.clear();
   nextIngestionRunId = 100;
   skillGroupLabels = seedSkillGroupLabels.map((entry) => ({
@@ -475,6 +494,207 @@ function mockIngestionRun(source: Job['source']): IngestionRun {
     failed: 0,
     error: error ?? null,
   };
+}
+
+const ACTIVE_APPLY_STATUSES: ReadonlySet<ApplyRun['status']> = new Set([
+  'queued',
+  'inspecting',
+  'ready_for_review',
+  'approved',
+  'submitting',
+  'needs_human',
+]);
+
+/** Simulates the apply worker draining the queue on read (demo mode). */
+function drainApplyRuns() {
+  const template = seedApplyRuns[0];
+  if (template === undefined) return;
+  const now = new Date().toISOString();
+  applyRuns = applyRuns.map((run) => {
+    if (run.status === 'queued' || run.status === 'inspecting') {
+      const inspected: ApplyRun = {
+        ...run,
+        status: 'ready_for_review',
+        attempt: run.attempt + 1,
+        formFields: template.formFields,
+        proposedAnswers: { ...template.proposedAnswers },
+        artifacts: { ...template.artifacts },
+        updatedAt: now,
+      };
+      for (const name of Object.keys(inspected.artifacts)) {
+        const canned = applyArtifactTexts.get(`1:${name}`);
+        if (canned !== undefined) {
+          applyArtifactTexts.set(`${inspected.id}:${name}`, canned);
+        }
+      }
+      return inspected;
+    }
+    if (run.status === 'approved') {
+      const application = applications.find((a) => a.id === run.applicationId);
+      if (application !== undefined && application.status === 'saved') {
+        application.status = 'applied';
+        application.appliedAt = now.slice(0, 10);
+        application.statusChangedAt = now;
+        pushAppEvent(application.id, 'status_changed', {
+          from: 'saved',
+          to: 'applied',
+        });
+      }
+      pushAppEvent(run.applicationId, 'apply_submitted', { run_id: run.id });
+      return {
+        ...run,
+        status: 'submitted',
+        submittedAt: now,
+        result: { confirmation: 'mock-submit-ok' },
+        updatedAt: now,
+      };
+    }
+    return run;
+  });
+}
+
+function findApplyRun(id: number): ApplyRun | Response {
+  drainApplyRuns();
+  const run = applyRuns.find((r) => r.id === id);
+  return run ?? notFoundJson('Apply run not found');
+}
+
+function applyReviewError(status: number, code: string, message: string) {
+  return HttpResponse.json({ error: { code, message } }, { status });
+}
+
+function approveApplyRun(run: ApplyRun, now: string): ApplyRun | Response {
+  if (run.status !== 'ready_for_review') {
+    return conflictJson('invalid_transition', 'Run is not ready for review');
+  }
+  const missing = run.formFields.filter(
+    (f) =>
+      f.required &&
+      (run.proposedAnswers[f.key] === undefined ||
+        run.proposedAnswers[f.key]?.source === 'none'),
+  );
+  if (missing.length > 0) {
+    return applyReviewError(
+      422,
+      'validation_failed',
+      `required fields unanswered: ${missing.map((f) => f.key).join(', ')}`,
+    );
+  }
+  for (const field of run.formFields) {
+    const answer = run.proposedAnswers[field.key];
+    if (field.options.length === 0 || answer === undefined) continue;
+    const invalid = answer.value
+      .split(',')
+      .map((part) => part.trim())
+      .filter((part) => !field.options.includes(part));
+    if (invalid.length > 0) {
+      return applyReviewError(
+        422,
+        'validation_failed',
+        `answer for '${field.key}' is not one of the allowed options`,
+      );
+    }
+  }
+  pushAppEvent(run.applicationId, 'apply_approved', { run_id: run.id });
+  return { ...run, status: 'approved', updatedAt: now };
+}
+
+function collectAnswerEdits(
+  run: ApplyRun,
+  answers: Record<string, string>,
+): Map<string, string> | Response {
+  const known = new Set(run.formFields.map((f) => f.key));
+  const edits = new Map<string, string>();
+  for (const [key, value] of Object.entries(answers)) {
+    if (!known.has(key)) {
+      return applyReviewError(
+        422,
+        'validation_failed',
+        `unknown form field '${key}'`,
+      );
+    }
+    edits.set(key, value.trim());
+  }
+  return edits;
+}
+
+const manualAnswer = (value: string): ProposedAnswer => ({
+  value,
+  source: 'manual',
+  confidence: 1,
+});
+
+function mergeAnswerEdits(
+  run: ApplyRun,
+  edits: Map<string, string>,
+): Record<string, ProposedAnswer> {
+  const proposedAnswers: Record<string, ProposedAnswer> = {};
+  for (const [key, answer] of Object.entries(run.proposedAnswers)) {
+    const edit = edits.get(key);
+    if (edit === '') continue;
+    proposedAnswers[key] = edit === undefined ? answer : manualAnswer(edit);
+  }
+  for (const [key, edit] of edits) {
+    if (edit !== '' && run.proposedAnswers[key] === undefined) {
+      proposedAnswers[key] = manualAnswer(edit);
+    }
+  }
+  return proposedAnswers;
+}
+
+function editApplyRun(
+  run: ApplyRun,
+  answers: Record<string, string> | null | undefined,
+  now: string,
+): ApplyRun | Response {
+  const hadAnswers = answers !== undefined && answers !== null;
+  const editable =
+    run.status === 'ready_for_review' ||
+    (run.status === 'needs_human' && hadAnswers);
+  if (!editable) {
+    return conflictJson('invalid_transition', 'Run cannot be edited');
+  }
+  const edits = collectAnswerEdits(run, answers ?? {});
+  if (edits instanceof Response) return edits;
+  return {
+    ...run,
+    status: hadAnswers ? 'ready_for_review' : run.status,
+    proposedAnswers: mergeAnswerEdits(run, edits),
+    error: null,
+    updatedAt: now,
+  };
+}
+
+function nextRunForReview(
+  run: ApplyRun,
+  body: ApplyRunReview,
+  now: string,
+): ApplyRun | Response {
+  if (body.action === 'approve') return approveApplyRun(run, now);
+  if (body.action === 'reject') {
+    if (run.status !== 'ready_for_review' && run.status !== 'needs_human') {
+      return conflictJson('invalid_transition', 'Run cannot be rejected');
+    }
+    pushAppEvent(run.applicationId, 'apply_rejected', { run_id: run.id });
+    return { ...run, status: 'skipped', updatedAt: now };
+  }
+  if (body.action === 'retry') {
+    if (run.status !== 'failed' && run.status !== 'needs_human') {
+      return conflictJson('invalid_transition', 'Run cannot be retried');
+    }
+    return { ...run, status: 'queued', error: null, updatedAt: now };
+  }
+  return editApplyRun(run, body.answers, now);
+}
+
+function applyRunReview(
+  run: ApplyRun,
+  body: ApplyRunReview,
+): ApplyRun | Response {
+  const next = nextRunForReview(run, body, new Date().toISOString());
+  if (next instanceof Response) return next;
+  applyRuns = applyRuns.map((r) => (r.id === run.id ? next : r));
+  return next;
 }
 
 export const handlers = [
@@ -1174,6 +1394,93 @@ export const handlers = [
       group: entry.group,
       labels: { ...entry.labels },
     });
+  }),
+
+  http.post('/api/applications/:id/apply', ({ params }) => {
+    const application = findApplication(Number(params.id));
+    if (application instanceof Response) return application;
+    if (application.status !== 'saved') {
+      return conflictJson(
+        'apply_conflict',
+        'Only saved applications can be queued for auto-apply',
+      );
+    }
+    drainApplyRuns();
+    if (
+      applyRuns.some(
+        (r) =>
+          r.applicationId === application.id &&
+          ACTIVE_APPLY_STATUSES.has(r.status),
+      )
+    ) {
+      return conflictJson(
+        'apply_conflict',
+        'An active apply run already exists',
+      );
+    }
+    const now = new Date().toISOString();
+    const run: ApplyRun = {
+      id: nextApplyRunId++,
+      applicationId: application.id,
+      jobId: application.jobId,
+      status: 'queued',
+      provider: 'greenhouse',
+      attempt: 0,
+      formFields: [],
+      proposedAnswers: {},
+      artifacts: {},
+      result: null,
+      error: null,
+      submittedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    applyRuns.push(run);
+    pushAppEvent(application.id, 'apply_enqueued', { run_id: run.id });
+    return HttpResponse.json(run, { status: 201 });
+  }),
+
+  http.get('/api/apply-runs', ({ request }) => {
+    drainApplyRuns();
+    const params = new URL(request.url).searchParams;
+    let result = [...applyRuns].toSorted((a, b) => b.id - a.id);
+    const status = params.get('status');
+    const applicationId = params.get('application_id');
+    if (status) result = result.filter((r) => r.status === status);
+    if (applicationId) {
+      result = result.filter((r) => r.applicationId === Number(applicationId));
+    }
+    const { items, total } = pageOf(result, params);
+    return HttpResponse.json({ runs: items, total });
+  }),
+
+  http.get('/api/apply-runs/:id', ({ params }) => {
+    const run = findApplyRun(Number(params.id));
+    if (run instanceof Response) return run;
+    return HttpResponse.json(run);
+  }),
+
+  http.patch('/api/apply-runs/:id', async ({ params, request }) => {
+    const run = findApplyRun(Number(params.id));
+    if (run instanceof Response) return run;
+    const body = (await request.json()) as ApplyRunReview;
+    const outcome = applyRunReview(run, body);
+    if (outcome instanceof Response) return outcome;
+    return HttpResponse.json(outcome);
+  }),
+
+  http.get('/api/apply-runs/:id/artifacts/:name', ({ params }) => {
+    const run = findApplyRun(Number(params.id));
+    if (run instanceof Response) return run;
+    const name = String(params.name);
+    if (!(name in run.artifacts)) {
+      return notFoundJson('Artifact not found');
+    }
+    const artifact = applyArtifactTexts.get(`${run.id}:${name}`);
+    if (artifact === undefined) {
+      return notFoundJson('Artifact not found');
+    }
+    return HttpResponse.json(artifact);
   }),
 ];
 

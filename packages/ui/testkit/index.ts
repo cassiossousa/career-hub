@@ -1,3 +1,4 @@
+export { describeLocaleContract, flattenLeaves } from './dictionaryContract';
 export {
   featureOf,
   findCrossFeatureImports,
@@ -9,3 +10,4 @@ export {
   SOURCE_EXTENSIONS,
   SPECIFIER_PATTERN,
 } from './sourceScan';
+export { describeStorageContract, type StorageFns } from './storageContract';

@@ -12,6 +12,7 @@ export interface Translation {
     switchToPortuguese: string;
     switchToDarkMode: string;
     switchToLightMode: string;
+    skipToContent: string;
   };
 
   links: {

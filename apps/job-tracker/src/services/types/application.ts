@@ -35,6 +35,11 @@ export const APPLICATION_EVENT_KINDS = [
   'note_added',
   'follow_up_set',
   'follow_up_cleared',
+  'apply_enqueued',
+  'apply_approved',
+  'apply_rejected',
+  'apply_submitted',
+  'apply_failed',
 ] as const satisfies readonly Schemas['ApplicationEventKind'][];
 
 export type ApplicationEventKind = Schemas['ApplicationEventKind'];

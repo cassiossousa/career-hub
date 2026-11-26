@@ -108,4 +108,15 @@ describe('ManualJobForm', () => {
     expect(await screen.findByText('Creation failed')).toBeInTheDocument();
     expect(useUIStore.getState().isManualJobFormOpen).toBe(true);
   }, 20000);
+
+  it('keeps the dialog open with a generic error on network failure', async () => {
+    server.use(http.post('/api/jobs', () => HttpResponse.error()));
+    useUIStore.getState().openManualJobForm();
+    renderWithProviders(<ManualJobForm />);
+    fillRequiredFields();
+    submitForm();
+
+    expect(await screen.findByText('An error occurred.')).toBeInTheDocument();
+    expect(useUIStore.getState().isManualJobFormOpen).toBe(true);
+  }, 20000);
 });

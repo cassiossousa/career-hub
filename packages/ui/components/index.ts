@@ -19,6 +19,8 @@ export {
   resumePrintGlobalStyles,
   resumePrintPageSx,
 } from './ResumePdfViewer';
+export type { SkipLinkProps } from './SkipLink';
+export { SkipLink } from './SkipLink';
 export type { ThemeModeToggleProps } from './ThemeModeToggle';
 export { ThemeModeToggle } from './ThemeModeToggle';
 export type { ToggleChipProps } from './ToggleChip';

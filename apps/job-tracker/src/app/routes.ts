@@ -38,6 +38,16 @@ const FactsEditor = lazy(() =>
     default: m.FactsEditor,
   })),
 );
+const ApplyQueue = lazy(() =>
+  import('../features/apply/ApplyQueue').then((m) => ({
+    default: m.ApplyQueue,
+  })),
+);
+const ApplyRunReview = lazy(() =>
+  import('../features/apply/ApplyRunReview').then((m) => ({
+    default: m.ApplyRunReview,
+  })),
+);
 const SettingsEditor = lazy(() =>
   import('../features/settings/SettingsEditor').then((m) => ({
     default: m.SettingsEditor,
@@ -88,6 +98,12 @@ export const appRoutes: AppRoute[] = [
     Component: FactsEditor,
     navLabel: (nav) => nav.facts,
   },
+  {
+    path: routePaths.apply,
+    Component: ApplyQueue,
+    navLabel: (nav) => nav.apply,
+  },
+  { path: routePaths.applyRun(':id'), Component: ApplyRunReview },
   {
     path: routePaths.settings,
     Component: SettingsEditor,

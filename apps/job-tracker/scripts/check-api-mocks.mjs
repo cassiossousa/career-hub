@@ -14,10 +14,19 @@
  * Exits 1 and lists every uncovered call site when a route is missing.
  */
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const APP_ROOT = fileURLToPath(new URL('..', import.meta.url));
+// --app-root <dir> / --app-root=<dir> lets falsification specs point the gate
+// at a fixture tree; production runs always scan this app's real directory.
+const appRootArg =
+  process.argv.find((arg) => arg.startsWith('--app-root=')) ??
+  (process.argv.includes('--app-root')
+    ? `--app-root=${process.argv[process.argv.indexOf('--app-root') + 1] ?? ''}`
+    : undefined);
+const APP_ROOT = appRootArg
+  ? resolve(appRootArg.slice('--app-root='.length))
+  : fileURLToPath(new URL('..', import.meta.url));
 const SRC_DIR = join(APP_ROOT, 'src');
 const MOCKS_DIR = join(SRC_DIR, 'mocks');
 

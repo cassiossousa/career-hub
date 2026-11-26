@@ -37,7 +37,7 @@ describe('Resume', () => {
 
     expect(
       screen.getByRole('heading', {
-        level: 1,
+        level: 2,
         name: 'Cássio dos Santos Sousa',
       }),
     ).toBeInTheDocument();

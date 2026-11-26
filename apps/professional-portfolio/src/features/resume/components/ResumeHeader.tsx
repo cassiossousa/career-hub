@@ -12,7 +12,7 @@ export default function ResumeHeader({
       spacing={1}
       sx={{ alignItems: 'center', textAlign: 'center' }}
     >
-      <Typography component="h1" variant="h5">
+      <Typography component="h2" variant="h5">
         {name}
       </Typography>
       <Typography

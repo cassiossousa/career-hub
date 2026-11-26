@@ -48,7 +48,7 @@ describe('ResumeDocument', () => {
 
     expect(
       screen.getByRole('heading', {
-        level: 1,
+        level: 2,
         name: messages.home.name,
       }),
     ).toBeInTheDocument();

@@ -12,6 +12,23 @@ import {
   APPLICATION_STATUS_ORDER,
 } from '../types/application';
 import type {
+  ApplyAnswerSource,
+  ApplyArtifact,
+  ApplyFormField,
+  ApplyFormFieldKind,
+  ApplyProvider,
+  ApplyRun,
+  ApplyRunListPage,
+  ApplyRunStatus,
+  ProposedAnswer,
+} from '../types/applyRun';
+import {
+  APPLY_ANSWER_SOURCES,
+  APPLY_FORM_FIELD_KINDS,
+  APPLY_PROVIDERS,
+  APPLY_RUN_STATUSES,
+} from '../types/applyRun';
+import type {
   ApplicationContact,
   Contact,
   ContactListPage,
@@ -543,3 +560,63 @@ export const resumesResponseSchema = z.object({
   resumes: z.array(resumeSchema),
   total: z.number(),
 }) satisfies z.ZodType<ResumeListPage>;
+
+const applyRunStatusSchema = z.enum(
+  APPLY_RUN_STATUSES,
+) satisfies z.ZodType<ApplyRunStatus>;
+
+const applyProviderSchema = z.enum(
+  APPLY_PROVIDERS,
+) satisfies z.ZodType<ApplyProvider>;
+
+const applyAnswerSourceSchema = z.enum(
+  APPLY_ANSWER_SOURCES,
+) satisfies z.ZodType<ApplyAnswerSource>;
+
+const applyFormFieldKindSchema = z.enum(
+  APPLY_FORM_FIELD_KINDS,
+) satisfies z.ZodType<ApplyFormFieldKind>;
+
+const applyFormFieldSchema = z.object({
+  key: z.string(),
+  kind: applyFormFieldKindSchema,
+  label: z.string(),
+  options: z.array(z.string()),
+  required: z.boolean(),
+  section: z.string().nullable(),
+}) satisfies z.ZodType<ApplyFormField>;
+
+const proposedAnswerSchema = z.object({
+  value: z.string(),
+  source: applyAnswerSourceSchema,
+  confidence: z.number(),
+}) satisfies z.ZodType<ProposedAnswer>;
+
+const applyRunSchema = z.object({
+  id: z.number(),
+  applicationId: z.number(),
+  jobId: z.number(),
+  status: applyRunStatusSchema,
+  provider: applyProviderSchema,
+  attempt: z.number(),
+  formFields: z.array(applyFormFieldSchema),
+  proposedAnswers: z.record(z.string(), proposedAnswerSchema),
+  artifacts: z.record(z.string(), z.unknown()),
+  result: z.record(z.string(), z.unknown()).nullable(),
+  error: z.string().nullable(),
+  submittedAt: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}) satisfies z.ZodType<ApplyRun>;
+
+export const applyRunResponseSchema = applyRunSchema;
+
+export const applyRunsResponseSchema = z.object({
+  runs: z.array(applyRunSchema),
+  total: z.number(),
+}) satisfies z.ZodType<ApplyRunListPage>;
+
+export const applyArtifactResponseSchema = z.object({
+  contentType: z.string(),
+  text: z.string(),
+}) satisfies z.ZodType<ApplyArtifact>;

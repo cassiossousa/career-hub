@@ -1,10 +1,14 @@
 import { Button, Chip, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { routePaths } from '../../app/routePaths';
 import { ApplicationStatusChip } from '../../components/ApplicationStatusChip/ApplicationStatusChip';
 import { ApplicationStatusSelect } from '../../components/ApplicationStatusSelect/ApplicationStatusSelect';
+import { ApplyRunStatusChip } from '../../components/ApplyRunStatusChip/ApplyRunStatusChip';
 import { interpolate } from '../../i18n/interpolate';
 import { useTranslation } from '../../i18n/Provider';
 import { useUpdateApplication } from '../../services/api/applications';
+import { useLatestApplyRun } from '../../services/api/applyRuns';
 import { useJobSummaries } from '../../services/api/jobs';
 import {
   type Application,
@@ -30,6 +34,8 @@ function toDateTimeLocal(iso: string | null): string {
 export function HubOverview({ application }: { application: Application }) {
   const { locale, messages } = useTranslation();
   const jobSummaries = useJobSummaries();
+  const latestRunQuery = useLatestApplyRun(application.id);
+  const latestRun = latestRunQuery.data?.runs[0];
   const updateMutation = useUpdateApplication();
   const [pendingTarget, setPendingTarget] = useState<ApplicationStatus | null>(
     null,
@@ -111,6 +117,17 @@ export function HubOverview({ application }: { application: Application }) {
             <Chip key={tag} label={tag} size="small" variant="outlined" />
           ))}
         </Stack>
+        {latestRun !== undefined && (
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {messages.apply.review.latestRun}:
+            </Typography>
+            <ApplyRunStatusChip status={latestRun.status} />
+            <RouterLink to={routePaths.applyRun(String(latestRun.id))}>
+              {messages.apply.review.viewRun}
+            </RouterLink>
+          </Stack>
+        )}
       </Stack>
 
       <Stack spacing={2} sx={{ maxWidth: 560 }}>

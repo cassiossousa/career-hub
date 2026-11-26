@@ -1,4 +1,9 @@
+import { describeLocaleContract } from '@career-hub/ui/testkit';
 import { getDictionary } from './dictionaries';
+import en from './locales/en';
+import ptBR from './locales/pt-BR';
+
+describeLocaleContract(en, ptBR);
 
 describe('getDictionary', () => {
   it('returns the English dictionary for en', () => {

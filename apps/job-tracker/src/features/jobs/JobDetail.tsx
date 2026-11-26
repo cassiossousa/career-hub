@@ -23,6 +23,7 @@ import {
   useCreateApplication,
   useUpdateApplication,
 } from '../../services/api/applications';
+import { useEnqueueApplyRun } from '../../services/api/applyRuns';
 import { useJob } from '../../services/api/jobs';
 import { isFilteredResult } from '../../services/filterResult';
 import { formatJobSalary, isJobStale } from '../../services/jobMeta';
@@ -260,6 +261,8 @@ function ApplicationActionRow({
   pending: boolean;
 }) {
   const { messages, locale } = useTranslation();
+  const navigate = useNavigate();
+  const enqueueApply = useEnqueueApplyRun();
   const followUpOverdue =
     application.followUpAt != null &&
     new Date(application.followUpAt).getTime() <= renderedAtMs;
@@ -276,9 +279,30 @@ function ApplicationActionRow({
         </Typography>
       )}
       {application.status === 'saved' && (
-        <Button variant="contained" onClick={onMarkApplied} disabled={pending}>
-          {messages.jobs.markApplied}
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            onClick={onMarkApplied}
+            disabled={pending}
+          >
+            {messages.jobs.markApplied}
+          </Button>
+          <Button
+            variant="outlined"
+            disabled={enqueueApply.isPending}
+            onClick={() => {
+              enqueueApply.mutate(application.id, {
+                onSuccess: (run) => {
+                  void navigate(routePaths.applyRun(String(run.id)));
+                },
+              });
+            }}
+          >
+            {enqueueApply.isPending
+              ? messages.apply.enqueueing
+              : messages.apply.enqueue}
+          </Button>
+        </>
       )}
       <Button
         component={RouterLink}

@@ -36,6 +36,7 @@ module.exports = {
   // MSW-intercepted XHR calls are slow under coverage instrumentation;
   // the 5s default flakes on parallel workers.
   testTimeout: 30000,
+  restoreMocks: true,
   testEnvironmentOptions: {
     url: 'http://localhost:8000/',
     customExportConditions: ['node', 'require', 'default'],

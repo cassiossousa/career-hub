@@ -15,7 +15,8 @@
     "./components": "./components/index.ts",
     "./pdf": "./pdf/index.ts",
     "./i18n": "./i18n/index.ts",
-    "./testkit": "./testkit/index.ts"
+    "./testkit": "./testkit/index.ts",
+    "./e2e": "./testkit/e2eFixtures.ts"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -30,6 +31,7 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.1",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.6.12",

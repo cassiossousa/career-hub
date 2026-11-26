@@ -81,6 +81,55 @@ describe('apiClient', () => {
     expect((error as Error).message).toBe('Request failed with status 500');
   });
 
+  it('preserves the error code on rate-limit (429) envelopes', async () => {
+    server.use(
+      http.get('/api/jobs', () =>
+        HttpResponse.json(
+          { error: { code: 'rate_limited', message: 'Slow down' } },
+          { status: 429 },
+        ),
+      ),
+    );
+    const error: unknown = await captureError(apiClient.get('/api/jobs'));
+    expect(isApiError(error)).toBe(true);
+    if (!isApiError(error)) {
+      throw new Error('expected ApiError');
+    }
+    expect(error.code).toBe('rate_limited');
+    expect(error.message).toBe('Slow down');
+  });
+
+  it('resolves null data for malformed JSON success bodies', async () => {
+    server.use(
+      http.get(
+        '/api/jobs',
+        () =>
+          new HttpResponse('{not valid json', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+      ),
+    );
+    const response = await apiClient.get('/api/jobs');
+    expect(response.data).toBeNull();
+  });
+
+  it('sends a JSON content type and serializes the request body', async () => {
+    let contentType: string | null = null;
+    let bodyText = '';
+    server.use(
+      http.post('/api/jobs', async ({ request }) => {
+        contentType = request.headers.get('Content-Type');
+        bodyText = await request.text();
+        return HttpResponse.json({ id: 1 });
+      }),
+    );
+    await apiClient.post('/api/jobs', { title: 'Fault Probe' });
+    expect(contentType).toBe('application/json');
+    const parsedBody: unknown = JSON.parse(bodyText);
+    expect(parsedBody).toEqual({ title: 'Fault Probe' });
+  });
+
   it('resolves null data for non-JSON success bodies', async () => {
     server.use(
       http.delete(

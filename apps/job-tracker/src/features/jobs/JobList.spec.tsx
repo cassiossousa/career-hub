@@ -1,5 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { delay, HttpResponse, http } from 'msw';
+import { server } from '../../mocks/server';
 import { useFilterStore } from '../../store/filterStore';
 import {
   expectErrorWithRetry,
@@ -77,5 +79,55 @@ describe('JobList', () => {
     );
     renderWithProviders(<JobList />);
     await expectErrorWithRetry('Jobs unavailable');
+  });
+
+  it('shows the API error message on rate-limit (429) responses', async () => {
+    mockApiJson(
+      'get',
+      '/api/jobs',
+      { error: { code: 'rate_limited', message: 'Too many requests' } },
+      429,
+    );
+    renderWithProviders(<JobList />);
+    await expectErrorWithRetry('Too many requests');
+  });
+
+  it('shows the unreachable error state on network failure', async () => {
+    server.use(http.get('/api/jobs', () => HttpResponse.error()));
+    renderWithProviders(<JobList />);
+    expect(
+      await screen.findByText(/Could not reach the API server/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+  });
+
+  it('shows a loading state while the request is in flight', async () => {
+    server.use(
+      http.get('/api/jobs', async () => {
+        await delay(300);
+        return HttpResponse.json({ jobs: [], total: 0 });
+      }),
+    );
+    renderWithProviders(<JobList />);
+    expect(await screen.findByLabelText('Loading...')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('No jobs found.')).toBeInTheDocument();
+    });
+  });
+
+  it('surfaces an error state when the API returns malformed JSON', async () => {
+    server.use(
+      http.get(
+        '/api/jobs',
+        () =>
+          new HttpResponse('{not valid json', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+      ),
+    );
+    renderWithProviders(<JobList />);
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
   });
 });

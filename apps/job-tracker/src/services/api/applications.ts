@@ -16,6 +16,7 @@ import type {
 } from '../types/application';
 import { apiClient } from './client';
 import { JOBS_PAGE_SIZE, type JobSummary, useJobSummaries } from './jobs';
+import { paginationParams } from './pagination';
 import {
   applicationEventsResponseSchema,
   applicationResponseSchema,
@@ -45,9 +46,7 @@ export function useApplications(
     followUp,
     tag,
   } = filter;
-  const params = new URLSearchParams();
-  params.set('limit', String(limit));
-  params.set('offset', String(offset));
+  const params = paginationParams(limit, offset);
   if (status) params.set('status', status);
   if (jobId) params.set('jobId', String(jobId));
   if (followUp) params.set('followUp', followUp);

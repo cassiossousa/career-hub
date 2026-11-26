@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-
+import { test } from '@career-hub/ui/e2e';
+import { expect } from '@playwright/test';
 import { routePaths } from '../src/app/routePaths';
 
 const viewports = [

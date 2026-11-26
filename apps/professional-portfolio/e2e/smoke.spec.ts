@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
-
+import { expectMainLandmarks, test } from '@career-hub/ui/e2e';
+import { expect } from '@playwright/test';
 import { publicRoutePaths, routePaths } from '../src/app/routePaths';
 
 for (const route of publicRoutePaths) {
@@ -9,7 +9,7 @@ for (const route of publicRoutePaths) {
   }) => {
     await page.goto(route);
 
-    await expect(page.locator('main')).toBeVisible();
+    await expectMainLandmarks(page);
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag22aa'])

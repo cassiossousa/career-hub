@@ -1,6 +1,7 @@
 module.exports = {
   rootDir: __dirname,
   testEnvironment: 'jsdom',
+  restoreMocks: true,
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

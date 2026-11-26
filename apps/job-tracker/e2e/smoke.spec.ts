@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, type Page, test } from '@playwright/test';
-
+import { expectNoHorizontalOverflow, test } from '@career-hub/ui/e2e';
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { publicRoutePaths } from '../src/app/routePaths';
 import { LOCALE_STORAGE_KEY } from '../src/i18n/localeStorageKey';
 import { LOCALES } from '../src/types/i18n';
@@ -16,15 +17,6 @@ async function setLocale(page: Page, locale: string) {
     },
     { key: LOCALE_STORAGE_KEY, value: locale },
   );
-}
-
-async function expectNoHorizontalOverflow(page: Page) {
-  const overflow = await page.evaluate(
-    () =>
-      document.documentElement.scrollWidth -
-      document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(0);
 }
 
 test.describe('job-tracker smoke matrix', () => {

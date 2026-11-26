@@ -5,11 +5,14 @@ export default defineConfig({
   testMatch: '**/*.spec.ts',
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
-  reporter: 'list',
+  reporter: [['list'], ['html', { open: 'never' }]],
   snapshotPathTemplate:
     '{testDir}/{testFileName}-snapshots/{arg}-{platform}{ext}',
   use: {
     baseURL: 'http://localhost:4173',
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   webServer: {
     command:

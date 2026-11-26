@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-
+import { test } from '@career-hub/ui/e2e';
+import { expect } from '@playwright/test';
 import { publicRoutePaths } from '../src/app/routePaths';
 import { LOCALE_STORAGE_KEY } from '../src/i18n/localeStorageKey';
 

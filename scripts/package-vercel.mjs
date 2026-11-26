@@ -12,7 +12,14 @@ import {
   writeFileSync,
 } from 'node:fs';
 import path from 'node:path';
-import { ROOT } from './repo-root.mjs';
+import { ROOT as REPO_ROOT } from './repo-root.mjs';
+
+// --root=<dir> lets falsification specs package fixture apps; CI always uses
+// the real repository root.
+const rootArg = process.argv.find((arg) => arg.startsWith('--root='));
+const ROOT = rootArg
+  ? path.resolve(rootArg.slice('--root='.length))
+  : REPO_ROOT;
 
 const DEFAULT_APPS = ['professional-portfolio', 'job-tracker'];
 
@@ -94,7 +101,7 @@ function packageApp(app) {
   console.log(`Packaged ${app}: ${path.relative(ROOT, outputDir)}`);
 }
 
-const apps = process.argv.slice(2);
+const apps = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
 const targets = apps.length > 0 ? apps : DEFAULT_APPS;
 for (const app of targets) {
   packageApp(app);

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
 import { Route, Routes } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
+import { seedApplyRuns } from '../../mocks/data';
 import { server } from '../../mocks/server';
 import { renderWithProviders } from '../../test/TestUtils';
 import { JobDetail } from './JobDetail';
@@ -71,5 +72,35 @@ describe('JobDetail', () => {
       },
       { timeout: 5000 },
     );
+  });
+
+  it('enqueues an apply run for saved applications', async () => {
+    const user = userEvent.setup();
+    let postedApplicationId: string | null = null;
+    server.use(
+      http.post('/api/applications/:id/apply', ({ params }) => {
+        postedApplicationId = String(params.id);
+        const run = seedApplyRuns[0];
+        if (run === undefined) throw new Error('expected seeded apply run');
+        return HttpResponse.json(run, { status: 201 });
+      }),
+    );
+    // job 3 maps to application 3, which is 'saved'
+    renderDetail(routePaths.jobDetail('3'));
+    const button = await screen.findByRole('button', {
+      name: /apply with auto-apply/i,
+    });
+    await user.click(button);
+    await waitFor(() => {
+      expect(postedApplicationId).toBe('3');
+    });
+  });
+
+  it('hides the apply button for non-saved applications', async () => {
+    renderDetail(routePaths.jobDetail('1'));
+    await screen.findByText('Applied', {}, { timeout: 8000 });
+    expect(
+      screen.queryByRole('button', { name: /apply with auto-apply/i }),
+    ).not.toBeInTheDocument();
   });
 });

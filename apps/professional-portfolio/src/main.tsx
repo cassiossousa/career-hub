@@ -1,4 +1,4 @@
-import { AppErrorBoundary } from '@career-hub/ui/components';
+import { AppErrorBoundary, SkipLink } from '@career-hub/ui/components';
 import type { ThemeMode } from '@career-hub/ui/theme';
 import { Box, CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
 import React, { useState } from 'react';
@@ -14,7 +14,14 @@ import ProjectDetails from './features/projects/ProjectDetails';
 import Projects from './features/projects/Projects';
 import Resume from './features/resume/Resume';
 import WorkExperience from './features/work-experience/WorkExperience';
-import { TranslationProvider } from './i18n/Provider';
+import { TranslationProvider, useTranslation } from './i18n/Provider';
+
+function SkipToContent() {
+  const { messages } = useTranslation();
+  return (
+    <SkipLink href="#main-content" label={messages.navigation.skipToContent} />
+  );
+}
 
 function App() {
   const [themeMode, setThemeMode] = useState<ThemeMode>(initialThemeMode);
@@ -35,6 +42,7 @@ function App() {
         }}
       />
       <TranslationProvider>
+        <SkipToContent />
         <AppErrorBoundary>
           <Box
             sx={{
@@ -51,6 +59,8 @@ function App() {
             <Navbar themeMode={themeMode} onToggleTheme={toggleThemeMode} />
             <Box
               component="main"
+              id="main-content"
+              tabIndex={-1}
               sx={{
                 gridColumn: { xs: '1 / -1', md: '2' },
                 minWidth: 0,

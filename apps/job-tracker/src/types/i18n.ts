@@ -2,6 +2,11 @@ import type {
   ApplicationEventKind,
   ApplicationStatus,
 } from '../services/types/application';
+import type {
+  ApplyAnswerSource,
+  ApplyProvider,
+  ApplyRunStatus,
+} from '../services/types/applyRun';
 import type { FactCategory, FactSensitivity } from '../services/types/facts';
 import type { IngestionRunStatus } from '../services/types/ingestion';
 import type {
@@ -34,6 +39,7 @@ export interface Translation {
     portfolio: string;
     skills: string;
     facts: string;
+    apply: string;
     settings: string;
     ingestion: string;
     switchToEnglish: string;
@@ -46,6 +52,7 @@ export interface Translation {
     mockDataOff: string;
     switchToDarkMode: string;
     switchToLightMode: string;
+    skipToContent: string;
   };
 
   dashboard: {
@@ -434,6 +441,49 @@ export interface Translation {
     sensitivities: Record<FactSensitivity, string>;
   };
 
+  apply: {
+    title: string;
+    allStatuses: string;
+    empty: string;
+    reviewTitle: string;
+    notFound: string;
+    enqueue: string;
+    enqueueing: string;
+    status: Record<ApplyRunStatus, string>;
+    providers: Record<ApplyProvider, string>;
+    sources: Record<ApplyAnswerSource, string>;
+    columns: {
+      job: string;
+      company: string;
+      provider: string;
+      status: string;
+      updated: string;
+      attempt: string;
+    };
+    review: {
+      answersTitle: string;
+      artifactsTitle: string;
+      required: string;
+      optional: string;
+      uncategorized: string;
+      noFields: string;
+      preview: string;
+      approve: string;
+      reject: string;
+      saveAnswers: string;
+      retry: string;
+      fillManually: string;
+      runError: string;
+      result: string;
+      submittedAt: string;
+      attempt: string;
+      viewJob: string;
+      latestRun: string;
+      viewRun: string;
+      approveHint: string;
+    };
+  };
+
   settings: {
     title: string;
     description: string;
@@ -479,6 +529,7 @@ export interface Translation {
     retry: string;
     save: string;
     cancel: string;
+    close: string;
     delete: string;
     add: string;
     edit: string;

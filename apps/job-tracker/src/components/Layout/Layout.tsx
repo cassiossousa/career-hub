@@ -1,6 +1,7 @@
 import {
   createLanguageOptions,
   LanguageSwitcher,
+  SkipLink,
   ThemeModeToggle,
 } from '@career-hub/ui/components';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -69,6 +70,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <Box sx={{ display: 'flex' }}>
+      <SkipLink
+        href="#main-content"
+        label={messages.navigation.skipToContent}
+      />
       <AppBar
         position="fixed"
         color="inherit"
@@ -117,6 +122,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <Sidebar open={mobileOpen} onClose={handleDrawerToggle} />
       <Box
         component="main"
+        id="main-content"
+        tabIndex={-1}
         sx={{
           flexGrow: 1,
           minWidth: 0,

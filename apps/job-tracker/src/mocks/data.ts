@@ -2,6 +2,7 @@ import type {
   Application,
   ApplicationEvent,
 } from '../services/types/application';
+import type { ApplyRun } from '../services/types/applyRun';
 import type { Contact } from '../services/types/contact';
 import type { CoverLetter } from '../services/types/coverLetter';
 import type { ProfileFact } from '../services/types/facts';
@@ -1325,3 +1326,180 @@ export const seedIngestionRuns: IngestionRun[] = [
     error: null,
   },
 ];
+
+export const seedApplyRuns: ApplyRun[] = [
+  {
+    id: 1,
+    applicationId: 3,
+    jobId: 3,
+    status: 'ready_for_review',
+    provider: 'greenhouse',
+    attempt: 1,
+    formFields: [
+      {
+        key: 'first_name',
+        kind: 'text',
+        label: 'First name',
+        options: [],
+        required: true,
+        section: 'Personal information',
+      },
+      {
+        key: 'last_name',
+        kind: 'text',
+        label: 'Last name',
+        options: [],
+        required: true,
+        section: 'Personal information',
+      },
+      {
+        key: 'email',
+        kind: 'text',
+        label: 'Email',
+        options: [],
+        required: true,
+        section: 'Personal information',
+      },
+      {
+        key: 'phone',
+        kind: 'text',
+        label: 'Phone',
+        options: [],
+        required: false,
+        section: 'Personal information',
+      },
+      {
+        key: 'work_authorization',
+        kind: 'select',
+        label: 'Are you authorized to work in Brazil?',
+        options: ['Yes', 'No'],
+        required: true,
+        section: 'Eligibility',
+      },
+      {
+        key: 'requires_sponsorship',
+        kind: 'select',
+        label: 'Will you now or in the future require sponsorship?',
+        options: ['Yes', 'No'],
+        required: true,
+        section: 'Eligibility',
+      },
+      {
+        key: 'resume',
+        kind: 'file',
+        label: 'Resume/CV',
+        options: [],
+        required: true,
+        section: 'Attachments',
+      },
+      {
+        key: 'cover_letter',
+        kind: 'file',
+        label: 'Cover letter',
+        options: [],
+        required: false,
+        section: 'Attachments',
+      },
+      {
+        key: 'linkedin_url',
+        kind: 'text',
+        label: 'LinkedIn profile URL',
+        options: [],
+        required: false,
+        section: 'Links',
+      },
+      {
+        key: 'motivation',
+        kind: 'textarea',
+        label: 'Why do you want to work at Waymark?',
+        options: [],
+        required: false,
+        section: null,
+      },
+    ],
+    proposedAnswers: {
+      first_name: { value: 'Cassio', source: 'resume', confidence: 0.9 },
+      last_name: { value: 'Sousa', source: 'resume', confidence: 0.9 },
+      email: { value: 'cassio@example.com', source: 'fact', confidence: 1 },
+      phone: { value: '+55 71 99999-0000', source: 'fact', confidence: 1 },
+      work_authorization: { value: 'Yes', source: 'fact', confidence: 1 },
+      requires_sponsorship: { value: 'No', source: 'fact', confidence: 1 },
+      resume: { value: 'resume.txt', source: 'resume', confidence: 1 },
+      cover_letter: {
+        value: 'cover_letter.txt',
+        source: 'cover_letter',
+        confidence: 1,
+      },
+      linkedin_url: {
+        value: 'https://linkedin.com/in/cassiosousa',
+        source: 'fact',
+        confidence: 1,
+      },
+    },
+    artifacts: {
+      'resume.txt': { contentType: 'text/plain' },
+      'cover_letter.txt': { contentType: 'text/plain' },
+    },
+    result: null,
+    error: null,
+    submittedAt: null,
+    createdAt: daysAgo(0),
+    updatedAt: daysAgo(0),
+  },
+  {
+    id: 2,
+    applicationId: 6,
+    jobId: 12,
+    status: 'submitted',
+    provider: 'lever',
+    attempt: 1,
+    formFields: [],
+    proposedAnswers: {},
+    artifacts: {},
+    result: { confirmation: 'lever-ok' },
+    error: null,
+    submittedAt: daysAgo(1),
+    createdAt: daysAgo(2),
+    updatedAt: daysAgo(1),
+  },
+  {
+    id: 3,
+    applicationId: 5,
+    jobId: 11,
+    status: 'needs_human',
+    provider: 'unknown',
+    attempt: 2,
+    formFields: [
+      {
+        key: 'captcha',
+        kind: 'unknown',
+        label: 'Security check',
+        options: [],
+        required: true,
+        section: null,
+      },
+    ],
+    proposedAnswers: {},
+    artifacts: {},
+    result: null,
+    error: 'captcha required — complete the application manually',
+    submittedAt: null,
+    createdAt: daysAgo(1),
+    updatedAt: daysAgo(1),
+  },
+];
+
+/** Artifact texts served by GET /api/apply-runs/:id/artifacts/:name. */
+export const seedApplyArtifacts: Record<
+  string,
+  { contentType: string; text: string }
+> = {
+  '1:resume.txt': {
+    contentType: 'text/plain',
+    text: 'Cassio Sousa\nSenior Frontend Engineer\n\nSUMMARY\n\nBuilds fast, accessible web apps.\n\nEXPERIENCE\n\nSenior Frontend Engineer — Vetta Bank\n- Led migration to React 19\n',
+  },
+  '1:cover_letter.txt': {
+    contentType: 'text/plain',
+    text: 'Dear Waymark team,\n\nI am excited to apply for the Junior Frontend Developer role.\n\nCassio',
+  },
+};

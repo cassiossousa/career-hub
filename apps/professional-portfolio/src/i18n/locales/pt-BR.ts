@@ -4,6 +4,7 @@ const pt: Translation = {
   navigation: {
     home: 'Início',
     footerLabel: 'Navegação do rodapé',
+    skipToContent: 'Pular para o conteúdo',
     toggleMenu: 'Alternar menu',
     switchToEnglish: 'Mudar para inglês',
     switchToPortuguese: 'Mudar para português',

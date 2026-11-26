@@ -1,6 +1,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  restoreMocks: true,
   // No <rootDir> in testMatch: Stryker's jest runner re-roots into
   // .stryker-tmp/sandbox-*, where <rootDir>-based patterns stop matching.
   testMatch: ['**/components/**/*.spec.{ts,tsx}'],

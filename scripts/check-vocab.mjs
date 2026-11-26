@@ -1,7 +1,8 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+import { walk } from './walk.mjs';
 
 // Closed string vocabularies (enums) must have exactly ONE canonical
 // declaration: an `as const` array in the domain types module. Union types,
@@ -21,31 +22,10 @@ import ts from 'typescript';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCAN_ROOTS = ['apps', 'packages/ui'];
-const SKIP_DIRS = new Set([
-  'node_modules',
-  'dist',
-  'coverage',
-  '.stryker-tmp',
-  'playwright-report',
-  'test-results',
-  // Auto-generated artifacts (e.g. openapi-typescript output) are themselves
-  // single-sourced from their upstream spec — not hand-maintained vocab.
-  'generated',
-]);
+// Auto-generated artifacts (e.g. openapi-typescript output) are themselves
+// single-sourced from their upstream spec — not hand-maintained vocab.
+const isSourceFile = (file) => /\.tsx?$/.test(file) && !file.endsWith('.d.ts');
 const EXCLUDED_KEYMAP_PATH = /[/\\]locales[/\\]/;
-
-function* walk(dir) {
-  for (const entry of readdirSync(dir)) {
-    if (SKIP_DIRS.has(entry)) continue;
-    const full = path.join(dir, entry);
-    const stat = statSync(full);
-    if (stat.isDirectory()) {
-      yield* walk(full);
-    } else if (/\.tsx?$/.test(entry) && !entry.endsWith('.d.ts')) {
-      yield full;
-    }
-  }
-}
 
 function lineOf(sourceFile, node) {
   return ts.getLineAndCharacterOfPosition(sourceFile, node.getStart()).line + 1;
@@ -223,7 +203,7 @@ const allKeyMaps = [];
 
 for (const scanRoot of SCAN_ROOTS) {
   const absRoot = path.join(ROOT, scanRoot);
-  for (const file of walk(absRoot)) {
+  for (const file of walk(absRoot, isSourceFile)) {
     const relPath = path.relative(ROOT, file);
     const text = readFileSync(file, 'utf8');
     const kind = file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;

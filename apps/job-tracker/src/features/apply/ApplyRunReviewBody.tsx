@@ -4,7 +4,10 @@ import { Link as RouterLink } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
 import { ApplyRunStatusChip } from '../../components/ApplyRunStatusChip/ApplyRunStatusChip';
 import { useTranslation } from '../../i18n/Provider';
-import { useReviewApplyRun } from '../../services/api/applyRuns';
+import {
+  useRedraftApplyRun,
+  useReviewApplyRun,
+} from '../../services/api/applyRuns';
 import { useJob } from '../../services/api/jobs';
 import {
   dirtyAnswerEdits,
@@ -21,6 +24,7 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
   const { messages } = useTranslation();
   const jobQuery = useJob(run.jobId);
   const reviewMutation = useReviewApplyRun();
+  const redraftMutation = useRedraftApplyRun();
   const [draft, setDraft] = useState<Record<string, string>>(() =>
     draftAnswersFromRun(run),
   );
@@ -31,7 +35,16 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
   const reviewable = run.status === 'ready_for_review';
   const retryable = run.status === 'failed' || run.status === 'needs_human';
   const artifactNames = Object.keys(run.artifacts);
-  const pending = reviewMutation.isPending;
+  const dirty = Object.keys(dirtyAnswerEdits(draft, run)).length > 0;
+  const pending = reviewMutation.isPending || redraftMutation.isPending;
+
+  const redraft = () => {
+    redraftMutation.mutate(run.id, {
+      onSuccess: (updated) => {
+        setDraft(draftAnswersFromRun(updated));
+      },
+    });
+  };
 
   const sendReview = (action: 'approve' | 'reject' | 'retry') => {
     reviewMutation.mutate({ id: run.id, review: { action } });
@@ -97,7 +110,7 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
         editable={editable}
         reviewable={reviewable}
         retryable={retryable}
-        dirty={Object.keys(dirtyAnswerEdits(draft, run)).length > 0}
+        dirty={dirty}
         pending={pending}
         manualUrl={jobQuery.data?.url}
         onSave={saveAnswers}
@@ -108,6 +121,8 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
         onRetry={() => {
           sendReview('retry');
         }}
+        onRedraft={redraft}
+        redraftDisabled={dirty}
       />
 
       {run.error !== null && (
@@ -119,6 +134,13 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
         <Alert severity="error">
           {reviewMutation.error instanceof Error
             ? reviewMutation.error.message
+            : messages.common.error}
+        </Alert>
+      )}
+      {redraftMutation.isError && (
+        <Alert severity="error">
+          {redraftMutation.error instanceof Error
+            ? redraftMutation.error.message
             : messages.common.error}
         </Alert>
       )}

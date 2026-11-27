@@ -590,6 +590,7 @@ const en: Translation = {
       approve: 'Approve & submit',
       reject: 'Reject',
       saveAnswers: 'Save answers',
+      redraft: 'Regenerate AI drafts',
       retry: 'Retry',
       fillManually: 'Fill manually',
       runError: 'Run error',

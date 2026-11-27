@@ -14,6 +14,8 @@ interface ApplyRunActionsProps {
   onApprove: () => void;
   onReject: () => void;
   onRetry: () => void;
+  onRedraft: () => void;
+  redraftDisabled: boolean;
 }
 
 export function ApplyRunActions({
@@ -28,6 +30,8 @@ export function ApplyRunActions({
   onApprove,
   onReject,
   onRetry,
+  onRedraft,
+  redraftDisabled,
 }: ApplyRunActionsProps) {
   const { messages } = useTranslation();
 
@@ -42,6 +46,16 @@ export function ApplyRunActions({
             onClick={onSave}
           >
             {messages.apply.review.saveAnswers}
+          </Button>
+        )}
+        {editable && (
+          <Button
+            variant="outlined"
+            size="small"
+            disabled={pending || redraftDisabled}
+            onClick={onRedraft}
+          >
+            {messages.apply.review.redraft}
           </Button>
         )}
         {reviewable && (

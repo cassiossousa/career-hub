@@ -77,6 +77,29 @@ describe('ApplyRunReview', () => {
     });
   }, 30000);
 
+  it('regenerates AI-drafted answers', async () => {
+    const user = userEvent.setup();
+    renderReview(routePaths.applyRun('1'));
+    expect(
+      await screen.findByDisplayValue(/Waymark's focus/),
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('button', { name: /regenerate ai drafts/i }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByDisplayValue(/Waymark's focus/),
+      ).not.toBeInTheDocument();
+    });
+    expect(
+      await screen.findByDisplayValue(
+        /excited about this opportunity|aligns closely|strong fit/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('rejects a run', async () => {
     const user = userEvent.setup();
     renderReview(routePaths.applyRun('1'));

@@ -95,6 +95,7 @@ let offers: Offer[] = [...seedOffers];
 let coverLetters: CoverLetter[] = [...seedCoverLetters];
 let profileFacts: ProfileFact[] = [...seedProfileFacts];
 let applyRuns: ApplyRun[] = [...seedApplyRuns];
+let redraftSeq = 0;
 const applyArtifactTexts = new Map<
   string,
   { contentType: string; text: string }
@@ -168,6 +169,7 @@ export function resetMockData() {
   coverLetters = [...seedCoverLetters];
   profileFacts = [...seedProfileFacts];
   applyRuns = [...seedApplyRuns];
+  redraftSeq = 0;
   applyArtifactTexts.clear();
   for (const [key, value] of Object.entries(seedApplyArtifacts)) {
     applyArtifactTexts.set(key, value);
@@ -685,6 +687,35 @@ function nextRunForReview(
     return { ...run, status: 'queued', error: null, updatedAt: now };
   }
   return editApplyRun(run, body.answers, now);
+}
+
+const REDRAFT_TEXTS = [
+  'I am excited about this opportunity and would love to contribute my experience to the team.',
+  'This role aligns closely with my background, and I am eager to bring my skills to your company.',
+  'I believe my experience makes me a strong fit, and I would welcome the chance to discuss it further.',
+];
+
+function redraftApplyRun(run: ApplyRun, now: string): ApplyRun | Response {
+  const editable =
+    run.status === 'ready_for_review' ||
+    (run.status === 'needs_human' && run.formFields.length > 0);
+  if (!editable) {
+    return conflictJson('invalid_transition', 'Run cannot be redrafted');
+  }
+  const answers = { ...run.proposedAnswers };
+  for (const [key, answer] of Object.entries(answers)) {
+    if (answer.source !== 'ai') continue;
+    redraftSeq += 1;
+    answers[key] = {
+      ...answer,
+      value:
+        REDRAFT_TEXTS[redraftSeq % REDRAFT_TEXTS.length] ??
+        REDRAFT_TEXTS[0] ??
+        '',
+      confidence: 0.6,
+    };
+  }
+  return { ...run, proposedAnswers: answers, updatedAt: now };
 }
 
 function applyRunReview(
@@ -1466,6 +1497,15 @@ export const handlers = [
     const body = (await request.json()) as ApplyRunReview;
     const outcome = applyRunReview(run, body);
     if (outcome instanceof Response) return outcome;
+    return HttpResponse.json(outcome);
+  }),
+
+  http.post('/api/apply-runs/:id/redraft', ({ params }) => {
+    const run = findApplyRun(Number(params.id));
+    if (run instanceof Response) return run;
+    const outcome = redraftApplyRun(run, new Date().toISOString());
+    if (outcome instanceof Response) return outcome;
+    applyRuns = applyRuns.map((r) => (r.id === run.id ? outcome : r));
     return HttpResponse.json(outcome);
   }),
 

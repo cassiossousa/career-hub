@@ -125,6 +125,21 @@ export function useReviewApplyRun(
   });
 }
 
+/** Re-drafts the run's AI-eligible answers; returns the updated run. */
+export function useRedraftApplyRun(
+  options?: Omit<UseMutationOptions<ApplyRun, Error, number>, 'mutationFn'>,
+) {
+  const invalidate = useInvalidateApplyRuns();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiClient.post(`/api/apply-runs/${id}/redraft`);
+      return applyRunResponseSchema.parse(response.data);
+    },
+    onSuccess: invalidate,
+    ...options,
+  });
+}
+
 /** Fetches one stored artifact (resume/cover-letter text) for preview. */
 export function useApplyArtifact(
   runId: number,

@@ -40,9 +40,12 @@ export async function expectSkipLinkFocusesMain(
   url: string,
 ): Promise<void> {
   await page.goto(url);
+  const skipLink = page.getByRole('link', { name: 'Skip to content' });
+  // Wait for hydration before pressing Tab — an early Tab is consumed by the
+  // not-yet-mounted link and focus never lands on it.
+  await expect(skipLink).toBeAttached();
   await page.keyboard.press('Tab');
 
-  const skipLink = page.getByRole('link', { name: 'Skip to content' });
   await expect(skipLink).toBeFocused();
   await page.keyboard.press('Enter');
 

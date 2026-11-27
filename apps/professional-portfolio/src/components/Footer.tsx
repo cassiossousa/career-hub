@@ -23,7 +23,9 @@ export default function Footer() {
           sx={{ justifyContent: 'space-between' }}
         >
           <Stack spacing={0.5}>
-            <Typography variant="subtitle1">{t.home.name}</Typography>
+            <Typography variant="subtitle1" component="p">
+              {t.home.name}
+            </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {t.home.title}
             </Typography>

@@ -19,25 +19,27 @@ test.describe('deep accessibility', () => {
     }
   });
 
-  test('heading levels never skip on the home page', async ({ page }) => {
-    await page.goto(routePaths.home);
-    await expect(page.locator('main')).toBeVisible();
+  test('heading levels never skip on public routes', async ({ page }) => {
+    for (const route of publicRoutePaths) {
+      await page.goto(route);
+      await expect(page.locator('main')).toBeVisible();
 
-    const levels = await page
-      .locator('h1, h2, h3, h4, h5, h6')
-      .evaluateAll((elements) =>
-        elements.map((element) => Number(element.tagName.slice(1))),
-      );
+      const levels = await page
+        .locator('h1, h2, h3, h4, h5, h6')
+        .evaluateAll((elements) =>
+          elements.map((element) => Number(element.tagName.slice(1))),
+        );
 
-    expect(levels.length).toBeGreaterThan(0);
-    expect(levels[0]).toBe(1);
-    for (let index = 1; index < levels.length; index += 1) {
-      const previous = levels[index - 1];
-      const current = levels[index];
-      if (previous === undefined || current === undefined) {
-        throw new Error('unexpected empty heading level');
+      expect(levels.length).toBeGreaterThan(0);
+      expect(levels[0]).toBe(1);
+      for (let index = 1; index < levels.length; index += 1) {
+        const previous = levels[index - 1];
+        const current = levels[index];
+        if (previous === undefined || current === undefined) {
+          throw new Error('unexpected empty heading level');
+        }
+        expect(current).toBeLessThanOrEqual(previous + 1);
       }
-      expect(current).toBeLessThanOrEqual(previous + 1);
     }
   });
 

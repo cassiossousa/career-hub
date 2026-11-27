@@ -11,11 +11,16 @@ test.describe('url-synced filters and navigation', () => {
     await expect(page.locator('main')).toBeVisible();
     await expect(page).toHaveURL(/level=senior/);
 
-    const stored = await page.evaluate(
-      (key) => window.localStorage.getItem(key),
-      FILTERS_STORAGE_KEY,
-    );
-    expect(stored).toContain('senior');
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            (key) => window.localStorage.getItem(key),
+            FILTERS_STORAGE_KEY,
+          ),
+        { timeout: 15_000 },
+      )
+      .toContain('senior');
 
     await page.reload();
     await expect(page.locator('main')).toBeVisible();

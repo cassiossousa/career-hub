@@ -35,25 +35,13 @@ export function SkipLink({ href, label }: SkipLinkProps) {
         borderRadius: 1,
         textDecoration: 'none',
         fontWeight: 600,
-        // Visually-hidden pattern: clipped to 1px until focused.
-        width: '1px',
-        height: '1px',
-        padding: 0,
-        margin: '-1px',
-        overflow: 'hidden',
-        clip: 'rect(0, 0, 0, 0)',
-        clipPath: 'inset(50%)',
-        whiteSpace: 'nowrap',
-        border: 0,
+        padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+        // Visually-hidden pattern: parked above the viewport until focused.
+        // Keeps a real bounding box (unlike the 1px clip pattern) so target-size
+        // checks still measure the focused control's true dimensions.
+        transform: 'translateY(-200%)',
         '&:focus, &:focus-visible': {
-          width: 'auto',
-          height: 'auto',
-          margin: 0,
-          padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
-          overflow: 'visible',
-          clip: 'auto',
-          clipPath: 'none',
-          whiteSpace: 'normal',
+          transform: 'translateY(0)',
         },
       })}
     >

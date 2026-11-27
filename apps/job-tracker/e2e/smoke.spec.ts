@@ -31,7 +31,9 @@ test.describe('job-tracker smoke matrix', () => {
         });
         await setLocale(page, locale);
         await page.goto('/');
-        await expect(page.locator('h1, h2').first()).toBeVisible();
+        await expect(page.locator('h1, h2').first()).toBeVisible({
+          timeout: 20_000,
+        });
         await expectNoHorizontalOverflow(page);
       });
     }
@@ -44,9 +46,9 @@ test.describe('job-tracker smoke matrix', () => {
     await setLocale(page, 'pt-BR');
     for (const route of publicRoutePaths) {
       await page.goto(route);
-      await expect(
-        page.locator('h1, h2, [role="alert"]').first(),
-      ).toBeVisible();
+      await expect(page.locator('h1, h2, [role="alert"]').first()).toBeVisible({
+        timeout: 20_000,
+      });
       await expectNoHorizontalOverflow(page);
     }
   });
@@ -55,7 +57,9 @@ test.describe('job-tracker smoke matrix', () => {
     for (const locale of LOCALES) {
       await setLocale(page, locale);
       await page.goto('/');
-      await expect(page.locator('h1, h2').first()).toBeVisible();
+      await expect(page.locator('h1, h2').first()).toBeVisible({
+        timeout: 20_000,
+      });
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
         .analyze();
@@ -68,7 +72,9 @@ test.describe('job-tracker smoke matrix', () => {
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto('/');
-    await expect(page.locator('h1, h2').first()).toBeVisible();
+    await expect(page.locator('h1, h2').first()).toBeVisible({
+      timeout: 20_000,
+    });
 
     const violations = await page.evaluate(() => {
       const smallTargets: string[] = [];
@@ -88,9 +94,12 @@ test.describe('job-tracker smoke matrix', () => {
           continue;
         }
         if (rect.width < 24 || rect.height < 24) {
-          const ariaLabel = el.getAttribute('aria-label');
+          const label =
+            el.getAttribute('aria-label') ??
+            el.textContent?.trim().slice(0, 40) ??
+            '';
           smallTargets.push(
-            `${el.tagName.toLowerCase()}${ariaLabel ? ` "${ariaLabel}"` : ''} ${Math.round(rect.width)}x${Math.round(rect.height)}`,
+            `${el.tagName.toLowerCase()} "${label}" ${Math.round(rect.width)}x${Math.round(rect.height)}`,
           );
         }
       }

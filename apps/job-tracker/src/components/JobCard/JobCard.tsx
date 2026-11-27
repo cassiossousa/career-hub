@@ -128,7 +128,12 @@ function JobChips({ job }: { job: Job }) {
           target="_blank"
           rel="noopener noreferrer"
           variant="body2"
-          sx={{ alignSelf: 'center' }}
+          sx={{
+            alignSelf: 'center',
+            display: 'inline-flex',
+            alignItems: 'center',
+            minHeight: 24,
+          }}
         >
           {messages.jobs.viewPosting}
         </Link>
@@ -139,7 +144,12 @@ function JobChips({ job }: { job: Job }) {
               component={RouterLink}
               to={routePaths.applicationDetail(String(job.applicationId))}
               variant="body2"
-              sx={{ alignSelf: 'center' }}
+              sx={{
+                alignSelf: 'center',
+                display: 'inline-flex',
+                alignItems: 'center',
+                minHeight: 24,
+              }}
             >
               {messages.jobs.viewApplication}
             </Link>

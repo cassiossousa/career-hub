@@ -53,7 +53,9 @@ export default function ProjectDetails() {
             {project.title}
           </Typography>
           {project.description && (
-            <Typography variant="h6">{project.description}</Typography>
+            <Typography variant="h6" component="p">
+              {project.description}
+            </Typography>
           )}
           {project.summary && (
             <ul>

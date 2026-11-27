@@ -25,7 +25,7 @@ export default function ResumeProjects({
             sx={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}
           >
             <Stack component="header" spacing={0.5}>
-              <Typography variant="subtitle2">
+              <Typography component="h3" variant="subtitle2">
                 {project.title}
                 {project.technologies?.length ? (
                   <Typography

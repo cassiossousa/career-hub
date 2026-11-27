@@ -42,14 +42,23 @@ function AccordionItem({ role }: { role: WorkRole }) {
     <Accordion
       disableGutters
       elevation={0}
+      slots={{ heading: 'div' }}
       sx={{ backgroundColor: 'transparent', border: 'none', borderRadius: 0 }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
         <Stack spacing={0.5}>
-          <Typography variant="h3" sx={{ color: 'primary.dark' }}>
+          <Typography
+            variant="h3"
+            component="h2"
+            sx={{ color: 'primary.dark' }}
+          >
             {role.company}
           </Typography>
-          <Typography variant="h6" sx={{ color: 'primary.main' }}>
+          <Typography
+            variant="h6"
+            component="h3"
+            sx={{ color: 'primary.main' }}
+          >
             {role.title}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>

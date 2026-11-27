@@ -19,6 +19,14 @@ async function setLocale(page: Page, locale: string) {
   );
 }
 
+async function expectDashboard(page: Page, locale: string) {
+  await setLocale(page, locale);
+  await page.goto('/');
+  await expect(page.locator('h1, h2').first()).toBeVisible({
+    timeout: 20_000,
+  });
+}
+
 test.describe('job-tracker smoke matrix', () => {
   for (const locale of LOCALES) {
     for (const viewport of VIEWPORTS) {
@@ -29,11 +37,7 @@ test.describe('job-tracker smoke matrix', () => {
           width: viewport.width,
           height: viewport.height,
         });
-        await setLocale(page, locale);
-        await page.goto('/');
-        await expect(page.locator('h1, h2').first()).toBeVisible({
-          timeout: 20_000,
-        });
+        await expectDashboard(page, locale);
         await expectNoHorizontalOverflow(page);
       });
     }
@@ -55,11 +59,7 @@ test.describe('job-tracker smoke matrix', () => {
 
   test('WCAG 2.2 AA audit on dashboard (en + pt-BR)', async ({ page }) => {
     for (const locale of LOCALES) {
-      await setLocale(page, locale);
-      await page.goto('/');
-      await expect(page.locator('h1, h2').first()).toBeVisible({
-        timeout: 20_000,
-      });
+      await expectDashboard(page, locale);
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
         .analyze();

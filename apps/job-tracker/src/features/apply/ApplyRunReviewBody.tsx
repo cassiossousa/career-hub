@@ -15,6 +15,7 @@ import { ApplyAnswersCard } from './ApplyAnswersCard';
 import { ApplyArtifactsCard } from './ApplyArtifactsCard';
 import { ApplyRunActions } from './ApplyRunActions';
 import { ApplyRunOutcome } from './ApplyRunOutcome';
+import { ApplyTailoringCard } from './ApplyTailoringCard';
 
 export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
   const { messages } = useTranslation();
@@ -132,6 +133,13 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
       />
 
       <ApplyArtifactsCard runId={run.id} artifactNames={artifactNames} />
+
+      {(run.status === 'ready_for_review' || run.status === 'needs_human') && (
+        <ApplyTailoringCard
+          jobId={run.jobId}
+          applicationId={run.applicationId}
+        />
+      )}
 
       <ApplyRunOutcome run={run} />
     </Stack>

@@ -601,6 +601,9 @@ const ptBR: Translation = {
       latestRun: 'Última execução automática',
       viewRun: 'Revisar execução',
       approveHint: 'Aprovar envia a candidatura ao empregador pelo ATS.',
+      tailoringTitle: 'Sugestões de adequação',
+      tailoringHint:
+        'Sobreposição de palavras-chave entre esta vaga e o currículo enviado. Enfatize os termos correspondentes e revise os requisitos não atendidos antes de aprovar.',
     },
   },
 

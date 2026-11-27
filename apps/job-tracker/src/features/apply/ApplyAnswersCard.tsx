@@ -1,7 +1,7 @@
-import { Card, CardContent, Stack, Typography } from '@mui/material';
 import { useTranslation } from '../../i18n/Provider';
 import type { ApplyRun } from '../../services/types/applyRun';
 import { ApplyFieldGroups } from './ApplyFieldGroups';
+import { ApplyReviewCard } from './ApplyReviewCard';
 
 interface ApplyAnswersCardProps {
   run: ApplyRun;
@@ -18,20 +18,13 @@ export function ApplyAnswersCard({
 }: ApplyAnswersCardProps) {
   const { messages } = useTranslation();
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography component="h2" variant="h6">
-            {messages.apply.review.answersTitle}
-          </Typography>
-          <ApplyFieldGroups
-            run={run}
-            draft={draft}
-            disabled={disabled}
-            onChange={onChange}
-          />
-        </Stack>
-      </CardContent>
-    </Card>
+    <ApplyReviewCard title={messages.apply.review.answersTitle}>
+      <ApplyFieldGroups
+        run={run}
+        draft={draft}
+        disabled={disabled}
+        onChange={onChange}
+      />
+    </ApplyReviewCard>
   );
 }

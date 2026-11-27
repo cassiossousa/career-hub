@@ -29,6 +29,22 @@ describe('ApplyRunReview', () => {
     ).toBeEnabled();
   });
 
+  it('shows tailoring suggestions from the match score', async () => {
+    renderReview(routePaths.applyRun('1'));
+    expect(
+      await screen.findByRole('heading', { name: 'Tailoring suggestions' }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/Match score: \d+%/)).toBeInTheDocument();
+  });
+
+  it('hides tailoring suggestions on terminal runs', async () => {
+    renderReview(routePaths.applyRun('2'));
+    await screen.findByRole('heading', { name: 'Apply run review' });
+    expect(
+      screen.queryByRole('heading', { name: 'Tailoring suggestions' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows artifact previews', async () => {
     renderReview(routePaths.applyRun('1'));
     expect(

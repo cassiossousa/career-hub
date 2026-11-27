@@ -481,6 +481,8 @@ export interface Translation {
       latestRun: string;
       viewRun: string;
       approveHint: string;
+      tailoringTitle: string;
+      tailoringHint: string;
     };
   };
 

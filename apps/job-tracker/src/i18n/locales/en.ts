@@ -601,6 +601,9 @@ const en: Translation = {
       viewRun: 'Review run',
       approveHint:
         'Approving submits the application to the employer through the ATS.',
+      tailoringTitle: 'Tailoring suggestions',
+      tailoringHint:
+        'Keyword overlap between this job and the resume being submitted. Emphasize matched terms and review unmet requirements before approving.',
     },
   },
 

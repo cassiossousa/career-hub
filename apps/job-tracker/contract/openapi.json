@@ -461,6 +461,25 @@
         "title": "ApplyRunListResponse",
         "type": "object"
       },
+      "ApplyRunRedraft": {
+        "additionalProperties": false,
+        "properties": {
+          "fieldKey": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fieldkey"
+          }
+        },
+        "title": "ApplyRunRedraft",
+        "type": "object"
+      },
       "ApplyRunResponse": {
         "additionalProperties": false,
         "properties": {
@@ -6731,6 +6750,23 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ApplyRunRedraft"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {

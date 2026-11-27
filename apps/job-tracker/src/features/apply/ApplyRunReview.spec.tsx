@@ -14,6 +14,27 @@ function renderReview(route: string) {
   );
 }
 
+type User = ReturnType<typeof userEvent.setup>;
+
+async function replaceEmail(user: User, value: string): Promise<void> {
+  const emailInput = await screen.findByDisplayValue('cassio@example.com');
+  await user.clear(emailInput);
+  await user.type(emailInput, value);
+}
+
+async function expectMotivationRegenerated(): Promise<void> {
+  await waitFor(() => {
+    expect(
+      screen.queryByDisplayValue(/Waymark's focus/),
+    ).not.toBeInTheDocument();
+  });
+  expect(
+    await screen.findByDisplayValue(
+      /excited about this opportunity|aligns closely|strong fit/i,
+    ),
+  ).toBeInTheDocument();
+}
+
 describe('ApplyRunReview', () => {
   it('renders the extracted form fields with proposed answers', async () => {
     renderReview(routePaths.applyRun('1'));
@@ -58,10 +79,8 @@ describe('ApplyRunReview', () => {
   it('edits an answer then approves', async () => {
     const user = userEvent.setup();
     renderReview(routePaths.applyRun('1'));
-    const emailInput = await screen.findByDisplayValue('cassio@example.com');
+    await replaceEmail(user, 'new@example.com');
 
-    await user.clear(emailInput);
-    await user.type(emailInput, 'new@example.com');
     await user.click(screen.getByRole('button', { name: /save answers/i }));
 
     await waitFor(() => {
@@ -88,16 +107,20 @@ describe('ApplyRunReview', () => {
       screen.getByRole('button', { name: /regenerate ai drafts/i }),
     );
 
-    await waitFor(() => {
-      expect(
-        screen.queryByDisplayValue(/Waymark's focus/),
-      ).not.toBeInTheDocument();
-    });
-    expect(
-      await screen.findByDisplayValue(
-        /excited about this opportunity|aligns closely|strong fit/i,
-      ),
-    ).toBeInTheDocument();
+    await expectMotivationRegenerated();
+  });
+
+  it('regenerates a single AI answer without losing unsaved edits', async () => {
+    const user = userEvent.setup();
+    renderReview(routePaths.applyRun('1'));
+    await replaceEmail(user, 'draft@example.com');
+
+    await user.click(
+      screen.getByRole('button', { name: /regenerate this answer/i }),
+    );
+
+    await expectMotivationRegenerated();
+    expect(screen.getByDisplayValue('draft@example.com')).toBeInTheDocument();
   });
 
   it('rejects a run', async () => {

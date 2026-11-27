@@ -7,11 +7,12 @@ import {
 import type { ApplyRun } from '../../services/types/applyRun';
 import { ApplyAnswerField } from './ApplyAnswerField';
 
-interface ApplyFieldGroupsProps {
+export interface ApplyFieldGroupsProps {
   run: ApplyRun;
   draft: Record<string, string>;
   disabled: boolean;
   onChange: (key: string, value: string) => void;
+  onRedraftField: ((key: string) => void) | undefined;
 }
 
 export function ApplyFieldGroups({
@@ -19,6 +20,7 @@ export function ApplyFieldGroups({
   draft,
   disabled,
   onChange,
+  onRedraftField,
 }: ApplyFieldGroupsProps) {
   const { messages } = useTranslation();
   const missing = new Set(missingRequiredFields(run).map((f) => f.key));
@@ -49,6 +51,7 @@ export function ApplyFieldGroups({
                     proposed={run.proposedAnswers[field.key]}
                     disabled={disabled}
                     onChange={onChange}
+                    onRedraft={onRedraftField}
                   />
                   {missing.has(field.key) && (
                     <Typography variant="caption" color="warning.main">

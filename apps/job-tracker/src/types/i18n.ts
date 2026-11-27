@@ -472,6 +472,7 @@ export interface Translation {
       reject: string;
       saveAnswers: string;
       redraft: string;
+      redraftField: string;
       retry: string;
       fillManually: string;
       runError: string;

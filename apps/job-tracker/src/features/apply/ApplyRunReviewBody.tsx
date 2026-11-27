@@ -39,11 +39,26 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
   const pending = reviewMutation.isPending || redraftMutation.isPending;
 
   const redraft = () => {
-    redraftMutation.mutate(run.id, {
-      onSuccess: (updated) => {
-        setDraft(draftAnswersFromRun(updated));
+    redraftMutation.mutate(
+      { id: run.id },
+      {
+        onSuccess: (updated) => {
+          setDraft(draftAnswersFromRun(updated));
+        },
       },
-    });
+    );
+  };
+
+  const redraftField = (fieldKey: string) => {
+    redraftMutation.mutate(
+      { id: run.id, fieldKey },
+      {
+        onSuccess: (updated) => {
+          const next = updated.proposedAnswers[fieldKey];
+          setDraft((prev) => ({ ...prev, [fieldKey]: next?.value ?? '' }));
+        },
+      },
+    );
   };
 
   const sendReview = (action: 'approve' | 'reject' | 'retry') => {
@@ -152,6 +167,7 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
         onChange={(key, value) => {
           setDraft((prev) => ({ ...prev, [key]: value }));
         }}
+        onRedraftField={editable ? redraftField : undefined}
       />
 
       <ApplyArtifactsCard runId={run.id} artifactNames={artifactNames} />

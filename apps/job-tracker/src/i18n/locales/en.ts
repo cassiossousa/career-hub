@@ -591,6 +591,7 @@ const en: Translation = {
       reject: 'Reject',
       saveAnswers: 'Save answers',
       redraft: 'Regenerate AI drafts',
+      redraftField: 'Regenerate this answer',
       retry: 'Retry',
       fillManually: 'Fill manually',
       runError: 'Run error',

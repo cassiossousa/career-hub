@@ -592,6 +592,7 @@ const ptBR: Translation = {
       reject: 'Rejeitar',
       saveAnswers: 'Salvar respostas',
       redraft: 'Gerar novos rascunhos de IA',
+      redraftField: 'Gerar novo rascunho desta resposta',
       retry: 'Tentar novamente',
       fillManually: 'Preencher manualmente',
       runError: 'Erro da execução',

@@ -1,21 +1,17 @@
 import { useTranslation } from '../../i18n/Provider';
-import type { ApplyRun } from '../../services/types/applyRun';
-import { ApplyFieldGroups } from './ApplyFieldGroups';
+import {
+  ApplyFieldGroups,
+  type ApplyFieldGroupsProps,
+} from './ApplyFieldGroups';
 import { ApplyReviewCard } from './ApplyReviewCard';
-
-interface ApplyAnswersCardProps {
-  run: ApplyRun;
-  draft: Record<string, string>;
-  disabled: boolean;
-  onChange: (key: string, value: string) => void;
-}
 
 export function ApplyAnswersCard({
   run,
   draft,
   disabled,
   onChange,
-}: ApplyAnswersCardProps) {
+  onRedraftField,
+}: ApplyFieldGroupsProps) {
   const { messages } = useTranslation();
   return (
     <ApplyReviewCard title={messages.apply.review.answersTitle}>
@@ -24,6 +20,7 @@ export function ApplyAnswersCard({
         draft={draft}
         disabled={disabled}
         onChange={onChange}
+        onRedraftField={onRedraftField}
       />
     </ApplyReviewCard>
   );

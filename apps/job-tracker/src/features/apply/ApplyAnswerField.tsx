@@ -1,4 +1,12 @@
-import { Chip, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Chip,
+  IconButton,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from '../../i18n/Provider';
 import type {
   ApplyFormField,
@@ -11,6 +19,7 @@ interface ApplyAnswerFieldProps {
   proposed: ProposedAnswer | undefined;
   disabled: boolean;
   onChange: (key: string, value: string) => void;
+  onRedraft: ((key: string) => void) | undefined;
 }
 
 export function ApplyAnswerField({
@@ -19,6 +28,7 @@ export function ApplyAnswerField({
   proposed,
   disabled,
   onChange,
+  onRedraft,
 }: ApplyAnswerFieldProps) {
   const { messages } = useTranslation();
   const label = `${field.label}${field.required ? ` (${messages.apply.review.required})` : ` (${messages.apply.review.optional})`}`;
@@ -71,10 +81,30 @@ export function ApplyAnswerField({
         />
       )}
       {proposed !== undefined && proposed.source !== 'manual' && (
-        <Typography variant="caption" color="text.secondary">
-          {messages.apply.sources[proposed.source]} ·{' '}
-          {Math.round(proposed.confidence * 100)}%
-        </Typography>
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ flexGrow: 1 }}
+          >
+            {messages.apply.sources[proposed.source]} ·{' '}
+            {Math.round(proposed.confidence * 100)}%
+          </Typography>
+          {proposed.source === 'ai' && onRedraft !== undefined && (
+            <IconButton
+              size="small"
+              aria-label={`${messages.apply.review.redraftField}: ${field.label}`}
+              title={messages.apply.review.redraftField}
+              disabled={disabled}
+              onClick={() => {
+                onRedraft(field.key);
+              }}
+              sx={{ p: 0.25 }}
+            >
+              <RefreshIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          )}
+        </Stack>
       )}
     </Stack>
   );

@@ -1018,6 +1018,11 @@ export interface components {
       /** Total */
       total: number;
     };
+    /** ApplyRunRedraft */
+    ApplyRunRedraft: {
+      /** Fieldkey */
+      fieldKey?: string | null;
+    };
     /** ApplyRunResponse */
     ApplyRunResponse: {
       /** Applicationid */
@@ -3947,7 +3952,11 @@ export interface operations {
       };
       cookie?: never;
     };
-    requestBody?: never;
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['ApplyRunRedraft'] | null;
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {

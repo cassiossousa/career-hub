@@ -695,7 +695,11 @@ const REDRAFT_TEXTS = [
   'I believe my experience makes me a strong fit, and I would welcome the chance to discuss it further.',
 ];
 
-function redraftApplyRun(run: ApplyRun, now: string): ApplyRun | Response {
+function redraftApplyRun(
+  run: ApplyRun,
+  now: string,
+  fieldKey: string | undefined,
+): ApplyRun | Response {
   const editable =
     run.status === 'ready_for_review' ||
     (run.status === 'needs_human' && run.formFields.length > 0);
@@ -703,8 +707,10 @@ function redraftApplyRun(run: ApplyRun, now: string): ApplyRun | Response {
     return conflictJson('invalid_transition', 'Run cannot be redrafted');
   }
   const answers = { ...run.proposedAnswers };
-  for (const [key, answer] of Object.entries(answers)) {
-    if (answer.source !== 'ai') continue;
+  const keys = fieldKey === undefined ? Object.keys(answers) : [fieldKey];
+  for (const key of keys) {
+    const answer = answers[key];
+    if (answer === undefined || answer.source !== 'ai') continue;
     redraftSeq += 1;
     answers[key] = {
       ...answer,
@@ -1500,10 +1506,15 @@ export const handlers = [
     return HttpResponse.json(outcome);
   }),
 
-  http.post('/api/apply-runs/:id/redraft', ({ params }) => {
+  http.post('/api/apply-runs/:id/redraft', async ({ params, request }) => {
     const run = findApplyRun(Number(params.id));
     if (run instanceof Response) return run;
-    const outcome = redraftApplyRun(run, new Date().toISOString());
+    const body = (await request.json()) as { fieldKey?: string | undefined };
+    const outcome = redraftApplyRun(
+      run,
+      new Date().toISOString(),
+      body.fieldKey,
+    );
     if (outcome instanceof Response) return outcome;
     applyRuns = applyRuns.map((r) => (r.id === run.id ? outcome : r));
     return HttpResponse.json(outcome);

@@ -125,14 +125,29 @@ export function useReviewApplyRun(
   });
 }
 
-/** Re-drafts the run's AI-eligible answers; returns the updated run. */
+/** Re-drafts the run's AI-eligible answers; `fieldKey` narrows to one field. */
 export function useRedraftApplyRun(
-  options?: Omit<UseMutationOptions<ApplyRun, Error, number>, 'mutationFn'>,
+  options?: Omit<
+    UseMutationOptions<
+      ApplyRun,
+      Error,
+      { id: number; fieldKey?: string | undefined }
+    >,
+    'mutationFn'
+  >,
 ) {
   const invalidate = useInvalidateApplyRuns();
   return useMutation({
-    mutationFn: async (id: number) => {
-      const response = await apiClient.post(`/api/apply-runs/${id}/redraft`);
+    mutationFn: async ({
+      id,
+      fieldKey,
+    }: {
+      id: number;
+      fieldKey?: string | undefined;
+    }) => {
+      const response = await apiClient.post(`/api/apply-runs/${id}/redraft`, {
+        fieldKey,
+      });
       return applyRunResponseSchema.parse(response.data);
     },
     onSuccess: invalidate,

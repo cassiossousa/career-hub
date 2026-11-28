@@ -12,8 +12,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const MUTATION_WORKSPACES = {
   'apps/job-tracker': {
-    // Repo-root-relative prefix `git diff --name-only` must match.
-    srcPrefix: 'apps/job-tracker/src/',
+    // Repo-root-relative prefixes `git diff --name-only` must match.
+    srcPrefixes: ['apps/job-tracker/src/'],
     coreGlobs: [
       'src/services/**',
       'src/types/**',
@@ -29,7 +29,7 @@ const MUTATION_WORKSPACES = {
     ].join(','),
   },
   'apps/professional-portfolio': {
-    srcPrefix: 'apps/professional-portfolio/src/',
+    srcPrefixes: ['apps/professional-portfolio/src/'],
     coreGlobs: [
       'src/services/**',
       'src/types/**',
@@ -43,16 +43,21 @@ const MUTATION_WORKSPACES = {
     ].join(','),
   },
   'packages/ui': {
-    // packages/ui has no src/ dir — its mutation surface is components/,
-    // the only directory with Jest specs. theme/, pdf/, i18n/, testkit/
+    // packages/ui has no src/ dir — its mutation surface is components/ and
+    // pdf/, the directories with Jest specs. theme/, i18n/, testkit/
     // are untested and stay out until specs exist.
-    srcPrefix: 'packages/ui/components/',
+    srcPrefixes: ['packages/ui/components/', 'packages/ui/pdf/'],
     coreGlobs: [
       'components/**',
+      'pdf/**',
       '!components/**/*.spec.ts',
       '!components/**/*.spec.tsx',
       '!components/**/*.test.ts',
       '!components/**/*.test.tsx',
+      '!pdf/**/*.spec.ts',
+      '!pdf/**/*.spec.tsx',
+      '!pdf/**/*.test.ts',
+      '!pdf/**/*.test.tsx',
       '!**/*.d.ts',
     ].join(','),
   },

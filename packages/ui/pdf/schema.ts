@@ -59,7 +59,24 @@ const languageEntrySchema = z.object({
   proficiency: optionalText,
 });
 
+// Provenance envelope (ADR 0035): which resume schema produced the
+// document and where it came from. Rendering ignores it; the viewer and
+// download flows may surface it. All fields optional — older documents
+// simply carry no meta.
+const resumeDocumentMetaSchema = z.object({
+  locale: optionalText,
+  source: optionalText,
+  versionId: z.union([z.string(), z.number()]).optional(),
+  applicationId: z.union([z.string(), z.number()]).optional(),
+  jobId: z.union([z.string(), z.number()]).optional(),
+  generatedAt: optionalText,
+});
+
 export const resumePdfDocumentSchema = z.object({
+  // Schema version of the resume document shape (backend
+  // RESUME_SCHEMA_VERSION); documents predating versioning parse as 1.
+  schemaVersion: z.number().int().nonnegative().default(1),
+  meta: resumeDocumentMetaSchema.optional(),
   basics: basicsSchema,
   summary: optionalText,
   experience: z.array(experienceEntrySchema).optional(),

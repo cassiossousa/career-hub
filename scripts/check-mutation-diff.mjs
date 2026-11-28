@@ -22,7 +22,7 @@ const changedFiles = execFileSync(
   .split(/\r?\n/)
   .filter(
     (file) =>
-      file.startsWith(workspace.srcPrefix) &&
+      workspace.srcPrefixes.some((prefix) => file.startsWith(prefix)) &&
       /\.(ts|tsx)$/.test(file) &&
       !file.endsWith('.d.ts') &&
       !/\.(test|spec)\.(ts|tsx)$/.test(file),

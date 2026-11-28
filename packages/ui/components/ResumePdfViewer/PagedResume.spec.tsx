@@ -14,6 +14,7 @@ function experienceEntry(company: string) {
 }
 
 const DOCUMENT: ResumePdfDocument = {
+  schemaVersion: 1,
   basics: { fullName: 'Paged Person', links: [] },
   summary: 'Summary text.',
   experience: [

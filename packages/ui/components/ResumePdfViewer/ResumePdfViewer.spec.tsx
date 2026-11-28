@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { resumePdfDocumentSchema } from '../../pdf/schema';
 import { ResumePdfViewer } from './ResumePdfViewer';
 import { RESUME_PDF_SPEC_LABELS } from './specFixtures';
 import type { ResumePdfDocument } from './types';
 
 const FULL_DOCUMENT: ResumePdfDocument = {
+  schemaVersion: 1,
   basics: {
     fullName: 'Ada Lovelace',
     headline: 'Engineer',
@@ -49,6 +51,31 @@ const FULL_DOCUMENT: ResumePdfDocument = {
   certifications: [{ name: 'Fellow', issuer: 'Royal Society', year: '1835' }],
   languages: [{ name: 'English', proficiency: 'Native' }, { name: 'French' }],
 };
+
+function renderDocumentTwice(options: {
+  printLabel?: string;
+  paged?: boolean;
+}) {
+  const first = render(
+    <ResumePdfViewer
+      document={FULL_DOCUMENT}
+      labels={RESUME_PDF_SPEC_LABELS}
+      {...options}
+    />,
+  );
+  const firstHtml = first.container.innerHTML;
+  first.unmount();
+
+  const second = render(
+    <ResumePdfViewer
+      document={FULL_DOCUMENT}
+      labels={{ ...RESUME_PDF_SPEC_LABELS }}
+      {...options}
+    />,
+  );
+
+  return { firstHtml, secondHtml: second.container.innerHTML };
+}
 
 describe('ResumePdfViewer', () => {
   it('renders the header with name, title line, location and links', () => {
@@ -110,6 +137,7 @@ describe('ResumePdfViewer', () => {
     render(
       <ResumePdfViewer
         document={{
+          schemaVersion: 1,
           basics: { fullName: 'Bare Bones', links: [] },
           experience: [],
           languages: [{ name: 'English' }],
@@ -181,5 +209,65 @@ describe('ResumePdfViewer', () => {
     // assert on the node rather than jest-dom's in-the-document matcher.
     expect(printDocument?.querySelector('.resume-print-page')).not.toBeNull();
     iframe?.remove();
+  });
+
+  it('renders only the schema-declared fields of the document it receives', () => {
+    // The viewer contract is `z.infer<resumePdfDocumentSchema>`: anything
+    // outside the schema is stripped at parse time and can never render.
+    const document = resumePdfDocumentSchema.parse({
+      ...FULL_DOCUMENT,
+      injectedField: 'INJECTED-CONTENT',
+      basics: { ...FULL_DOCUMENT.basics, injectedField: 'INJECTED-BASICS' },
+    });
+
+    render(
+      <ResumePdfViewer document={document} labels={RESUME_PDF_SPEC_LABELS} />,
+    );
+
+    expect(screen.queryByText(/INJECTED/)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Ada Lovelace' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders byte-identical markup every time for the same document', () => {
+    const { firstHtml, secondHtml } = renderDocumentTwice({
+      printLabel: 'Download PDF',
+    });
+
+    expect(secondHtml).toBe(firstHtml);
+  });
+
+  it('renders byte-identical paged markup every time for the same document', () => {
+    const { firstHtml, secondHtml } = renderDocumentTwice({ paged: true });
+
+    expect(secondHtml).toBe(firstHtml);
+  });
+
+  it('produces identical print markup on repeated exports', async () => {
+    const user = userEvent.setup();
+    render(
+      <ResumePdfViewer
+        document={FULL_DOCUMENT}
+        labels={RESUME_PDF_SPEC_LABELS}
+        printLabel="Download PDF"
+      />,
+    );
+
+    const printOnce = async () => {
+      await user.click(screen.getByRole('button', { name: 'Download PDF' }));
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        'iframe[title="Print"]',
+      );
+      const html = iframe?.contentDocument?.body.innerHTML;
+      iframe?.remove();
+      return html;
+    };
+
+    const firstPrint = await printOnce();
+    const secondPrint = await printOnce();
+
+    expect(firstPrint).toBeTruthy();
+    expect(secondPrint).toBe(firstPrint);
   });
 });

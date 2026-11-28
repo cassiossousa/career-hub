@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolveRootArg } from './repo-root.mjs';
 import { walk } from './walk.mjs';
 
 // Every environment variable an app reads must be documented in that app's
@@ -9,13 +9,7 @@ import { walk } from './walk.mjs';
 // docs rot into misinformation. Scans import.meta.env/process.env/fileEnv
 // member access plus viteEnv.d.ts declarations, per app workspace.
 
-// Optional --root <dir> override exists so falsification specs can point the
-// gate at a fixture tree; production runs always scan the real repo root.
-const rootArgIndex = process.argv.indexOf('--root');
-const ROOT =
-  rootArgIndex === -1
-    ? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-    : path.resolve(process.argv[rootArgIndex + 1] ?? '.');
+const ROOT = resolveRootArg();
 const APPS_DIR = path.join(ROOT, 'apps');
 
 // Vite builtins and Node conventions — never documented in .env.example.

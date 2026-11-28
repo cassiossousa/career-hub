@@ -2,9 +2,11 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
+      "ignore": ["scripts/context-hook.mjs"],
       "ignoreDependencies": [
         "@lhci/cli",
-        "@secretlint/secretlint-rule-preset-recommend"
+        "@secretlint/secretlint-rule-preset-recommend",
+        "source-map-explorer"
       ]
     },
     "apps/professional-portfolio": {

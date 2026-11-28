@@ -12,6 +12,7 @@ coverage/
 test-results/
 playwright-report/
 .lighthouseci/
+.bundle-analysis/
 
 # build output
 **/dist/
@@ -52,3 +53,7 @@ next-env.d.ts
 
 # Dist files
 dist/
+
+# agent context runtime state
+.agents/context/.runtime/
+.devin/config.local.json

@@ -27,6 +27,7 @@ npm workspaces monorepo:
 npm run dev                  # portfolio dev server
 npm run dev:job-tracker      # job tracker dev server
 npm run test                 # all Jest suites
+npm run test:changed         # only Jest specs related to working-tree changes (dev loop; not a gate)
 npm run test:e2e             # Playwright e2e (both apps)
 npm run verify:all           # full CI-equivalent gate
 npm run audit:deep           # verify:all + browser/memlab/lighthouse runtime checks

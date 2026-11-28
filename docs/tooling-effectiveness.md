@@ -1,4 +1,4 @@
-# Tooling Effectiveness Audit — 2026-11-23
+# Tooling Effectiveness Audit — 2026-11-23 (passes 2026-11-26, 2026-11-28)
 
 Point-in-time audit of every lint/test/CI gate in this repo and the verdict for
 each tool in the two 300-item evaluation catalogs. Durable rules live in
@@ -175,7 +175,96 @@ adoptions use existing deps, custom `.mjs` gates, or specs.
 - **Deferred with trigger:** ~15 items.
 - **Evaluated, not adopted:** oxlint extra categories; on-demand diagnostics.
 
-## 6. How to use this file
+## 6. Third catalog pass — 2026-11-28 (104 items)
+
+A 104-item frontend/monorepo tooling catalog was dispositioned against §1–§5.
+~70 items were already covered or previously rejected; the user relaxed the
+"no new deps" constraint to **open-source devDependencies allowed**, while
+security scanning stayed **on-demand** (no CI workflow change). Five genuine
+gaps were implemented; `jest-mock-extended` was trialed and rejected on merit
+(see below).
+
+### Adopted / implemented 2026-11-28
+
+| Addition                                                                     | Covers catalog items                                                    | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `expectNoA11yViolations` (`packages/ui/testkit/a11y.ts`, `axe-core@4.14.1`)  | axe-core in unit specs (jest-axe's role, without the wrapper dep)       | First run caught **two real WCAG failures**: MUI `Select` components in `ApplicationTable` (per-row status) and `ManualJobForm` (area/level/source) had no `labelId`/`id` association — fixed via `useId()` per the existing `FilterBar` pattern. `color-contrast` disabled (jsdom has no layout); e2e axe remains authoritative for contrast. Specs: OptionGroup, FilterBar, ApplicationTable, ManualJobForm, ProjectDetails. |
+| `analyze:bundle` (`scripts/analyze-bundle.mjs`, `source-map-explorer@2.5.3`) | vite-bundle-visualizer / rollup-plugin-visualizer / source-map-explorer | On-demand treemap: rebuilds the app with `--sourcemap`, emits `.bundle-analysis/report.html` + `report.json` (gitignored) plus a gzip-size table. No build-config change; not a gate (same exempt category as `lighthouse-run.mjs`). Verified on job-tracker (41 assets).                                                                                                                                                      |
+| `check:content` (`scripts/check-content.mjs`)                                | remark-lint for MDX (replaced — see rejections)                         | Deterministic gate wired into `verify:all`/`verify:push`: frontmatter parse + per-type required/typed fields, non-empty bodies, work-experience locale pairing (base + every non-en `LOCALES` entry, read from `types/i18n.ts` — never re-declared), no locale suffixes on single-locale projects, no unknown locales. Spec: `checkContent.spec.ts` (pass + 8 falsification fixtures). First run: clean on all 25 MDX files.   |
+| `check:supply-chain` (`scripts/check-supply-chain.mjs`)                      | Semgrep/OSV-Scanner intent for dependency provenance (on-demand only)   | Audits `package-lock.json`: registry-only `resolved` URLs, `integrity` present, no git/file/http deps, `hasInstallScript` reported for manual review. First run: clean; 5 install-script packages noted (esbuild, fsevents, msw, puppeteer, sleep). Spec: `checkSupplyChain.spec.ts` (pass + 5 falsification fixtures). NOT wired into verify per user decision.                                                               |
+
+### Evaluated and rejected this pass
+
+- **`jest-mock-extended`** — trialed against `content.spec.ts` (the repo's only
+  hand-rolled `jest.Mocked` intersections). Its `DeepMockProxy` typing cannot be
+  reached without `as unknown as` casts (banned by AGENTS §2) or loses mock
+  method typing; existing `jest.mock` automock + `jest.MockedFunction` + MSW
+  already cover the need. Uninstalled.
+- **`remark-lint`** — lints prose style; content is GitHub-synced, so upstream
+  edits would fail CI on style the repo doesn't own. `check:content` validates
+  the structural contract instead.
+- **`jest-when`, `jest-extended`** — redundant with `mockReturnValueOnce`
+  idioms and `@testing-library/jest-dom` matchers.
+- **`eslint-plugin-import-x`, `madge`, `dpdm`, `ts-prune`** — covered by
+  no-relative-import-paths + dependency-cruiser + Biome organizeImports + knip.
+- **`publint`, `are-the-types-wrong`** — packages are private, unpublished,
+  raw-TS source; no publish surface to lint.
+- **`Pa11y`, `WAVE`, `jest-axe`, `vitest-axe`** — axe already runs in Playwright
+  e2e (authoritative, real browser) and now in Jest via the testkit helper.
+- **`stylelint`, `lightningcss`** — one CSS file in the repo (`App.css`),
+  formatted by Biome.
+- **`vite-bundle-visualizer`, `rollup-plugin-visualizer`** —
+  source-map-explorer covers the same treemap on demand without touching
+  `vite.config.ts`.
+- **`Trivy`, `Syft`, `Grype`, `Cosign`, `Checkov`, `Hadolint`** — no
+  containers/IaC/Dockerfile in this repo.
+- **`pip-audit`, `Bandit`, `Vulture`, `deptry`** — Python tooling; the
+  job-tracker-api repo owns that surface.
+- **`detect-secrets`, `TruffleHog`** — secretlint (lint-staged + full-repo
+  scan) already covers the commit-stage role.
+- **`tsd`, `expect-type`** — redundant with strict `tsc` + zod; `type-fest`
+  was already a dependency.
+- **`k6`, `Locust`** — previously rejected; API repo's `load.yml` owns load
+  testing.
+- **`Storybook`/`@storybook/test`, `Ladle`** — unchanged deferred trigger
+  (component-library scale); Playwright visual.spec renders every route.
+- **`web-vitals` library, Playwright CDP throttling, React Profiler /
+  why-did-you-render, multi-browser matrix, MemLab for job-tracker,
+  license-checker, Vercel preview smoke, portfolio tsconfig strictness flags**
+  — unchanged deferred triggers from §4/§5.
+- **`@total-typescript/ts-reset`** — global type augmentation; revisit on
+  first real `Response.json()`/unknown-narrowing pain.
+- **`npm audit`/`npm ls`/`npm outdated`, `git bisect`, `git worktree`,
+  `React.lazy`/`<Suspense>`, `PerformanceObserver`,
+  `performance.getEntriesByType`, Chrome DevTools panels, Bundlephobia,
+  Vercel Build Output API, `actions/cache`** — builtins, platform primitives,
+  informational tools, or already implemented (`package:vercel`,
+  `cache: npm`).
+
+### 104-item verdict summary
+
+- **Already covered / previously rejected / N/A:** ~85 items.
+- **Implemented:** 4 capability areas (Jest axe helper + 2 real a11y fixes,
+  bundle visualizer, content gate, supply-chain audit).
+- **Adopted-then-rejected on merit:** 1 (`jest-mock-extended`).
+- **Deferred with trigger:** ~10 items (unchanged triggers above).
+- **Rejected on merit:** ~8 items.
+
+## 7. Fourth pass — AI-agent context & local models (2026-11-28)
+
+Disposition of a suggestion (YouTube comment thread) to have the LLM train
+"tiny local models" on the project so the agent gets fast, specialized
+answers without re-scanning the codebase — plus two reply threads proposing
+(a) code-bound guardrails + agent config over fine-tuning, and (b) a learned
+model that picks which unit tests to run per modified file.
+
+| Suggestion                                            | Verdict                                           | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tiny local models / LoRA fine-tuned on the codebase   | **Rejected**                                      | Non-deterministic, unverifiable output — violates the deterministic-gate rule (AGENTS §2); GPU/runtime infra for unproven iteration savings; embeddings/RAG adds a stale-index failure mode worse than grep. The underlying need — project-specialized context without re-scanning — is already served deterministically by `.agents/context/` area files (auto-injected via `scripts/context-hook.mjs` + scout refresh), `AGENTS.md` + `.agents/skills/`, and typed gates. No revisit trigger identified. |
+| Code-bound guardrails + editing the agent config      | **Already adopted — this is the repo's approach** | AGENTS.md constitution, per-workspace AGENTS.md, skills loaded at planning start, ESLint `strictTypeChecked` + sonarjs + security plugins, ~20 deterministic gates. Convention stands: each observed agent mistake becomes a lint rule or gate, not a trained model.                                                                                                                                                                                                                                       |
+| LLM that learns which unit tests to run per file diff | **Adopted deterministically**                     | Same outcome, zero model infra: `npm run test:changed` (`scripts/test-changed.mjs`, Jest `--findRelatedTests` per workspace) here; `uv run python scripts/test_changed.py` (stdlib AST reverse-import graph with conservative full-suite fallback) in job-tracker-api. Both are dev tools, deliberately NOT wired into `verify:*`/lint-staged — subset semantics differ from the full-suite gates.                                                                                                         |
+
+## 8. How to use this file
 
 Re-run the audit when adding/removing gates. Update verdicts, not just the
 tool list — a gate that never fires and has no suppressions is either

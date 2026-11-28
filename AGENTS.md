@@ -17,10 +17,11 @@ npm workspaces monorepo (`apps/*`, `packages/*`). Node >= 22.12 (`.nvmrc` = 24, 
 | `apps/*/scripts/`             | App-local gates                                                                                      | covered by each app's AGENTS.md         |
 | `content/projects/`           | Repo-root MDX synced from GitHub (`npm run sync:projects`)                                           | portfolio AGENTS.md                     |
 | `docs/`                       | `tooling-effectiveness.md` — living audit of gate value                                              | —                                       |
+| `.agents/context/`            | Scout-maintained per-area project context + `index.md` (see "Agent context")                         | —                                       |
 
 ## Agent skills
 
-**Skills live in exactly one place: `.agents/skills/<name>/SKILL.md`.** All current skills are there; ALL new skills must be created there. No other directory may store skills — `.devin/` holds only Devin tool config (`config.local.json`), and no new skills folders may be created anywhere else.
+**Skills live in exactly one place: `.agents/skills/<name>/SKILL.md`.** All current skills are there; ALL new skills must be created there. No other directory may store skills — `.devin/` holds only Devin tool config (`config.local.json`, `hooks.v1.json`), and no new skills folders may be created anywhere else. Custom subagent profiles live in `.agents/agents/<name>.md` (profile id comes from the `name:` frontmatter).
 
 **Consult skills at planning start.** Before writing ANY plan or starting ANY task, inventory `.agents/skills/` and load every skill whose description matches the work — at minimum during planning stages, and again before implementing.
 
@@ -29,6 +30,16 @@ npm workspaces monorepo (`apps/*`, `packages/*`). Node >= 22.12 (`.nvmrc` = 24, 
 | `clean-frontend-change` | Creating or modifying any front-end feature — enforces vertical slices, small diffs, strict TS, deterministic verification                                                                            |
 | `test-falsification`    | Writing or reviewing unit tests — replaces superficial tests with high-signal Jest tests + mutation evidence                                                                                          |
 | `ui-ux-guidelines`      | ANY UI/UX change — screens, components, forms, layouts, styling, empty/loading/error states, i18n strings, navigation. Mandatory before implementing; run its §14 pre-ship checklist before finishing |
+| `multi-part-change`     | Any change spanning multiple workspaces/apps/packages or the frontend↔backend API contract — one agent per part, contract-first sequencing                                                            |
+| `context-scout`         | Refresh `.agents/context/` project context via the scout subagent — after meaningful changes or when the index reports staleness                                                                      |
+
+## Agent context
+
+`.agents/context/` is a committed, scout-maintained knowledge base: `index.md` plus per-area files (`monorepo.md`, `portfolio-app.md`, `job-tracker-app.md`, `ui-package.md`). The index is auto-injected into every session by lifecycle hooks (`.devin/hooks.v1.json`, backed by the global `%APPDATA%/devin` dispatcher → `scripts/context-hook.mjs`) and re-injected after compaction; staleness is flagged per prompt and unsurveyed edits block turn-end once.
+
+- Read the relevant area file before editing that area — it captures product purpose, architecture, invariants, and pitfalls that AGENTS.md doesn't.
+- After meaningful changes run `/context-scout` (or let the stop-hook nudge handle it). The `scout` subagent (`.agents/agents/SCOUT.md`) rewrites affected files and bumps `last-reviewed` SHAs; it may only write under `.agents/context/`.
+- Context files are committed docs: no secrets, env values, or session details. They orient — they never replace AGENTS.md rules, skills, or `docs/` audits.
 
 ## Read before you start
 
@@ -40,6 +51,7 @@ npm workspaces monorepo (`apps/*`, `packages/*`). Node >= 22.12 (`.nvmrc` = 24, 
 | UI/UX work anywhere                         | `.agents/skills/ui-ux-guidelines/SKILL.md`      |
 | Writing tests                               | `.agents/skills/test-falsification/SKILL.md`    |
 | Front-end feature work                      | `.agents/skills/clean-frontend-change/SKILL.md` |
+| Cross-repo or multi-workspace change        | `.agents/skills/multi-part-change/SKILL.md`     |
 | Wondering if a gate is worth its runtime    | `docs/tooling-effectiveness.md`                 |
 | Human setup/PR questions                    | `CONTRIBUTING.md`                               |
 
@@ -75,7 +87,7 @@ Before finishing ANY task:
 
 1. Stage the files you changed and run `npx lint-staged`; fix failures and re-stage.
 2. Run the narrowest checks that cover the change:
-   - TS/TSX: `npm run check:types` plus the related Jest specs (`npx jest --config <app>/jest.config.cjs --runInBand <spec paths>`).
+   - TS/TSX: `npm run check:types` plus the related Jest specs (`npx jest --config <app>/jest.config.cjs --runInBand <spec paths>`). For a fast local loop `npm run test:changed` runs only the specs Jest's module graph relates to your working-tree changes (`scripts/test-changed.mjs`, dev tool — never a gate).
    - UI/styling/i18n: check the affected routes at desktop and 360px when a dev/preview server is already running; update visual baselines only when those routes' pixels change (see the app's AGENTS.md).
    - Business logic/services/types: keep focused Jest coverage and run `npm run check:mutate:diff` when touching mutation-covered logic.
 3. Do NOT run `verify:all` or `audit:deep` for routine small changes — CI runs them on every push/PR. Run them manually only for broad refactors, dependency/build-system changes, or explicit user request.

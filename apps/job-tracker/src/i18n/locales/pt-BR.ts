@@ -568,6 +568,7 @@ const ptBR: Translation = {
       resume: 'Currículo',
       cover_letter: 'Carta de apresentação',
       ai: 'Rascunho de IA',
+      template: 'Rascunho de modelo',
       manual: 'Manual',
       none: 'Sem resposta',
     },

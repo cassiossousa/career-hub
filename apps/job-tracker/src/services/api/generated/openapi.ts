@@ -956,7 +956,13 @@ export interface components {
      * @enum {string}
      */
     ApplyAnswerSource:
-      'fact' | 'resume' | 'cover_letter' | 'ai' | 'manual' | 'none';
+      | 'fact'
+      | 'resume'
+      | 'cover_letter'
+      | 'ai'
+      | 'template'
+      | 'manual'
+      | 'none';
     /** ApplyArtifactResponse */
     ApplyArtifactResponse: {
       /** Contenttype */

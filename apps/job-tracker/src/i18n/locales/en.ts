@@ -567,6 +567,7 @@ const en: Translation = {
       resume: 'Resume',
       cover_letter: 'Cover letter',
       ai: 'AI draft',
+      template: 'Template draft',
       manual: 'Manual',
       none: 'Unanswered',
     },

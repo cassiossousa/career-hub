@@ -1,3 +1,4 @@
+import { expectNoA11yViolations } from '@career-hub/ui/testkit';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act, useEffect } from 'react';
@@ -28,6 +29,11 @@ describe('FilterBar', () => {
     expect(screen.getAllByText('Remote Only').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
     expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = renderWithProviders(<FilterBar />);
+    await expectNoA11yViolations(container);
   });
 
   it('toggles remote-only switch and updates the store', async () => {

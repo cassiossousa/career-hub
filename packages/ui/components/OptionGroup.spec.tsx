@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { expectNoA11yViolations } from '../testkit/a11y';
 import { OptionGroup } from './OptionGroup';
 
 const OPTIONS = ['alpha', 'beta', 'gamma'] as const;
@@ -46,5 +47,10 @@ describe('OptionGroup', () => {
     await user.click(screen.getByLabelText('Label alpha'));
     expect(screen.getByLabelText('Label alpha')).not.toBeChecked();
     expect(screen.getByLabelText('Label gamma')).toBeChecked();
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(<Harness initial={['beta']} />);
+    await expectNoA11yViolations(container);
   });
 });

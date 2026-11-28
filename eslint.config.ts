@@ -179,6 +179,8 @@ const eslintConfig = defineConfig([
             'expectErrorWithRetry',
             'expectJobTitlesRendered',
             'expectApiErrorCode',
+            'expectContentViolation',
+            'expectNoA11yViolations',
             'waitForQuerySuccess',
             'saveAndExpectSuccess',
             'renderJobListLoaded',

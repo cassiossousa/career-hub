@@ -1,3 +1,4 @@
+import { expectNoA11yViolations } from '@career-hub/ui/testkit';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { routePaths } from '../../app/routePaths';
@@ -24,7 +25,7 @@ jest.mock('../../services/projects/getProjects', () => ({
 const mockGetProject = getProject as jest.MockedFunction<typeof getProject>;
 
 function renderDetails(entry: string) {
-  render(
+  return render(
     <MemoryRouter initialEntries={[entry]}>
       <TranslationProvider>
         <Routes>
@@ -79,5 +80,11 @@ describe('ProjectDetails', () => {
     expect(
       screen.getByRole('link', { name: 'Back to projects' }),
     ).toHaveAttribute('href', routePaths.projects);
+  });
+
+  it('has no axe violations', async () => {
+    mockGetProject.mockReturnValue(project);
+    const { container } = renderDetails('/projects/featured-app');
+    await expectNoA11yViolations(container);
   });
 });

@@ -1,3 +1,4 @@
+export { expectNoA11yViolations } from './a11y';
 export { describeLocaleContract, flattenLeaves } from './dictionaryContract';
 export {
   featureOf,

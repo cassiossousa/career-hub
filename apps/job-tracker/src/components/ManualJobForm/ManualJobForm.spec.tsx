@@ -1,3 +1,4 @@
+import { expectNoA11yViolations } from '@career-hub/ui/testkit';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
@@ -47,6 +48,14 @@ describe('ManualJobForm', () => {
   it('is closed by default', () => {
     renderWithProviders(<ManualJobForm />);
     expect(screen.queryByText('Add Job Manually')).not.toBeInTheDocument();
+  });
+
+  it('has no axe violations while open', async () => {
+    useUIStore.getState().openManualJobForm();
+    renderWithProviders(<ManualJobForm />);
+    expect(await screen.findByText('Add Job Manually')).toBeInTheDocument();
+    // The dialog renders in a portal — audit the whole document.
+    await expectNoA11yViolations(document.body);
   });
 
   it('submits a new job and closes the dialog', async () => {

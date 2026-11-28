@@ -1,3 +1,4 @@
+import { expectNoA11yViolations } from '@career-hub/ui/testkit';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { seedApplications } from '../../mocks/data';
@@ -8,7 +9,7 @@ import { ApplicationTable } from './ApplicationTable';
 function renderTable(selected = new Set<number>()) {
   const onToggleSelect = jest.fn();
   const onRequestAdvance = jest.fn();
-  renderWithProviders(
+  const view = renderWithProviders(
     <ApplicationTable
       applications={seedApplications}
       selected={selected}
@@ -18,7 +19,7 @@ function renderTable(selected = new Set<number>()) {
       onRequestAdvance={onRequestAdvance}
     />,
   );
-  return { onToggleSelect, onRequestAdvance };
+  return { ...view, onToggleSelect, onRequestAdvance };
 }
 
 describe('ApplicationTable', () => {
@@ -54,5 +55,10 @@ describe('ApplicationTable', () => {
       seedApplications[0],
       'interview' satisfies ApplicationStatus,
     );
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = renderTable();
+    await expectNoA11yViolations(container);
   });
 });

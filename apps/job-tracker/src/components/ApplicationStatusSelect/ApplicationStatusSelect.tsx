@@ -6,6 +6,7 @@ import {
   type SxProps,
   type Theme,
 } from '@mui/material';
+import { useId } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import {
   APPLICATION_STATUS_ORDER,
@@ -26,10 +27,12 @@ export function ApplicationStatusSelect({
   sx,
 }: ApplicationStatusSelectProps) {
   const { messages } = useTranslation();
+  const labelId = useId();
   return (
     <FormControl size="small" sx={sx ?? { minWidth: 140 }}>
-      <InputLabel>{messages.applications.statusLabel}</InputLabel>
+      <InputLabel id={labelId}>{messages.applications.statusLabel}</InputLabel>
       <Select
+        labelId={labelId}
         label={messages.applications.statusLabel}
         value={value}
         disabled={disabled}

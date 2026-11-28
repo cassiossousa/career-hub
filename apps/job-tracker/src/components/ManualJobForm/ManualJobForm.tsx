@@ -14,7 +14,7 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from '../../i18n/Provider';
 import { isApiError } from '../../services/api/client';
 import { useCreateJob, useJobs } from '../../services/api/jobs';
@@ -51,6 +51,9 @@ export function ManualJobForm() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const jobsQuery = useJobs();
+  const areaLabelId = useId();
+  const levelLabelId = useId();
+  const sourceLabelId = useId();
 
   const salaryMin = formData.salaryMin ? Number(formData.salaryMin) : null;
   const salaryMax = formData.salaryMax ? Number(formData.salaryMax) : null;
@@ -165,8 +168,11 @@ export function ManualJobForm() {
             />
             <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
               <FormControl size="small" sx={{ minWidth: 160 }}>
-                <InputLabel>{messages.dashboard.filterBar.area}</InputLabel>
+                <InputLabel id={areaLabelId}>
+                  {messages.dashboard.filterBar.area}
+                </InputLabel>
                 <Select
+                  labelId={areaLabelId}
                   value={formData.area}
                   label={messages.dashboard.filterBar.area}
                   onChange={(e) => {
@@ -184,8 +190,11 @@ export function ManualJobForm() {
                 </Select>
               </FormControl>
               <FormControl size="small" sx={{ minWidth: 160 }}>
-                <InputLabel>{messages.dashboard.filterBar.level}</InputLabel>
+                <InputLabel id={levelLabelId}>
+                  {messages.dashboard.filterBar.level}
+                </InputLabel>
                 <Select
+                  labelId={levelLabelId}
                   value={formData.level}
                   label={messages.dashboard.filterBar.level}
                   onChange={(e) => {
@@ -204,8 +213,11 @@ export function ManualJobForm() {
               </FormControl>
             </Stack>
             <FormControl size="small" sx={{ minWidth: 200 }}>
-              <InputLabel>{messages.manualJobForm.source}</InputLabel>
+              <InputLabel id={sourceLabelId}>
+                {messages.manualJobForm.source}
+              </InputLabel>
               <Select
+                labelId={sourceLabelId}
                 value={formData.source}
                 label={messages.manualJobForm.source}
                 onChange={(e) => {

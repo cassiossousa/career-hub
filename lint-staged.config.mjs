@@ -1,23 +1,4 @@
-// Chunk staged file lists so spawned commands stay under the Windows
-// command-line length limit (~8191 chars via cmd.exe).
-const MAX_COMMAND_CHARS = 5000;
-
-function chunkFiles(files) {
-  const chunks = [];
-  let current = [];
-  let length = 0;
-  for (const file of files) {
-    if (current.length > 0 && length + file.length + 1 > MAX_COMMAND_CHARS) {
-      chunks.push(current);
-      current = [];
-      length = 0;
-    }
-    current.push(file);
-    length += file.length + 1;
-  }
-  if (current.length > 0) chunks.push(current);
-  return chunks;
-}
+import { chunkFiles } from './scripts/chunk-files.mjs';
 
 const codeFiles = ['*.{js,jsx,ts,tsx,mjs,cjs}'];
 const styleFiles = ['*.css'];

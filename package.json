@@ -47,6 +47,7 @@
     "check:mutate:core": "node scripts/check-mutation-core.mjs apps/professional-portfolio && node scripts/check-mutation-core.mjs apps/job-tracker && node scripts/check-mutation-core.mjs packages/ui",
     "fix:all": "npm run fix:fast && npm run lint:fix && knip --fix && npm run prettier && npm run verify:all",
     "fix:bundle-baseline": "npm run build && node scripts/audit-bundle-budget.mjs apps/professional-portfolio --update-baseline && node scripts/audit-bundle-budget.mjs apps/job-tracker --update-baseline",
+    "verify:prepush": "node scripts/pre-push-check.mjs",
     "verify:push": "npm run check:fast && npm run prettier:check && npm run check:types && npm run lint && npm run check:case && npm run check:env && npm run check:api-mocks && npm run check:mock-contract && npm run check:content && npm run check:dead && npm run check:bloat && npm run check:arch && npm run check:clones && npm run check:vocab && npm run build && npm run check:bundle",
     "verify:all": "npm run check:fast && npm run prettier:check && npm run check:types && npm run lint && npm run check:case && npm run check:env && npm run test:cov -- --runInBand && npm run test:cov --workspace @career-hub/ui && npm run build && npm run check:bundle && npm run check:dead && npm run check:bloat && npm run check:arch && npm run check:clones && npm run check:vocab && npm run check:api-mocks && npm run check:mock-contract && npm run check:content && npm run check:audit",
     "dev": "npm run dev --workspace professional-portfolio",
@@ -77,6 +78,8 @@
   "devDependencies": {
     "@babel/core": "7.29.13",
     "@biomejs/biome": "2.6.8",
+    "@commitlint/cli": "21.3.0",
+    "@commitlint/config-conventional": "21.3.0",
     "@eslint-react/eslint-plugin": "5.30.4",
     "@lhci/cli": "0.16.1",
     "@memlab/api": "2.0.6",

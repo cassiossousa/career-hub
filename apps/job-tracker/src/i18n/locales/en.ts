@@ -339,7 +339,7 @@ const en: Translation = {
         apply_enqueued: 'Auto-apply queued',
         apply_approved: 'Auto-apply approved',
         apply_rejected: 'Auto-apply rejected',
-        apply_submitted: 'Auto-apply submitted',
+        apply_submitted: 'Application submitted',
         apply_failed: 'Auto-apply failed',
         apply_llm_draft: 'AI answer draft',
       },
@@ -548,7 +548,6 @@ const en: Translation = {
       inspecting: 'Inspecting',
       ready_for_review: 'Ready for review',
       approved: 'Approved',
-      submitting: 'Submitting',
       submitted: 'Submitted',
       failed: 'Failed',
       skipped: 'Skipped',
@@ -587,7 +586,8 @@ const en: Translation = {
       uncategorized: 'General',
       noFields: 'No form fields were extracted for this run.',
       preview: 'Preview',
-      approve: 'Approve & submit',
+      approve: 'Approve',
+      markSubmitted: 'Mark as submitted',
       reject: 'Reject',
       saveAnswers: 'Save answers',
       redraft: 'Regenerate AI drafts',
@@ -602,7 +602,9 @@ const en: Translation = {
       latestRun: 'Latest auto-apply run',
       viewRun: 'Review run',
       approveHint:
-        'Approving submits the application to the employer through the ATS.',
+        'Approving locks in your answers — you still submit the application yourself on the employer site.',
+      approvedHint:
+        'Submit the application on the employer site, then mark it as submitted here.',
       tailoringTitle: 'Tailoring suggestions',
       tailoringHint:
         'Keyword overlap between this job and the resume being submitted. Emphasize matched terms and review unmet requirements before approving.',

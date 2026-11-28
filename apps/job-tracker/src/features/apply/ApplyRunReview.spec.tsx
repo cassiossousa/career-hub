@@ -45,9 +45,7 @@ describe('ApplyRunReview', () => {
     expect(screen.getByText('Eligibility')).toBeInTheDocument();
     expect(screen.getByDisplayValue('cassio@example.com')).toBeInTheDocument();
     expect(screen.getAllByText('Fact · 100%').length).toBeGreaterThan(0);
-    expect(
-      screen.getByRole('button', { name: /approve & submit/i }),
-    ).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^approve$/i })).toBeEnabled();
   });
 
   it('shows tailoring suggestions from the match score', async () => {
@@ -89,8 +87,21 @@ describe('ApplyRunReview', () => {
       ).toBeDisabled();
     });
 
-    await user.click(screen.getByRole('button', { name: /approve & submit/i }));
-    // The mock worker drains approved runs to submitted on the next read.
+    await user.click(screen.getByRole('button', { name: /^approve$/i }));
+    // Approving parks the run — submission stays manual.
+    await waitFor(() => {
+      expect(screen.getByText('Approved')).toBeInTheDocument();
+    });
+    expect(
+      screen.getByRole('button', { name: /mark as submitted/i }),
+    ).toBeEnabled();
+    expect(
+      screen.getByRole('link', { name: /fill manually/i }),
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('button', { name: /mark as submitted/i }),
+    );
     await waitFor(() => {
       expect(screen.getByText('Submitted')).toBeInTheDocument();
     });

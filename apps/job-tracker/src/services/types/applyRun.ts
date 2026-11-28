@@ -5,7 +5,6 @@ export const APPLY_RUN_STATUSES = [
   'inspecting',
   'ready_for_review',
   'approved',
-  'submitting',
   'submitted',
   'failed',
   'skipped',

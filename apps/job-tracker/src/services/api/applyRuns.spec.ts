@@ -106,6 +106,14 @@ describe('apply runs api', () => {
     result.current.review.mutate({ id: 1, review: { action: 'approve' } });
     await waitForQuerySuccess(() => result.current.review.isSuccess);
     expect(result.current.review.data?.status).toBe('approved');
+
+    result.current.review.mutate({
+      id: 1,
+      review: { action: 'mark_submitted' },
+    });
+    await waitForQuerySuccess(() => result.current.review.isSuccess);
+    expect(result.current.review.data?.status).toBe('submitted');
+    expect(result.current.review.data?.submittedAt).not.toBeNull();
   });
 
   it('fetches an artifact preview', async () => {

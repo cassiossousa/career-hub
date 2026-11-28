@@ -1010,7 +1010,8 @@ export interface components {
      * @description Human decisions on a run in ``ready_for_review``/``needs_human``.
      * @enum {string}
      */
-    ApplyReviewAction: 'approve' | 'reject' | 'edit' | 'retry';
+    ApplyReviewAction:
+      'approve' | 'reject' | 'edit' | 'retry' | 'mark_submitted';
     /** ApplyRunListResponse */
     ApplyRunListResponse: {
       /** Runs */
@@ -1082,7 +1083,6 @@ export interface components {
       | 'inspecting'
       | 'ready_for_review'
       | 'approved'
-      | 'submitting'
       | 'submitted'
       | 'failed'
       | 'skipped'

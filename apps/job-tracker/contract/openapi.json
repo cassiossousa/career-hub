@@ -16,7 +16,11 @@
             "type": "boolean"
           }
         },
-        "required": ["applicationId", "contact", "isPrimary"],
+        "required": [
+          "applicationId",
+          "contact",
+          "isPrimary"
+        ],
         "title": "ApplicationContactResponse",
         "type": "object"
       },
@@ -85,7 +89,9 @@
             "title": "Tags"
           }
         },
-        "required": ["jobId"],
+        "required": [
+          "jobId"
+        ],
         "title": "ApplicationCreate",
         "type": "object"
       },
@@ -122,7 +128,10 @@
             "type": "integer"
           }
         },
-        "required": ["events", "total"],
+        "required": [
+          "events",
+          "total"
+        ],
         "title": "ApplicationEventListResponse",
         "type": "object"
       },
@@ -147,13 +156,21 @@
             "type": "object"
           }
         },
-        "required": ["id", "kind", "payload", "createdAt"],
+        "required": [
+          "id",
+          "kind",
+          "payload",
+          "createdAt"
+        ],
         "title": "ApplicationEventResponse",
         "type": "object"
       },
       "ApplicationFollowUpFilter": {
         "description": "List filter over ``follow_up_at``: past-due vs. still upcoming.",
-        "enum": ["due", "upcoming"],
+        "enum": [
+          "due",
+          "upcoming"
+        ],
         "title": "ApplicationFollowUpFilter",
         "type": "string"
       },
@@ -172,7 +189,10 @@
             "type": "integer"
           }
         },
-        "required": ["applications", "total"],
+        "required": [
+          "applications",
+          "total"
+        ],
         "title": "ApplicationListResponse",
         "type": "object"
       },
@@ -346,7 +366,14 @@
       },
       "ApplyAnswerSource": {
         "description": "Where a proposed answer value came from.",
-        "enum": ["fact", "resume", "cover_letter", "ai", "manual", "none"],
+        "enum": [
+          "fact",
+          "resume",
+          "cover_letter",
+          "ai",
+          "manual",
+          "none"
+        ],
         "title": "ApplyAnswerSource",
         "type": "string"
       },
@@ -362,7 +389,10 @@
             "type": "string"
           }
         },
-        "required": ["contentType", "text"],
+        "required": [
+          "contentType",
+          "text"
+        ],
         "title": "ApplyArtifactResponse",
         "type": "object"
       },
@@ -418,7 +448,14 @@
             "title": "Section"
           }
         },
-        "required": ["key", "label", "kind", "required", "options", "section"],
+        "required": [
+          "key",
+          "label",
+          "kind",
+          "required",
+          "options",
+          "section"
+        ],
         "title": "ApplyFormFieldResponse",
         "type": "object"
       },
@@ -438,7 +475,13 @@
       },
       "ApplyReviewAction": {
         "description": "Human decisions on a run in ``ready_for_review``/``needs_human``.",
-        "enum": ["approve", "reject", "edit", "retry"],
+        "enum": [
+          "approve",
+          "reject",
+          "edit",
+          "retry",
+          "mark_submitted"
+        ],
         "title": "ApplyReviewAction",
         "type": "string"
       },
@@ -457,7 +500,10 @@
             "type": "integer"
           }
         },
-        "required": ["runs", "total"],
+        "required": [
+          "runs",
+          "total"
+        ],
         "title": "ApplyRunListResponse",
         "type": "object"
       },
@@ -611,7 +657,9 @@
             "title": "Answers"
           }
         },
-        "required": ["action"],
+        "required": [
+          "action"
+        ],
         "title": "ApplyRunReview",
         "type": "object"
       },
@@ -622,7 +670,6 @@
           "inspecting",
           "ready_for_review",
           "approved",
-          "submitting",
           "submitted",
           "failed",
           "skipped",
@@ -678,7 +725,9 @@
             "title": "Year"
           }
         },
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "CertificationEntrySchema",
         "type": "object"
       },
@@ -763,7 +812,9 @@
             "title": "Role"
           }
         },
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "ContactCreate",
         "type": "object"
       },
@@ -782,7 +833,10 @@
             "type": "integer"
           }
         },
-        "required": ["contacts", "total"],
+        "required": [
+          "contacts",
+          "total"
+        ],
         "title": "ContactListResponse",
         "type": "object"
       },
@@ -1062,7 +1116,10 @@
             "title": "Subject"
           }
         },
-        "required": ["locale", "bodyText"],
+        "required": [
+          "locale",
+          "bodyText"
+        ],
         "title": "CoverLetterUpsert",
         "type": "object"
       },
@@ -1080,7 +1137,10 @@
             "type": "array"
           }
         },
-        "required": ["category", "items"],
+        "required": [
+          "category",
+          "items"
+        ],
         "title": "DerivedSkillGroupResponse",
         "type": "object"
       },
@@ -1099,7 +1159,10 @@
             "type": "string"
           }
         },
-        "required": ["name", "evidence"],
+        "required": [
+          "name",
+          "evidence"
+        ],
         "title": "DerivedSkillResponse",
         "type": "object"
       },
@@ -1172,7 +1235,10 @@
             "title": "Start"
           }
         },
-        "required": ["institution", "degree"],
+        "required": [
+          "institution",
+          "degree"
+        ],
         "title": "EducationEntrySchema",
         "type": "object"
       },
@@ -1202,7 +1268,10 @@
             "type": "string"
           }
         },
-        "required": ["code", "message"],
+        "required": [
+          "code",
+          "message"
+        ],
         "title": "ErrorBody",
         "type": "object"
       },
@@ -1232,7 +1301,11 @@
             "type": "string"
           }
         },
-        "required": ["location", "message", "type"],
+        "required": [
+          "location",
+          "message",
+          "type"
+        ],
         "title": "ErrorDetail",
         "type": "object"
       },
@@ -1243,7 +1316,9 @@
             "$ref": "#/components/schemas/ErrorBody"
           }
         },
-        "required": ["error"],
+        "required": [
+          "error"
+        ],
         "title": "ErrorResponse",
         "type": "object"
       },
@@ -1266,7 +1341,9 @@
             "type": "string"
           }
         },
-        "required": ["text"],
+        "required": [
+          "text"
+        ],
         "title": "ExperienceBulletSchema",
         "type": "object"
       },
@@ -1339,7 +1416,11 @@
             "type": "string"
           }
         },
-        "required": ["company", "role", "start"],
+        "required": [
+          "company",
+          "role",
+          "start"
+        ],
         "title": "ExperienceEntrySchema",
         "type": "object"
       },
@@ -1360,7 +1441,10 @@
       },
       "FactSensitivity": {
         "description": "PII facts are never sent to third parties without explicit review.",
-        "enum": ["normal", "pii"],
+        "enum": [
+          "normal",
+          "pii"
+        ],
         "title": "FactSensitivity",
         "type": "string"
       },
@@ -1404,7 +1488,10 @@
             "$ref": "#/components/schemas/FilterPresetScope"
           }
         },
-        "required": ["name", "scope"],
+        "required": [
+          "name",
+          "scope"
+        ],
         "title": "FilterPresetCreate",
         "type": "object"
       },
@@ -1423,7 +1510,10 @@
             "type": "integer"
           }
         },
-        "required": ["presets", "total"],
+        "required": [
+          "presets",
+          "total"
+        ],
         "title": "FilterPresetListResponse",
         "type": "object"
       },
@@ -1555,7 +1645,10 @@
       },
       "FilterPresetScope": {
         "description": "Which list endpoint a preset applies to.",
-        "enum": ["jobs", "applications"],
+        "enum": [
+          "jobs",
+          "applications"
+        ],
         "title": "FilterPresetScope",
         "type": "string"
       },
@@ -1590,7 +1683,10 @@
             "type": "boolean"
           }
         },
-        "required": ["evaluated", "truncated"],
+        "required": [
+          "evaluated",
+          "truncated"
+        ],
         "title": "FilterReevaluationResponse",
         "type": "object"
       },
@@ -1608,7 +1704,10 @@
             "type": "string"
           }
         },
-        "required": ["status", "timestamp"],
+        "required": [
+          "status",
+          "timestamp"
+        ],
         "title": "HealthResponse",
         "type": "object"
       },
@@ -1645,7 +1744,10 @@
             "type": "integer"
           }
         },
-        "required": ["runs", "total"],
+        "required": [
+          "runs",
+          "total"
+        ],
         "title": "IngestionRunListResponse",
         "type": "object"
       },
@@ -1723,7 +1825,11 @@
       },
       "IngestionRunStatus": {
         "description": "Terminal states of a synchronous ingestion run.",
-        "enum": ["succeeded", "partial", "failed"],
+        "enum": [
+          "succeeded",
+          "partial",
+          "failed"
+        ],
         "title": "IngestionRunStatus",
         "type": "string"
       },
@@ -1793,7 +1899,9 @@
             "type": "string"
           }
         },
-        "required": ["scheduledAt"],
+        "required": [
+          "scheduledAt"
+        ],
         "title": "InterviewCreate",
         "type": "object"
       },
@@ -1812,19 +1920,32 @@
             "type": "integer"
           }
         },
-        "required": ["interviews", "total"],
+        "required": [
+          "interviews",
+          "total"
+        ],
         "title": "InterviewListResponse",
         "type": "object"
       },
       "InterviewMode": {
         "description": "How the interview is conducted.",
-        "enum": ["onsite", "remote", "video", "phone"],
+        "enum": [
+          "onsite",
+          "remote",
+          "video",
+          "phone"
+        ],
         "title": "InterviewMode",
         "type": "string"
       },
       "InterviewOutcome": {
         "description": "Recorded result of an interview round.",
-        "enum": ["pending", "completed", "cancelled", "no_show"],
+        "enum": [
+          "pending",
+          "completed",
+          "cancelled",
+          "no_show"
+        ],
         "title": "InterviewOutcome",
         "type": "string"
       },
@@ -2186,7 +2307,14 @@
         "type": "string"
       },
       "JobLevel": {
-        "enum": ["intern", "junior", "mid", "senior", "lead", "unknown"],
+        "enum": [
+          "intern",
+          "junior",
+          "mid",
+          "senior",
+          "lead",
+          "unknown"
+        ],
         "title": "JobLevel",
         "type": "string"
       },
@@ -2205,7 +2333,10 @@
             "type": "integer"
           }
         },
-        "required": ["jobs", "total"],
+        "required": [
+          "jobs",
+          "total"
+        ],
         "title": "JobListResponse",
         "type": "object"
       },
@@ -2596,7 +2727,9 @@
         "type": "object"
       },
       "JobSortOrder": {
-        "enum": ["posted_desc"],
+        "enum": [
+          "posted_desc"
+        ],
         "title": "JobSortOrder",
         "type": "string"
       },
@@ -2699,7 +2832,9 @@
             "title": "Proficiency"
           }
         },
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LanguageEntrySchema",
         "type": "object"
       },
@@ -2737,19 +2872,32 @@
       },
       "LanguageName": {
         "description": "Canonical spoken-language identifiers.",
-        "enum": ["english", "portuguese", "spanish", "french", "german"],
+        "enum": [
+          "english",
+          "portuguese",
+          "spanish",
+          "french",
+          "german"
+        ],
         "title": "LanguageName",
         "type": "string"
       },
       "MatchAlgorithm": {
         "description": "Selectable scoring algorithm (Taleo-style modes).",
-        "enum": ["keyword", "tfidf", "hybrid"],
+        "enum": [
+          "keyword",
+          "tfidf",
+          "hybrid"
+        ],
         "title": "MatchAlgorithm",
         "type": "string"
       },
       "MatchBaselineKind": {
         "description": "Which candidate document produced the score.",
-        "enum": ["resume", "portfolio"],
+        "enum": [
+          "resume",
+          "portfolio"
+        ],
         "title": "MatchBaselineKind",
         "type": "string"
       },
@@ -2782,7 +2930,11 @@
             "title": "Locale"
           }
         },
-        "required": ["kind", "locale", "applicationId"],
+        "required": [
+          "kind",
+          "locale",
+          "applicationId"
+        ],
         "title": "MatchBaselineSchema",
         "type": "object"
       },
@@ -2801,7 +2953,10 @@
             "$ref": "#/components/schemas/ResumeDocument"
           }
         },
-        "required": ["job", "resume"],
+        "required": [
+          "job",
+          "resume"
+        ],
         "title": "MatchRequest",
         "type": "object"
       },
@@ -2950,7 +3105,9 @@
             "default": "received"
           }
         },
-        "required": ["currency"],
+        "required": [
+          "currency"
+        ],
         "title": "OfferCreate",
         "type": "object"
       },
@@ -2969,7 +3126,10 @@
             "type": "integer"
           }
         },
-        "required": ["offers", "total"],
+        "required": [
+          "offers",
+          "total"
+        ],
         "title": "OfferListResponse",
         "type": "object"
       },
@@ -3192,7 +3352,13 @@
         "type": "object"
       },
       "OfferStatus": {
-        "enum": ["received", "negotiating", "accepted", "declined", "expired"],
+        "enum": [
+          "received",
+          "negotiating",
+          "accepted",
+          "declined",
+          "expired"
+        ],
         "title": "OfferStatus",
         "type": "string"
       },
@@ -3250,7 +3416,9 @@
             "title": "Subtitle"
           }
         },
-        "required": ["fullName"],
+        "required": [
+          "fullName"
+        ],
         "title": "PortfolioBasicsSchema",
         "type": "object"
       },
@@ -3294,7 +3462,9 @@
             "type": "array"
           }
         },
-        "required": ["basics"],
+        "required": [
+          "basics"
+        ],
         "title": "PortfolioContentSchema",
         "type": "object"
       },
@@ -3355,7 +3525,10 @@
             "type": "array"
           }
         },
-        "required": ["basics", "locale"],
+        "required": [
+          "basics",
+          "locale"
+        ],
         "title": "PortfolioDocument",
         "type": "object"
       },
@@ -3415,7 +3588,12 @@
             "type": "string"
           }
         },
-        "required": ["language", "proficiency", "name", "proficiencyLabel"],
+        "required": [
+          "language",
+          "proficiency",
+          "name",
+          "proficiencyLabel"
+        ],
         "title": "PortfolioLanguagePublicResponse",
         "type": "object"
       },
@@ -3439,7 +3617,10 @@
             "type": "string"
           }
         },
-        "required": ["language", "proficiency"],
+        "required": [
+          "language",
+          "proficiency"
+        ],
         "title": "PortfolioLanguageSchema",
         "type": "object"
       },
@@ -3454,12 +3635,20 @@
             "type": "array"
           }
         },
-        "required": ["languages"],
+        "required": [
+          "languages"
+        ],
         "title": "PortfolioLanguagesResponse",
         "type": "object"
       },
       "PortfolioLinkKind": {
-        "enum": ["github", "linkedin", "website", "email", "other"],
+        "enum": [
+          "github",
+          "linkedin",
+          "website",
+          "email",
+          "other"
+        ],
         "title": "PortfolioLinkKind",
         "type": "string"
       },
@@ -3488,7 +3677,10 @@
             "type": "string"
           }
         },
-        "required": ["kind", "url"],
+        "required": [
+          "kind",
+          "url"
+        ],
         "title": "PortfolioLinkSchema",
         "type": "object"
       },
@@ -3520,7 +3712,13 @@
             "type": "string"
           }
         },
-        "required": ["id", "filters", "documents", "createdAt", "updatedAt"],
+        "required": [
+          "id",
+          "filters",
+          "documents",
+          "createdAt",
+          "updatedAt"
+        ],
         "title": "PortfolioResponse",
         "type": "object"
       },
@@ -3539,7 +3737,10 @@
             "type": "integer"
           }
         },
-        "required": ["facts", "total"],
+        "required": [
+          "facts",
+          "total"
+        ],
         "title": "ProfileFactListResponse",
         "type": "object"
       },
@@ -3598,7 +3799,10 @@
             "type": "string"
           }
         },
-        "required": ["category", "value"],
+        "required": [
+          "category",
+          "value"
+        ],
         "title": "ProfileFactUpsert",
         "type": "object"
       },
@@ -3705,7 +3909,11 @@
             "type": "array"
           }
         },
-        "required": ["slug", "title", "summary"],
+        "required": [
+          "slug",
+          "title",
+          "summary"
+        ],
         "title": "ProjectEntrySchema",
         "type": "object"
       },
@@ -3724,13 +3932,22 @@
             "type": "string"
           }
         },
-        "required": ["value", "source", "confidence"],
+        "required": [
+          "value",
+          "source",
+          "confidence"
+        ],
         "title": "ProposedAnswerResponse",
         "type": "object"
       },
       "RequirementClassification": {
         "description": "Wilson's 4-tier adherence classification.",
-        "enum": ["proven", "equivalent", "partial", "unproven"],
+        "enum": [
+          "proven",
+          "equivalent",
+          "partial",
+          "unproven"
+        ],
         "title": "RequirementClassification",
         "type": "string"
       },
@@ -3754,7 +3971,12 @@
             "type": "integer"
           }
         },
-        "required": ["text", "weight", "matched", "score"],
+        "required": [
+          "text",
+          "weight",
+          "matched",
+          "score"
+        ],
         "title": "RequirementMatchSchema",
         "type": "object"
       },
@@ -3778,7 +4000,10 @@
             "type": "integer"
           }
         },
-        "required": ["text", "classification"],
+        "required": [
+          "text",
+          "classification"
+        ],
         "title": "RequirementSchema",
         "type": "object"
       },
@@ -3857,7 +4082,12 @@
             "type": "string"
           }
         },
-        "required": ["locale", "summary", "basics", "applicationId"],
+        "required": [
+          "locale",
+          "summary",
+          "basics",
+          "applicationId"
+        ],
         "title": "ResumeCreate",
         "type": "object"
       },
@@ -3930,7 +4160,11 @@
             "type": "string"
           }
         },
-        "required": ["locale", "summary", "basics"],
+        "required": [
+          "locale",
+          "summary",
+          "basics"
+        ],
         "title": "ResumeDocument",
         "type": "object"
       },
@@ -3949,7 +4183,10 @@
             "type": "integer"
           }
         },
-        "required": ["resumes", "total"],
+        "required": [
+          "resumes",
+          "total"
+        ],
         "title": "ResumeListResponse",
         "type": "object"
       },
@@ -4097,7 +4334,10 @@
             "type": "string"
           }
         },
-        "required": ["name", "group"],
+        "required": [
+          "name",
+          "group"
+        ],
         "title": "SkillCreate",
         "type": "object"
       },
@@ -4116,13 +4356,20 @@
             "type": "string"
           }
         },
-        "required": ["source", "label", "text"],
+        "required": [
+          "source",
+          "label",
+          "text"
+        ],
         "title": "SkillEvidenceResponse",
         "type": "object"
       },
       "SkillEvidenceSource": {
         "description": "Where a derived skill's backing evidence comes from.",
-        "enum": ["experience", "project"],
+        "enum": [
+          "experience",
+          "project"
+        ],
         "title": "SkillEvidenceSource",
         "type": "string"
       },
@@ -4137,7 +4384,9 @@
             "type": "array"
           }
         },
-        "required": ["groups"],
+        "required": [
+          "groups"
+        ],
         "title": "SkillGroupLabelsListResponse",
         "type": "object"
       },
@@ -4155,7 +4404,10 @@
             "type": "object"
           }
         },
-        "required": ["group", "labels"],
+        "required": [
+          "group",
+          "labels"
+        ],
         "title": "SkillGroupLabelsResponse",
         "type": "object"
       },
@@ -4190,7 +4442,9 @@
             "type": "array"
           }
         },
-        "required": ["category"],
+        "required": [
+          "category"
+        ],
         "title": "SkillGroupSchema",
         "type": "object"
       },
@@ -4209,7 +4463,10 @@
             "type": "integer"
           }
         },
-        "required": ["skills", "total"],
+        "required": [
+          "skills",
+          "total"
+        ],
         "title": "SkillListResponse",
         "type": "object"
       },
@@ -4289,7 +4546,14 @@
             "type": "string"
           }
         },
-        "required": ["id", "name", "group", "labels", "createdAt", "updatedAt"],
+        "required": [
+          "id",
+          "name",
+          "group",
+          "labels",
+          "createdAt",
+          "updatedAt"
+        ],
         "title": "SkillResponse",
         "type": "object"
       },
@@ -4311,7 +4575,10 @@
             "type": "array"
           }
         },
-        "required": ["groups", "unmatched"],
+        "required": [
+          "groups",
+          "unmatched"
+        ],
         "title": "SkillsDerivationResponse",
         "type": "object"
       }
@@ -7362,7 +7629,10 @@
             "required": false,
             "schema": {
               "default": "csv",
-              "enum": ["csv", "json"],
+              "enum": [
+                "csv",
+                "json"
+              ],
               "title": "Format",
               "type": "string"
             }

@@ -10,7 +10,8 @@
       "**",
       "!!**/dist",
       "!!**/mockServiceWorker.js",
-      "!!apps/job-tracker/src/services/api/generated"
+      "!!apps/job-tracker/src/services/api/generated",
+      "!!apps/job-tracker/contract/openapi.json"
     ]
   },
   "formatter": {

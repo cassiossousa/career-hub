@@ -339,7 +339,7 @@ const ptBR: Translation = {
         apply_enqueued: 'Auto-candidatura enfileirada',
         apply_approved: 'Auto-candidatura aprovada',
         apply_rejected: 'Auto-candidatura rejeitada',
-        apply_submitted: 'Auto-candidatura enviada',
+        apply_submitted: 'Candidatura enviada',
         apply_failed: 'Auto-candidatura falhou',
         apply_llm_draft: 'Rascunho de resposta por IA',
       },
@@ -549,7 +549,6 @@ const ptBR: Translation = {
       inspecting: 'Inspecionando',
       ready_for_review: 'Pronta para revisão',
       approved: 'Aprovada',
-      submitting: 'Enviando',
       submitted: 'Enviada',
       failed: 'Falhou',
       skipped: 'Ignorada',
@@ -588,7 +587,8 @@ const ptBR: Translation = {
       uncategorized: 'Geral',
       noFields: 'Nenhum campo de formulário foi extraído nesta execução.',
       preview: 'Pré-visualizar',
-      approve: 'Aprovar e enviar',
+      approve: 'Aprovar',
+      markSubmitted: 'Marcar como enviada',
       reject: 'Rejeitar',
       saveAnswers: 'Salvar respostas',
       redraft: 'Gerar novos rascunhos de IA',
@@ -602,7 +602,10 @@ const ptBR: Translation = {
       viewJob: 'Ver vaga',
       latestRun: 'Última execução automática',
       viewRun: 'Revisar execução',
-      approveHint: 'Aprovar envia a candidatura ao empregador pelo ATS.',
+      approveHint:
+        'Aprovar confirma suas respostas — você ainda envia a candidatura no site do empregador.',
+      approvedHint:
+        'Envie a candidatura no site do empregador e depois marque como enviada aqui.',
       tailoringTitle: 'Sugestões de adequação',
       tailoringHint:
         'Sobreposição de palavras-chave entre esta vaga e o currículo enviado. Enfatize os termos correspondentes e revise os requisitos não atendidos antes de aprovar.',

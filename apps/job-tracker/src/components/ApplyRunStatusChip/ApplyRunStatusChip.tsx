@@ -10,7 +10,6 @@ const APPLY_STATUS_COLORS: Record<
   inspecting: 'info',
   ready_for_review: 'primary',
   approved: 'primary',
-  submitting: 'info',
   submitted: 'success',
   failed: 'error',
   skipped: 'default',

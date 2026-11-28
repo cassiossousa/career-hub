@@ -7,3 +7,7 @@ README.md
 LICENSE.md
 package.json
 package-lock.json
+
+# Generated verbatim from job-tracker-api/openapi.json — must stay
+# byte-identical for `check:api-contract` (sync-api-contract.mjs --check).
+apps/job-tracker/contract/openapi.json

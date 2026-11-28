@@ -503,7 +503,6 @@ const ACTIVE_APPLY_STATUSES: ReadonlySet<ApplyRun['status']> = new Set([
   'inspecting',
   'ready_for_review',
   'approved',
-  'submitting',
   'needs_human',
 ]);
 
@@ -531,28 +530,35 @@ function drainApplyRuns() {
       }
       return inspected;
     }
-    if (run.status === 'approved') {
-      const application = applications.find((a) => a.id === run.applicationId);
-      if (application !== undefined && application.status === 'saved') {
-        application.status = 'applied';
-        application.appliedAt = now.slice(0, 10);
-        application.statusChangedAt = now;
-        pushAppEvent(application.id, 'status_changed', {
-          from: 'saved',
-          to: 'applied',
-        });
-      }
-      pushAppEvent(run.applicationId, 'apply_submitted', { run_id: run.id });
-      return {
-        ...run,
-        status: 'submitted',
-        submittedAt: now,
-        result: { confirmation: 'mock-submit-ok' },
-        updatedAt: now,
-      };
-    }
+    // `approved` runs park: submission is manual (ADR 0032) — the mock
+    // worker never advances them.
     return run;
   });
+}
+
+/** Mirrors the backend `mark_submitted` review action (no ATS call). */
+function markApplyRunSubmitted(run: ApplyRun, now: string): ApplyRun {
+  const application = applications.find((a) => a.id === run.applicationId);
+  if (application !== undefined && application.status === 'saved') {
+    application.status = 'applied';
+    application.appliedAt = now.slice(0, 10);
+    application.statusChangedAt = now;
+    pushAppEvent(application.id, 'status_changed', {
+      from: 'saved',
+      to: 'applied',
+    });
+  }
+  pushAppEvent(run.applicationId, 'apply_submitted', {
+    run_id: run.id,
+    via: 'manual',
+  });
+  return {
+    ...run,
+    status: 'submitted',
+    submittedAt: now,
+    result: { submittedBy: 'manual' },
+    updatedAt: now,
+  };
 }
 
 function findApplyRun(id: number): ApplyRun | Response {
@@ -667,12 +673,23 @@ function editApplyRun(
   };
 }
 
+function markSubmittedForReview(
+  run: ApplyRun,
+  now: string,
+): ApplyRun | Response {
+  if (run.status !== 'approved') {
+    return conflictJson('invalid_transition', 'Run is not approved');
+  }
+  return markApplyRunSubmitted(run, now);
+}
+
 function nextRunForReview(
   run: ApplyRun,
   body: ApplyRunReview,
   now: string,
 ): ApplyRun | Response {
   if (body.action === 'approve') return approveApplyRun(run, now);
+  if (body.action === 'mark_submitted') return markSubmittedForReview(run, now);
   if (body.action === 'reject') {
     if (run.status !== 'ready_for_review' && run.status !== 'needs_human') {
       return conflictJson('invalid_transition', 'Run cannot be rejected');

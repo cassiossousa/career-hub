@@ -469,6 +469,7 @@ export interface Translation {
       noFields: string;
       preview: string;
       approve: string;
+      markSubmitted: string;
       reject: string;
       saveAnswers: string;
       redraft: string;
@@ -483,6 +484,7 @@ export interface Translation {
       latestRun: string;
       viewRun: string;
       approveHint: string;
+      approvedHint: string;
       tailoringTitle: string;
       tailoringHint: string;
     };

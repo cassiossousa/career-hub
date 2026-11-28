@@ -12,6 +12,7 @@ interface ApplyRunActionsProps {
   manualUrl: string | undefined;
   onSave: () => void;
   onApprove: () => void;
+  onMarkSubmitted: () => void;
   onReject: () => void;
   onRetry: () => void;
   onRedraft: () => void;
@@ -28,6 +29,7 @@ export function ApplyRunActions({
   manualUrl,
   onSave,
   onApprove,
+  onMarkSubmitted,
   onReject,
   onRetry,
   onRedraft,
@@ -68,6 +70,16 @@ export function ApplyRunActions({
             {messages.apply.review.approve}
           </Button>
         )}
+        {run.status === 'approved' && (
+          <Button
+            variant="contained"
+            size="small"
+            disabled={pending}
+            onClick={onMarkSubmitted}
+          >
+            {messages.apply.review.markSubmitted}
+          </Button>
+        )}
         {(reviewable || run.status === 'needs_human') && (
           <Button
             variant="outlined"
@@ -89,21 +101,29 @@ export function ApplyRunActions({
             {messages.apply.review.retry}
           </Button>
         )}
-        {run.status === 'needs_human' && manualUrl !== undefined && (
-          <Button
-            variant="outlined"
-            size="small"
-            href={manualUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {messages.apply.review.fillManually}
-          </Button>
-        )}
+        {(run.status === 'ready_for_review' ||
+          run.status === 'needs_human' ||
+          run.status === 'approved') &&
+          manualUrl !== undefined && (
+            <Button
+              variant="outlined"
+              size="small"
+              href={manualUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {messages.apply.review.fillManually}
+            </Button>
+          )}
       </Stack>
       {reviewable && (
         <Typography variant="caption" color="text.secondary">
           {messages.apply.review.approveHint}
+        </Typography>
+      )}
+      {run.status === 'approved' && (
+        <Typography variant="caption" color="text.secondary">
+          {messages.apply.review.approvedHint}
         </Typography>
       )}
     </Stack>

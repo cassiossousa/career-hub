@@ -61,7 +61,9 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
     );
   };
 
-  const sendReview = (action: 'approve' | 'reject' | 'retry') => {
+  const sendReview = (
+    action: 'approve' | 'reject' | 'retry' | 'mark_submitted',
+  ) => {
     reviewMutation.mutate({ id: run.id, review: { action } });
   };
 
@@ -130,6 +132,9 @@ export function ApplyRunReviewBody({ run }: { run: ApplyRun }) {
         manualUrl={jobQuery.data?.url}
         onSave={saveAnswers}
         onApprove={approve}
+        onMarkSubmitted={() => {
+          sendReview('mark_submitted');
+        }}
         onReject={() => {
           sendReview('reject');
         }}

@@ -474,6 +474,8 @@ export interface Translation {
       saveAnswers: string;
       redraft: string;
       redraftField: string;
+      copy: string;
+      copied: string;
       retry: string;
       fillManually: string;
       runError: string;

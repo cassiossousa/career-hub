@@ -35,6 +35,22 @@ async function expectMotivationRegenerated(): Promise<void> {
   ).toBeInTheDocument();
 }
 
+const writeText = jest.fn().mockResolvedValue(undefined);
+
+// userEvent.setup() swaps navigator.clipboard for its own stub — re-mock
+// after setup so assertions see our spy.
+function mockClipboard(): void {
+  Object.defineProperty(navigator, 'clipboard', {
+    value: { writeText },
+    configurable: true,
+  });
+  writeText.mockClear();
+}
+
+beforeEach(() => {
+  writeText.mockClear();
+});
+
 describe('ApplyRunReview', () => {
   it('renders the extracted form fields with proposed answers', async () => {
     renderReview(routePaths.applyRun('1'));
@@ -132,6 +148,34 @@ describe('ApplyRunReview', () => {
 
     await expectMotivationRegenerated();
     expect(screen.getByDisplayValue('draft@example.com')).toBeInTheDocument();
+  });
+
+  it('copies an answer to the clipboard', async () => {
+    const user = userEvent.setup();
+    mockClipboard();
+    renderReview(routePaths.applyRun('1'));
+    await screen.findByDisplayValue('cassio@example.com');
+
+    await user.click(screen.getByRole('button', { name: /copy: email/i }));
+
+    expect(writeText).toHaveBeenCalledWith('cassio@example.com');
+  });
+
+  it('copies artifact text from the preview dialog', async () => {
+    const user = userEvent.setup();
+    mockClipboard();
+    renderReview(routePaths.applyRun('1'));
+    await user.click(await screen.findByRole('button', { name: 'resume.txt' }));
+
+    const copyButton = await screen.findByRole('button', { name: /^copy$/i });
+    await waitFor(() => {
+      expect(copyButton).toBeEnabled();
+    });
+    await user.click(copyButton);
+
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('Senior Frontend Engineer'),
+    );
   });
 
   it('rejects a run', async () => {

@@ -592,6 +592,8 @@ const en: Translation = {
       saveAnswers: 'Save answers',
       redraft: 'Regenerate AI drafts',
       redraftField: 'Regenerate this answer',
+      copy: 'Copy',
+      copied: 'Copied',
       retry: 'Retry',
       fillManually: 'Fill manually',
       runError: 'Run error',

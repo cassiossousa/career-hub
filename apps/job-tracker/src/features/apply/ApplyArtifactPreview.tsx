@@ -6,6 +6,7 @@ import {
   DialogTitle,
   Typography,
 } from '@mui/material';
+import { useClipboard } from '../../app/useClipboard';
 import {
   EmptyState,
   LoadingState,
@@ -28,6 +29,7 @@ export function ApplyArtifactPreview({
   onClose,
 }: ApplyArtifactPreviewProps) {
   const { messages } = useTranslation();
+  const { copy, copied } = useClipboard();
   const artifactQuery = useApplyArtifact(runId, name, { enabled: open });
 
   return (
@@ -61,6 +63,16 @@ export function ApplyArtifactPreview({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{messages.common.close}</Button>
+        <Button
+          disabled={artifactQuery.data === undefined}
+          onClick={() => {
+            if (artifactQuery.data !== undefined) {
+              copy(artifactQuery.data.text);
+            }
+          }}
+        >
+          {copied ? messages.apply.review.copied : messages.apply.review.copy}
+        </Button>
       </DialogActions>
     </Dialog>
   );

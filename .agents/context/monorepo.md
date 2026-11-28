@@ -1,7 +1,7 @@
 ---
 area: monorepo
 paths: package.json scripts/ .github/ content/ docs/ .agents/ .devin/
-last-reviewed: cc53ac3b6ee8ee365566700fe038566e92ab3dd4
+last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
 ---
 
 # Monorepo root
@@ -17,7 +17,11 @@ npm workspaces (`apps/*`, `packages/*`), Node >= 22.12 (`.nvmrc` = 24), npm 11.x
 - **CI** (`.github/workflows/ci.yml`): `verify:all` on every push/PR + PR-scoped `check:mutate:diff`/`check:visual-baseline` + dedicated `e2e` job (Playwright container `mcr.microsoft.com/playwright:v1.65.1-noble`). On green `main` runs, `npm run package:vercel` emits Vercel Build Output API artifacts.
 - **Manual deep** `npm run audit:deep` → `scripts/audit-runtime.mjs`: portfolio-only runtime checks (arch spec → Playwright smoke/WCAG/resilience/visual → memlab leak check → Lighthouse budgets).
 
-`verify:all` additionally enforces `check:bundle` (gzip budgets + `.bundle-baseline.json` delta ratchet), `check:clones` (jscpd), `check:case` (git-index vs disk casing), `check:api-mocks`, `check:audit` (prod deps), and per-workspace Jest coverage behind single package-wide `global` floors.
+`verify:all` additionally enforces `check:bundle` (gzip budgets + `.bundle-baseline.json` delta ratchet), `check:clones` (jscpd), `check:case` (git-index vs disk casing), `check:api-mocks`, `check:mock-contract`, `check:content` (frontmatter schema/locales/non-empty bodies over the synced `content/` MDX tree — `check-content.mjs` reads the portfolio's `LOCALES` const as source of truth), `check:audit` (prod deps), and per-workspace Jest coverage behind single package-wide `global` floors.
+
+Two scripts look like gates but aren't: `check:supply-chain` (audits package-lock tarballs — registry+integrity only, manual/on-demand) and `analyze:bundle` (source-map-explorer bundle forensics). `test:changed` (`scripts/test-changed.mjs`) is a dev-loop accelerator (`jest --findRelatedTests` over working-tree changes, falls back to full suite past 100 changed files per workspace) — never wire it into gates.
+
+Falsification specs for root `scripts/*.mjs` gates live in `apps/job-tracker/src/test/` (e.g. `checkContent.spec.ts`, `checkSupplyChain.spec.ts`) via the `scriptGate.ts`/`repoRoot.ts`/`gitRepoFixture.ts` helpers — they build temp fixture repos and run the real script. New root-script gates should get a spec there.
 
 ## Cross-workspace rules worth remembering
 
@@ -41,6 +45,7 @@ npm workspaces (`apps/*`, `packages/*`), Node >= 22.12 (`.nvmrc` = 24), npm 11.x
 - Context store: `.agents/context/` — see `index.md`. `.runtime/` inside it is gitignored session state.
 - Hooks: `.devin/hooks.v1.json` registers `scripts/context-hook.mjs` for SessionStart/PostCompaction/UserPromptSubmit/PostToolUse/Stop/SessionEnd. A global dispatcher at `%APPDATA%/devin/hooks/context-hook.mjs` (registered in `%APPDATA%/devin/config.json`) delegates to the repo script with `DEVIN_CONTEXT_HOOK=global`; the repo script self-disables when it detects the global config, preventing double injection. Hook scripts must stay silent-and-fast: any failure exits 0.
 - `.devin/config.local.json` is gitignored local permission allow-lists — never commit real secrets there either.
+- In progress (uncommitted at last review): a `commit-msg` husky hook + `commitlint.config.mjs` enforcing conventional-commit format — AGENTS.md gate-tier table and `package.json` devDeps already updated in the working tree.
 
 ## Pointers
 

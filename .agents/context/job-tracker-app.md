@@ -1,7 +1,7 @@
 ---
 area: job-tracker-app
 paths: apps/job-tracker/
-last-reviewed: cc53ac3b6ee8ee365566700fe038566e92ab3dd4
+last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
 ---
 
 # apps/job-tracker
@@ -28,7 +28,9 @@ Personal job-application tracker SPA: applications pipeline (saved → applied �
 ## Gates that bite here
 
 - **`check:api-mocks`** (in `verify:all`): every `apiClient.<method>(<url>)` call site needs a matching MSW handler in `src/mocks/`; dynamic URLs fail. Adding an API call = handler + `data.ts` fixture.
-- **Contract sync:** backend API changes → `npm run sync:api-contract --workspace job-tracker` → commit regenerated `contract/openapi.json` + `src/services/api/generated/openapi.ts`. `check:api-contract` verifies freshness (needs sibling checkout or `--from`). Per `multi-part-change`: backend lands first, then sync, then frontend.
+- **Contract sync:** backend API changes → `npm run sync:api-contract --workspace job-tracker` → commit regenerated `contract/openapi.json` + `src/services/api/generated/openapi.ts`. `check:api-contract` verifies freshness (needs sibling checkout or `--from`). Per `multi-part-change`: backend lands first, then sync, then frontend. Enum additions need i18n labels too — `ApplyAnswerSource.TEMPLATE` (deterministic cover-letter draft when no LLM is configured) landed with en/pt-BR `sourceLabels.template`; any new contract enum value must get the same treatment or the review UI renders it raw.
+- **Jest-level a11y:** `@career-hub/ui/testkit`'s `expectNoA11yViolations` (axe-core, WCAG 2.x A/AA tags, `color-contrast` disabled under jsdom) is applied to FilterBar/ManualJobForm/ApplicationTable specs — it caught real bugs (MUI `Select` label wiring needed `useId` + `labelId`). e2e axe remains the authoritative contrast check.
+- `src/test/` also hosts falsification specs for ROOT `scripts/*.mjs` gates (checkContent/checkSupplyChain/etc.) via `scriptGate.ts` helpers — see `monorepo.md`.
 - Strictest tsconfig in the repo: `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + unused checks.
 - Bundle budget 400 kB JS / 20 kB CSS + baseline ratchet; own Jest `global` coverage floor; Stryker core mutation gate.
 
@@ -36,4 +38,4 @@ Personal job-application tracker SPA: applications pipeline (saved → applied �
 
 - Generated files (`contract/openapi.json`, `services/api/generated/`) are excluded from lint/knip/jscpd — drift is caught by `check:api-contract`/`tsc`, not style gates.
 - MSW handlers must mirror the real API's error envelope and status codes or demo mode hides contract bugs.
-- Recent feature thrust (see git log): apply runs — per-field AI answer regeneration, manual-submit review UI, ATS adapters on the backend.
+- Recent feature thrust (see git log): apply runs — per-field AI answer regeneration, manual-submit review UI, ATS adapters on the backend, deterministic `TEMPLATE` answer source for no-LLM cover-letter drafts.

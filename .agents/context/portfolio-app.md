@@ -1,7 +1,7 @@
 ---
 area: portfolio-app
 paths: apps/professional-portfolio/
-last-reviewed: cc53ac3b6ee8ee365566700fe038566e92ab3dd4
+last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
 ---
 
 # apps/professional-portfolio
@@ -24,6 +24,7 @@ The public face of the owner's professional presence: a Vite + React SPA (MUI 9,
 - **Bundle budget:** 150 kB JS / 20 kB CSS gzip + `.bundle-baseline.json` delta ratchet (>5 kB growth fails; intentional growth needs `--update-baseline` in the same PR).
 - **`audit:deep`** is portfolio-scoped: arch spec → Playwright (smoke/WCAG AA/resilience/visual) → memlab leak check on the production build → Lighthouse budgets (perf ≥0.75, a11y ≥0.9, CLS ≤0.1).
 - Coverage: single package-wide `global` Jest floor; Stryker `check:mutate:core` covers `services/`, `types/`, `i18n/dictionaries.ts`, `app/storage.ts`, `app/routePaths.ts` (break < 85 fails).
+- Jest-level a11y: `@career-hub/ui/testkit`'s `expectNoA11yViolations` (axe-core; `color-contrast` off under jsdom) is applied to component specs (e.g. ProjectDetails) — complements, never replaces, the e2e axe audit.
 
 ## Pitfalls
 

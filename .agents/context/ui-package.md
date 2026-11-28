@@ -1,7 +1,7 @@
 ---
 area: ui-package
 paths: packages/ui/
-last-reviewed: cc53ac3b6ee8ee365566700fe038566e92ab3dd4
+last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
 ---
 
 # packages/ui (@career-hub/ui)
@@ -22,7 +22,7 @@ Do not add a bundler, `dist/` publish pipeline, or changesets. `index.ts` barrel
 - `components/` — MUI-based shared components; the ONLY directory Jest discovers specs in (`components/**/*.spec.{ts,tsx}`) and the only coverage/mutation scope.
 - `theme/` — MUI theme.
 - `i18n/` — shared dictionary helpers/types.
-- `testkit/` — a11y/testing helpers for consumer specs.
+- `testkit/` — a11y/testing helpers for consumer specs. `a11y.ts` exports `expectNoA11yViolations(container)` (axe-core, WCAG 2.x A/AA tags; `color-contrast` disabled because jsdom has no layout — e2e axe is the authoritative contrast check). Consumers: app `architecture.spec.ts` files, component specs in both apps and `components/`.
 - Runtime deps: `@mui/material`, `@emotion/react`, `@emotion/styled`, `flag-icons`; peers `react`/`react-dom` ^18. Pin identical versions to siblings; declare only what this package's build/tests touch — no root test tooling redeclaration.
 
 ## Gates

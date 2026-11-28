@@ -108,7 +108,8 @@
           "apply_rejected",
           "apply_submitted",
           "apply_failed",
-          "apply_llm_draft"
+          "apply_llm_draft",
+          "resume_tailoring"
         ],
         "title": "ApplicationEventKind",
         "type": "string"
@@ -1165,6 +1166,46 @@
           "evidence"
         ],
         "title": "DerivedSkillResponse",
+        "type": "object"
+      },
+      "DuplicateGroupListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/DuplicateGroupSchema"
+            },
+            "title": "Groups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "groups"
+        ],
+        "title": "DuplicateGroupListResponse",
+        "type": "object"
+      },
+      "DuplicateGroupSchema": {
+        "additionalProperties": false,
+        "description": "One cluster of likely-duplicate postings across sources.",
+        "properties": {
+          "canonicalKey": {
+            "title": "Canonicalkey",
+            "type": "string"
+          },
+          "jobIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Jobids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "canonicalKey",
+          "jobIds"
+        ],
+        "title": "DuplicateGroupSchema",
         "type": "object"
       },
       "EducationEntrySchema": {
@@ -2742,6 +2783,8 @@
           "sine_bahia",
           "casa_do_trabalhador",
           "remote",
+          "greenhouse",
+          "lever",
           "google_jobs",
           "manual",
           "other"
@@ -2937,6 +2980,72 @@
           "applicationId"
         ],
         "title": "MatchBaselineSchema",
+        "type": "object"
+      },
+      "MatchRankRequest": {
+        "additionalProperties": false,
+        "description": "POST /api/match/rank body: bulk-score an explicit set of job ids.",
+        "properties": {
+          "algorithm": {
+            "$ref": "#/components/schemas/MatchAlgorithm",
+            "default": "hybrid"
+          },
+          "applicationId": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applicationid"
+          },
+          "jobIds": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Jobids",
+            "type": "array"
+          },
+          "locale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locale"
+          }
+        },
+        "required": [
+          "jobIds"
+        ],
+        "title": "MatchRankRequest",
+        "type": "object"
+      },
+      "MatchRankResponse": {
+        "additionalProperties": false,
+        "description": "Bulk ranking: best score first, job id ascending on ties.",
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/RankedMatchSchema"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "MatchRankResponse",
         "type": "object"
       },
       "MatchRequest": {
@@ -3941,6 +4050,24 @@
         "title": "ProposedAnswerResponse",
         "type": "object"
       },
+      "RankedMatchSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "title": "Jobid",
+            "type": "integer"
+          },
+          "result": {
+            "$ref": "#/components/schemas/MatchResponse"
+          }
+        },
+        "required": [
+          "jobId",
+          "result"
+        ],
+        "title": "RankedMatchSchema",
+        "type": "object"
+      },
       "RequirementClassification": {
         "description": "Wilson's 4-tier adherence classification.",
         "enum": [
@@ -4068,6 +4195,13 @@
             "title": "Projects",
             "type": "array"
           },
+          "schemaVersion": {
+            "default": 1,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Schemaversion",
+            "type": "integer"
+          },
           "skillGroups": {
             "items": {
               "$ref": "#/components/schemas/SkillGroupSchema"
@@ -4145,6 +4279,13 @@
             "maxItems": 200,
             "title": "Projects",
             "type": "array"
+          },
+          "schemaVersion": {
+            "default": 1,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Schemaversion",
+            "type": "integer"
           },
           "skillGroups": {
             "items": {
@@ -4256,6 +4397,13 @@
             "maxItems": 200,
             "title": "Projects",
             "type": "array"
+          },
+          "schemaVersion": {
+            "default": 1,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Schemaversion",
+            "type": "integer"
           },
           "skillGroups": {
             "items": {
@@ -4581,6 +4729,96 @@
           "unmatched"
         ],
         "title": "SkillsDerivationResponse",
+        "type": "object"
+      },
+      "TailoredResumeResponse": {
+        "additionalProperties": false,
+        "description": "Dry-run LLM rewrite: preview only, persisted via PUT /resume.",
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/ResumeDocument"
+          },
+          "guard": {
+            "additionalProperties": true,
+            "title": "Guard",
+            "type": "object"
+          },
+          "llmEnabled": {
+            "title": "Llmenabled",
+            "type": "boolean"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "title": "Meta",
+            "type": "object"
+          },
+          "suggestions": {
+            "$ref": "#/components/schemas/TailoringSuggestionsResponse"
+          }
+        },
+        "required": [
+          "document",
+          "suggestions",
+          "guard",
+          "meta",
+          "llmEnabled"
+        ],
+        "title": "TailoredResumeResponse",
+        "type": "object"
+      },
+      "TailoringGuidance": {
+        "description": "Deterministic guidance codes attached to every suggestion set.",
+        "enum": [
+          "emphasize_matched_terms",
+          "address_missing_terms",
+          "strengthen_summary",
+          "tag_bullets_with_skills",
+          "keep_facts_unchanged",
+          "review_before_submit"
+        ],
+        "title": "TailoringGuidance",
+        "type": "string"
+      },
+      "TailoringSuggestionsResponse": {
+        "additionalProperties": false,
+        "description": "Deterministic guidance derived from the runtime match \u2014 no LLM.",
+        "properties": {
+          "guidance": {
+            "items": {
+              "$ref": "#/components/schemas/TailoringGuidance"
+            },
+            "title": "Guidance",
+            "type": "array"
+          },
+          "missingTerms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missingterms",
+            "type": "array"
+          },
+          "suggestedSkillTerms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Suggestedskillterms",
+            "type": "array"
+          },
+          "unmetRequirements": {
+            "items": {
+              "$ref": "#/components/schemas/RequirementMatchSchema"
+            },
+            "title": "Unmetrequirements",
+            "type": "array"
+          }
+        },
+        "required": [
+          "missingTerms",
+          "unmetRequirements",
+          "suggestedSkillTerms",
+          "guidance"
+        ],
+        "title": "TailoringSuggestionsResponse",
         "type": "object"
       }
     },
@@ -6611,6 +6849,168 @@
         "summary": "Derive Resume Skills"
       }
     },
+    "/api/applications/{application_id}/resume/tailor": {
+      "post": {
+        "operationId": "tailor_resume_api_applications__application_id__resume_tailor_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "application_id",
+            "required": true,
+            "schema": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Application Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TailoredResumeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Tailor Resume"
+      }
+    },
+    "/api/applications/{application_id}/tailoring": {
+      "get": {
+        "operationId": "get_tailoring_suggestions_api_applications__application_id__tailoring_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "application_id",
+            "required": true,
+            "schema": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "title": "Application Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TailoringSuggestionsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Tailoring Suggestions"
+      }
+    },
     "/api/apply-runs": {
       "get": {
         "operationId": "list_apply_runs_api_apply_runs_get",
@@ -7046,6 +7446,16 @@
             },
             "description": "Successful Response"
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Malformed JSON body"
+          },
           "401": {
             "content": {
               "application/json": {
@@ -7075,6 +7485,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Payload too large"
           },
           "422": {
             "content": {
@@ -9428,6 +9848,73 @@
         "summary": "Create Job"
       }
     },
+    "/api/jobs/duplicates": {
+      "get": {
+        "operationId": "find_job_duplicates_api_jobs_duplicates_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DuplicateGroupListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Find Job Duplicates"
+      }
+    },
     "/api/jobs/stats": {
       "get": {
         "operationId": "job_stats_api_jobs_stats_get",
@@ -9851,6 +10338,89 @@
           }
         ],
         "summary": "Match Inline"
+      }
+    },
+    "/api/match/rank": {
+      "post": {
+        "operationId": "rank_jobs_api_match_rank_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchRankRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchRankResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Malformed JSON body"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Payload too large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Rank Jobs"
       }
     },
     "/api/offers": {

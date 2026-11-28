@@ -86,3 +86,5 @@ export const resumePdfDocumentSchema = z.object({
   certifications: z.array(certificationEntrySchema).optional(),
   languages: z.array(languageEntrySchema).optional(),
 });
+
+export type ResumePdfDocumentMeta = z.infer<typeof resumeDocumentMetaSchema>;

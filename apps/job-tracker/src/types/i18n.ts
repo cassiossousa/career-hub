@@ -26,6 +26,7 @@ import type {
 } from '../services/types/match';
 import type { OfferStatus } from '../services/types/offer';
 import type { LinkKind, SkillCategory } from '../services/types/portfolio';
+import type { TailoringGuidance } from '../services/types/tailoring';
 
 export const LOCALES = ['en', 'pt-BR'] as const;
 
@@ -116,6 +117,9 @@ export interface Translation {
     viewPosting: string;
     viewApplication: string;
     trackedOnly: string;
+    rankByMatch: string;
+    matchScore: string;
+    duplicatesTitle: string;
     saveForLater: string;
     markApplied: string;
     appliedConfirmTitle: string;
@@ -374,6 +378,21 @@ export interface Translation {
       category: string;
       items: string;
       categories: Record<SkillCategory, string>;
+    };
+    tailoring: {
+      title: string;
+      guidance: Record<TailoringGuidance, string>;
+      missingTerms: string;
+      suggestedSkillTerms: string;
+      unmetRequirements: string;
+      tailorButton: string;
+      draftTitle: string;
+      draftNote: string;
+      guardPassed: string;
+      guardFailed: string;
+      violations: string;
+      useDraft: string;
+      discardDraft: string;
     };
   };
 

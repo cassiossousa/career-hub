@@ -14,9 +14,11 @@ import type {
   JobListPage,
   JobStats,
 } from '../types/job';
+import type { DuplicateGroupList } from '../types/tailoring';
 import { apiClient } from './client';
 import { paginationParams } from './pagination';
 import {
+  duplicateGroupsResponseSchema,
   jobResponseSchema,
   jobStatsResponseSchema,
   jobsResponseSchema,
@@ -26,6 +28,7 @@ export const JOBS_PAGE_SIZE = 200;
 
 export const JOBS_QUERY_KEY = ['jobs'];
 export const JOB_STATS_QUERY_KEY = ['jobStats'];
+export const JOB_DUPLICATES_QUERY_KEY = ['jobDuplicates'];
 
 export interface JobsQueryOptions {
   limit?: number | undefined;
@@ -68,6 +71,20 @@ export function useJob(
     queryFn: async () => {
       const response = await apiClient.get(`/api/jobs/${id}`);
       return jobResponseSchema.parse(response.data);
+    },
+    ...options,
+  });
+}
+
+/** Likely-duplicate posting clusters across sources (fuzzy, server-side). */
+export function useJobDuplicates(
+  options?: Omit<UseQueryOptions<DuplicateGroupList>, 'queryKey' | 'queryFn'>,
+) {
+  return useQuery({
+    queryKey: JOB_DUPLICATES_QUERY_KEY,
+    queryFn: async () => {
+      const response = await apiClient.get('/api/jobs/duplicates');
+      return duplicateGroupsResponseSchema.parse(response.data);
     },
     ...options,
   });

@@ -106,6 +106,8 @@ const ptBR: Translation = {
       other: 'Outro',
     },
     sources: {
+      greenhouse: 'Greenhouse',
+      lever: 'Lever',
       gupy: 'Gupy',
       solides: 'Sólides',
       empregos_com_br: 'Empregos.com.br',
@@ -120,6 +122,9 @@ const ptBR: Translation = {
     viewPosting: 'Ver vaga',
     viewApplication: 'Ver candidatura',
     trackedOnly: 'Apenas acompanhadas',
+    rankByMatch: 'Ordenar por compatibilidade',
+    matchScore: 'Compatibilidade {score}%',
+    duplicatesTitle: 'Possíveis vagas duplicadas',
     saveForLater: 'Salvar para depois',
     markApplied: 'Marcar como aplicada',
     appliedConfirmTitle: 'Marcar como aplicada?',
@@ -342,6 +347,7 @@ const ptBR: Translation = {
         apply_submitted: 'Candidatura enviada',
         apply_failed: 'Auto-candidatura falhou',
         apply_llm_draft: 'Rascunho de resposta por IA',
+        resume_tailoring: 'Rascunho de currículo por IA',
       },
     },
   },
@@ -452,6 +458,31 @@ const ptBR: Translation = {
         cloud: 'Nuvem',
         testing: 'Testes',
       },
+    },
+    tailoring: {
+      title: 'Sugestões de adaptação',
+      guidance: {
+        emphasize_matched_terms:
+          'Destaque os termos que já combinam com a vaga',
+        address_missing_terms: 'Aborde os termos faltantes com veracidade',
+        strengthen_summary: 'Alinhe o resumo à função',
+        tag_bullets_with_skills: 'Marque os bullets com termos de habilidades',
+        keep_facts_unchanged:
+          'Mantenha datas, empregadores e fatos inalterados',
+        review_before_submit: 'Revise o rascunho antes de enviar',
+      },
+      missingTerms: 'Termos faltantes',
+      suggestedSkillTerms: 'Termos de habilidade sugeridos',
+      unmetRequirements: 'Requisitos não atendidos',
+      tailorButton: 'Pré-visualizar rascunho de IA',
+      draftTitle: 'Rascunho adaptado por IA (não salvo)',
+      draftNote:
+        'Esta é uma pré-visualização — nada é salvo até você pressionar Salvar. Carregar o rascunho substitui o conteúdo do editor.',
+      guardPassed: 'Rascunho passou nas verificações de fabricação',
+      guardFailed: 'Rascunho falhou nas verificações de fabricação',
+      violations: 'Violações',
+      useDraft: 'Carregar rascunho no editor',
+      discardDraft: 'Descartar',
     },
   },
 

@@ -8,8 +8,9 @@ import {
   type MatchAlgorithm,
   type MatchResult,
 } from '../types/match';
+import type { MatchRankResponse } from '../types/tailoring';
 import { apiClient } from './client';
-import { matchResponseSchema } from './schemas';
+import { matchRankResponseSchema, matchResponseSchema } from './schemas';
 
 const MATCH_QUERY_KEY = 'match';
 
@@ -55,6 +56,42 @@ export function useApplicationMatch(
         `/api/applications/${applicationId}/match?algorithm=${algorithm}`,
       );
       return matchResponseSchema.parse(response.data);
+    },
+    ...options,
+  });
+}
+
+export interface RankJobsParams {
+  algorithm?: MatchAlgorithm | undefined;
+  applicationId?: number | undefined;
+  locale?: string | undefined;
+}
+
+/** Bulk-scores an explicit set of job ids (API caps at 200); best first. */
+export function useRankJobs(
+  jobIds: number[],
+  params: RankJobsParams = {},
+  options?: Omit<UseQueryOptions<MatchRankResponse>, 'queryKey' | 'queryFn'>,
+) {
+  const algorithm = params.algorithm ?? 'hybrid';
+
+  return useQuery({
+    queryKey: [
+      MATCH_QUERY_KEY,
+      'rank',
+      jobIds.join(','),
+      algorithm,
+      params.applicationId,
+      params.locale,
+    ],
+    queryFn: async () => {
+      const response = await apiClient.post('/api/match/rank', {
+        jobIds,
+        algorithm,
+        applicationId: params.applicationId ?? null,
+        locale: params.locale ?? null,
+      });
+      return matchRankResponseSchema.parse(response.data);
     },
     ...options,
   });

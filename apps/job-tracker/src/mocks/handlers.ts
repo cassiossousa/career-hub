@@ -50,6 +50,7 @@ import type {
   SkillGroupLabels,
   SkillPatch,
 } from '../services/types/skills';
+import type { TailoringSuggestions } from '../services/types/tailoring';
 import {
   eventsForApplication,
   seedApplicationContacts,
@@ -432,6 +433,39 @@ function matchJobById(
   return computeMatch(job, baselineDoc, algorithm, baseline);
 }
 
+function tailoringSuggestionsFor(
+  applicationId: number,
+): TailoringSuggestions | Response {
+  const application = findApplication(applicationId);
+  if (application instanceof Response) return application;
+  const result = matchJobById(application.jobId, 'hybrid', applicationId);
+  if (result instanceof Response) return result;
+
+  const missingTerms = [...new Set(result.missingTerms)];
+  const unmetRequirements = result.requirements.filter((req) => !req.matched);
+  const suggestedSkillTerms = [
+    ...new Set(
+      unmetRequirements.flatMap((req) =>
+        req.text
+          .toLowerCase()
+          .split(/[^a-z0-9+#.]+/)
+          .filter((token) => token.length > 2),
+      ),
+    ),
+  ].slice(0, 8);
+  const guidance: TailoringSuggestions['guidance'] = [
+    'keep_facts_unchanged',
+    'review_before_submit',
+  ];
+  if (result.matchedTerms.length > 0) {
+    guidance.unshift('emphasize_matched_terms');
+  }
+  if (missingTerms.length > 0) {
+    guidance.unshift('address_missing_terms', 'tag_bullets_with_skills');
+  }
+  return { guidance, missingTerms, suggestedSkillTerms, unmetRequirements };
+}
+
 function findApplication(id: number): Application | Response {
   return (
     applications.find((a) => a.id === id) ??
@@ -459,6 +493,7 @@ function documentFromBody(body: ResumeDocument): ResumeDocument {
     languages: body.languages ?? [],
     projects: body.projects ?? [],
     skillGroups: body.skillGroups ?? [],
+    schemaVersion: body.schemaVersion,
   };
 }
 
@@ -813,6 +848,23 @@ export const handlers = [
     return HttpResponse.json(withApplication(job), { status: 201 });
   }),
 
+  http.get('/api/jobs/duplicates', ({ request }) => {
+    const params = new URL(request.url).searchParams;
+    const limit = Math.min(Math.max(Number(params.get('limit')) || 50, 1), 200);
+    const byKey = new Map<string, number[]>();
+    for (const job of jobs) {
+      const key = `${job.company.trim().toLowerCase()}|${job.title
+        .trim()
+        .toLowerCase()}`;
+      byKey.set(key, [...(byKey.get(key) ?? []), job.id]);
+    }
+    const groups = [...byKey.entries()]
+      .filter(([, jobIds]) => jobIds.length > 1)
+      .map(([canonicalKey, jobIds]) => ({ canonicalKey, jobIds }))
+      .slice(0, limit);
+    return HttpResponse.json({ groups });
+  }),
+
   http.get('/api/jobs/:id/match', ({ params, request }) => {
     const query = new URL(request.url).searchParams;
     const algorithm = query.get('algorithm') ?? 'hybrid';
@@ -923,6 +975,40 @@ export const handlers = [
     const result = matchJobById(application.jobId, algorithm, applicationId);
     if (result instanceof Response) return result;
     return HttpResponse.json(result);
+  }),
+
+  http.get('/api/applications/:id/tailoring', ({ params }) => {
+    const suggestions = tailoringSuggestionsFor(Number(params.id));
+    if (suggestions instanceof Response) return suggestions;
+    return HttpResponse.json(suggestions);
+  }),
+
+  http.post('/api/applications/:id/resume/tailor', ({ params }) => {
+    const applicationId = Number(params.id);
+    const application = findApplication(applicationId);
+    if (application instanceof Response) return application;
+    if (application.status !== 'saved') {
+      return conflictJson('resume_locked', 'Resume is locked');
+    }
+    const resume = applicationResume(applicationId);
+    if (!resume) {
+      return notFoundJson('Resume not found');
+    }
+    const suggestions = tailoringSuggestionsFor(applicationId);
+    if (suggestions instanceof Response) return suggestions;
+    return HttpResponse.json({
+      document: {
+        ...documentFromBody(resume),
+        schemaVersion: resume.schemaVersion ?? 1,
+      },
+      suggestions,
+      guard: { passed: true, violations: [] },
+      meta: {
+        source: 'llm_dry_run',
+        generatedAt: new Date().toISOString(),
+      },
+      llmEnabled: true,
+    });
   }),
 
   http.get('/api/applications/:id/resume', ({ params }) => {
@@ -1200,6 +1286,33 @@ export const handlers = [
     }
     coverLetters.splice(index, 1);
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.post('/api/match/rank', async ({ request }) => {
+    const body = (await request.json()) as {
+      algorithm?: string;
+      applicationId?: number | null;
+      jobIds?: number[];
+      locale?: string | null;
+    };
+    const ids = (body.jobIds ?? [])
+      .filter((id): id is number => typeof id === 'number')
+      .slice(0, 200);
+    const results = [];
+    for (const jobId of ids) {
+      const result = matchJobById(
+        jobId,
+        body.algorithm ?? 'hybrid',
+        body.applicationId ?? undefined,
+      );
+      if (!(result instanceof Response)) {
+        results.push({ jobId, result });
+      }
+    }
+    results.sort(
+      (a, b) => b.result.score - a.result.score || a.jobId - b.jobId,
+    );
+    return HttpResponse.json({ results });
   }),
 
   http.post('/api/match', async ({ request }) => {

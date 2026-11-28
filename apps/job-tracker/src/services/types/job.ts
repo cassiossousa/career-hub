@@ -7,6 +7,8 @@ export const JOB_SOURCES = [
   'sine_bahia',
   'casa_do_trabalhador',
   'remote',
+  'greenhouse',
+  'lever',
   'google_jobs',
   'manual',
   'other',

@@ -106,6 +106,7 @@ import type {
   EducationEntry,
   LanguageEntry,
   Resume,
+  ResumeDocument,
   ResumeListPage,
 } from '../types/resume';
 import type {
@@ -114,6 +115,15 @@ import type {
   SkillGroupLabelsList,
   SkillListPage,
 } from '../types/skills';
+import type {
+  DuplicateGroup,
+  DuplicateGroupList,
+  MatchRankResponse,
+  RankedMatch,
+  TailoredResume,
+  TailoringSuggestions,
+} from '../types/tailoring';
+import { TAILORING_GUIDANCE } from '../types/tailoring';
 
 const jobSourceSchema = z.enum(JOB_SOURCES) satisfies z.ZodType<JobSource>;
 
@@ -369,6 +379,19 @@ const matchResultSchema = z.object({
   requirements: z.array(requirementMatchSchema),
 }) satisfies z.ZodType<MatchResult>;
 
+const resumeDocumentSchema = z.object({
+  basics: portfolioBasicsSchema,
+  certifications: z.array(certificationEntrySchema).optional(),
+  education: z.array(educationEntrySchema).optional(),
+  experience: z.array(experienceEntrySchema).optional(),
+  languages: z.array(languageEntrySchema).optional(),
+  locale: z.string(),
+  projects: z.array(projectEntrySchema).optional(),
+  schemaVersion: z.number().int().nonnegative().optional(),
+  skillGroups: z.array(skillGroupSchema).optional(),
+  summary: z.string(),
+}) satisfies z.ZodType<ResumeDocument>;
+
 const resumeSchema = z.object({
   id: z.number(),
   applicationId: z.number(),
@@ -380,6 +403,7 @@ const resumeSchema = z.object({
   certifications: z.array(certificationEntrySchema).optional(),
   languages: z.array(languageEntrySchema).optional(),
   projects: z.array(projectEntrySchema).optional(),
+  schemaVersion: z.number().int().nonnegative().optional(),
   skillGroups: z.array(skillGroupSchema).optional(),
   submittedAt: z.string().nullable(),
   createdAt: z.string(),
@@ -554,6 +578,46 @@ export const profileFactsResponseSchema = z.object({
 export const profileFactResponseSchema = factSchema;
 
 export const matchResponseSchema = matchResultSchema;
+
+const tailoringGuidanceSchema = z.enum(TAILORING_GUIDANCE) satisfies z.ZodType<
+  TailoringSuggestions['guidance'][number]
+>;
+
+export const tailoringSuggestionsResponseSchema = z.object({
+  guidance: z.array(tailoringGuidanceSchema),
+  missingTerms: z.array(z.string()),
+  suggestedSkillTerms: z.array(z.string()),
+  unmetRequirements: z.array(requirementMatchSchema),
+}) satisfies z.ZodType<TailoringSuggestions>;
+
+export const tailoredResumeResponseSchema = z.object({
+  document: resumeDocumentSchema,
+  guard: z.object({
+    passed: z.boolean(),
+    violations: z.array(z.string()),
+  }),
+  llmEnabled: z.boolean(),
+  meta: z.record(z.string(), z.unknown()),
+  suggestions: tailoringSuggestionsResponseSchema,
+}) satisfies z.ZodType<TailoredResume>;
+
+const rankedMatchSchema = z.object({
+  jobId: z.number(),
+  result: matchResultSchema,
+}) satisfies z.ZodType<RankedMatch>;
+
+export const matchRankResponseSchema = z.object({
+  results: z.array(rankedMatchSchema),
+}) satisfies z.ZodType<MatchRankResponse>;
+
+const duplicateGroupSchema = z.object({
+  canonicalKey: z.string(),
+  jobIds: z.array(z.number()),
+}) satisfies z.ZodType<DuplicateGroup>;
+
+export const duplicateGroupsResponseSchema = z.object({
+  groups: z.array(duplicateGroupSchema),
+}) satisfies z.ZodType<DuplicateGroupList>;
 
 export const resumeResponseSchema = resumeSchema;
 

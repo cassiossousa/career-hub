@@ -216,6 +216,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/applications/{application_id}/resume/tailor': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Tailor Resume */
+    post: operations['tailor_resume_api_applications__application_id__resume_tailor_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/applications/{application_id}/tailoring': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Tailoring Suggestions */
+    get: operations['get_tailoring_suggestions_api_applications__application_id__tailoring_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/apply-runs': {
     parameters: {
       query?: never;
@@ -541,6 +575,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/jobs/duplicates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Find Job Duplicates */
+    get: operations['find_job_duplicates_api_jobs_duplicates_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/jobs/stats': {
     parameters: {
       query?: never;
@@ -604,6 +655,23 @@ export interface paths {
     put?: never;
     /** Match Inline */
     post: operations['match_inline_api_match_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/match/rank': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Rank Jobs */
+    post: operations['rank_jobs_api_match_rank_post'];
     delete?: never;
     options?: never;
     head?: never;
@@ -861,7 +929,8 @@ export interface components {
       | 'apply_rejected'
       | 'apply_submitted'
       | 'apply_failed'
-      | 'apply_llm_draft';
+      | 'apply_llm_draft'
+      | 'resume_tailoring';
     /** ApplicationEventListResponse */
     ApplicationEventListResponse: {
       /** Events */
@@ -1218,6 +1287,21 @@ export interface components {
       evidence: components['schemas']['SkillEvidenceResponse'][];
       /** Name */
       name: string;
+    };
+    /** DuplicateGroupListResponse */
+    DuplicateGroupListResponse: {
+      /** Groups */
+      groups: components['schemas']['DuplicateGroupSchema'][];
+    };
+    /**
+     * DuplicateGroupSchema
+     * @description One cluster of likely-duplicate postings across sources.
+     */
+    DuplicateGroupSchema: {
+      /** Canonicalkey */
+      canonicalKey: string;
+      /** Jobids */
+      jobIds: number[];
     };
     /** EducationEntrySchema */
     EducationEntrySchema: {
@@ -1698,6 +1782,8 @@ export interface components {
       | 'sine_bahia'
       | 'casa_do_trabalhador'
       | 'remote'
+      | 'greenhouse'
+      | 'lever'
       | 'google_jobs'
       | 'manual'
       | 'other';
@@ -1772,6 +1858,28 @@ export interface components {
       kind: components['schemas']['MatchBaselineKind'];
       /** Locale */
       locale: string | null;
+    };
+    /**
+     * MatchRankRequest
+     * @description POST /api/match/rank body: bulk-score an explicit set of job ids.
+     */
+    MatchRankRequest: {
+      /** @default hybrid */
+      algorithm?: components['schemas']['MatchAlgorithm'];
+      /** Applicationid */
+      applicationId?: number | null;
+      /** Jobids */
+      jobIds: number[];
+      /** Locale */
+      locale?: string | null;
+    };
+    /**
+     * MatchRankResponse
+     * @description Bulk ranking: best score first, job id ascending on ties.
+     */
+    MatchRankResponse: {
+      /** Results */
+      results: components['schemas']['RankedMatchSchema'][];
     };
     /**
      * MatchRequest
@@ -2076,6 +2184,12 @@ export interface components {
       /** Value */
       value: string;
     };
+    /** RankedMatchSchema */
+    RankedMatchSchema: {
+      /** Jobid */
+      jobId: number;
+      result: components['schemas']['MatchResponse'];
+    };
     /**
      * RequirementClassification
      * @description Wilson's 4-tier adherence classification.
@@ -2124,6 +2238,11 @@ export interface components {
       locale: string;
       /** Projects */
       projects?: components['schemas']['ProjectEntrySchema'][];
+      /**
+       * Schemaversion
+       * @default 1
+       */
+      schemaVersion?: number;
       /** Skillgroups */
       skillGroups?: components['schemas']['SkillGroupSchema'][];
       /** Summary */
@@ -2147,6 +2266,11 @@ export interface components {
       locale: string;
       /** Projects */
       projects?: components['schemas']['ProjectEntrySchema'][];
+      /**
+       * Schemaversion
+       * @default 1
+       */
+      schemaVersion?: number;
       /** Skillgroups */
       skillGroups?: components['schemas']['SkillGroupSchema'][];
       /** Summary */
@@ -2183,6 +2307,11 @@ export interface components {
       locale: string;
       /** Projects */
       projects?: components['schemas']['ProjectEntrySchema'][];
+      /**
+       * Schemaversion
+       * @default 1
+       */
+      schemaVersion?: number;
       /** Skillgroups */
       skillGroups?: components['schemas']['SkillGroupSchema'][];
       /** Submittedat */
@@ -2302,6 +2431,50 @@ export interface components {
       groups: components['schemas']['DerivedSkillGroupResponse'][];
       /** Unmatched */
       unmatched: string[];
+    };
+    /**
+     * TailoredResumeResponse
+     * @description Dry-run LLM rewrite: preview only, persisted via PUT /resume.
+     */
+    TailoredResumeResponse: {
+      document: components['schemas']['ResumeDocument'];
+      /** Guard */
+      guard: {
+        [key: string]: unknown;
+      };
+      /** Llmenabled */
+      llmEnabled: boolean;
+      /** Meta */
+      meta: {
+        [key: string]: unknown;
+      };
+      suggestions: components['schemas']['TailoringSuggestionsResponse'];
+    };
+    /**
+     * TailoringGuidance
+     * @description Deterministic guidance codes attached to every suggestion set.
+     * @enum {string}
+     */
+    TailoringGuidance:
+      | 'emphasize_matched_terms'
+      | 'address_missing_terms'
+      | 'strengthen_summary'
+      | 'tag_bullets_with_skills'
+      | 'keep_facts_unchanged'
+      | 'review_before_submit';
+    /**
+     * TailoringSuggestionsResponse
+     * @description Deterministic guidance derived from the runtime match — no LLM.
+     */
+    TailoringSuggestionsResponse: {
+      /** Guidance */
+      guidance: components['schemas']['TailoringGuidance'][];
+      /** Missingterms */
+      missingTerms: string[];
+      /** Suggestedskillterms */
+      suggestedSkillTerms: string[];
+      /** Unmetrequirements */
+      unmetRequirements: components['schemas']['RequirementMatchSchema'][];
     };
   };
   responses: never;
@@ -3691,6 +3864,131 @@ export interface operations {
       };
     };
   };
+  tailor_resume_api_applications__application_id__resume_tailor_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        application_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TailoredResumeResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  get_tailoring_suggestions_api_applications__application_id__tailoring_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        application_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TailoringSuggestionsResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Resource not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
   list_apply_runs_api_apply_runs_get: {
     parameters: {
       query?: {
@@ -3973,6 +4271,15 @@ export interface operations {
           'application/json': components['schemas']['ApplyRunResponse'];
         };
       };
+      /** @description Malformed JSON body */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
       /** @description Missing or invalid API key */
       401: {
         headers: {
@@ -3993,6 +4300,15 @@ export interface operations {
       };
       /** @description Conflict */
       409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Payload too large */
+      413: {
         headers: {
           [name: string]: unknown;
         };
@@ -5608,6 +5924,55 @@ export interface operations {
       };
     };
   };
+  find_job_duplicates_api_jobs_duplicates_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DuplicateGroupListResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
   job_stats_api_jobs_stats_get: {
     parameters: {
       query?: never;
@@ -5866,6 +6231,75 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['MatchResponse'];
+        };
+      };
+      /** @description Malformed JSON body */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Missing or invalid API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Payload too large */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Request validation failed */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  rank_jobs_api_match_rank_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MatchRankRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MatchRankResponse'];
         };
       };
       /** @description Malformed JSON body */

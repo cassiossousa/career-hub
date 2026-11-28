@@ -13,6 +13,7 @@ import type { PortfolioContent } from '../../services/types/portfolio';
 import type { Resume, ResumeDocument } from '../../services/types/resume';
 import { QueryErrorState } from './HubUi';
 import { ResumeForm } from './ResumeForm';
+import { TailoringSuggestionsCard } from './TailoringSuggestionsCard';
 import { useApplicationIdParam } from './useApplicationIdParam';
 
 function isResumeLocked(
@@ -33,6 +34,7 @@ function resumeToDocument(resume: Resume): ResumeDocument {
     languages: resume.languages ?? [],
     projects: resume.projects ?? [],
     skillGroups: resume.skillGroups ?? [],
+    schemaVersion: resume.schemaVersion,
   };
 }
 
@@ -73,6 +75,9 @@ export function ResumeEditor({ embedded = false }: { embedded?: boolean }) {
   });
   const jobSummaries = useJobSummaries();
   const [savedNotice, setSavedNotice] = useState(false);
+  const [draftDocument, setDraftDocument] = useState<ResumeDocument | null>(
+    null,
+  );
 
   if (applicationId === null) {
     return <EmptyState title={messages.common.notFound} />;
@@ -110,9 +115,15 @@ export function ResumeEditor({ embedded = false }: { embedded?: boolean }) {
 
   const resume = resumeQuery.data ?? null;
   const seededFromPortfolio = resume === null;
-  const initial = resume
-    ? resumeToDocument(resume)
-    : seedDocumentFromPortfolio(portfolioQuery.data?.documents ?? {}, locale);
+  const locked = isResumeLocked(application.status, resume);
+  const initial =
+    draftDocument ??
+    (resume
+      ? resumeToDocument(resume)
+      : seedDocumentFromPortfolio(
+          portfolioQuery.data?.documents ?? {},
+          locale,
+        ));
 
   const jobSummary = jobSummaries.get(application.jobId);
 
@@ -130,14 +141,26 @@ export function ResumeEditor({ embedded = false }: { embedded?: boolean }) {
           </Typography>
         </Stack>
       )}
+      {!locked && (
+        <TailoringSuggestionsCard
+          applicationId={applicationId}
+          canTailor={resume !== null}
+          onUseDraft={(document) => {
+            setDraftDocument(document);
+          }}
+        />
+      )}
       <ResumeForm
-        key={`${applicationId}-${resume?.id ?? 'draft'}`}
+        key={`${applicationId}-${resume?.id ?? 'draft'}-${
+          draftDocument === null ? 'base' : 'tailored'
+        }`}
         applicationId={applicationId}
         initial={initial}
-        locked={isResumeLocked(application.status, resume)}
+        locked={locked}
         seededFromPortfolio={seededFromPortfolio}
         onSaved={() => {
           setSavedNotice(true);
+          setDraftDocument(null);
         }}
       />
     </Stack>

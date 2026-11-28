@@ -1,7 +1,7 @@
 ---
 area: job-tracker-app
 paths: apps/job-tracker/
-last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
+last-reviewed: 3ed16ab9487fa6985aa1e908ef6361a9a4d038b0
 ---
 
 # apps/job-tracker
@@ -39,3 +39,4 @@ Personal job-application tracker SPA: applications pipeline (saved → applied �
 - Generated files (`contract/openapi.json`, `services/api/generated/`) are excluded from lint/knip/jscpd — drift is caught by `check:api-contract`/`tsc`, not style gates.
 - MSW handlers must mirror the real API's error envelope and status codes or demo mode hides contract bugs.
 - Recent feature thrust (see git log): apply runs — per-field AI answer regeneration, manual-submit review UI, ATS adapters on the backend, deterministic `TEMPLATE` answer source for no-LLM cover-letter drafts.
+- In progress (staged + working tree, uncommitted): contract sync adding `POST /api/applications/{id}/resume/tailor` (dry-run LLM rewrite preview, persisted separately via PUT `/resume`), `GET .../tailoring` (deterministic guidance suggestions), `GET /api/jobs/duplicates` (likely-duplicate clusters across sources), and `POST /api/match/rank` (bulk job match scoring). The same sync expands enums (`JobSource.greenhouse|lever`, `ApplicationEventKind.resume_tailoring`) with en/pt-BR labels and adds `schemaVersion` to resume-document wire types. Service hooks (`resumeTailoring.ts`, `useJobDuplicates`, `useRankJobs`) and MSW handlers are in the working tree; feature UI is not landed yet. `src/services/resumePreview.ts` + `ResumePdfViewer` consume `@career-hub/ui/pdf`'s `resumePdfDocumentSchema` (schemaVersion + optional `meta` provenance, ADR 0035).

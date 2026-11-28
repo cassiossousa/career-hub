@@ -1,7 +1,7 @@
 ---
 area: portfolio-app
 paths: apps/professional-portfolio/
-last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
+last-reviewed: 3ed16ab9487fa6985aa1e908ef6361a9a4d038b0
 ---
 
 # apps/professional-portfolio

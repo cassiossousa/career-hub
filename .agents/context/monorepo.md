@@ -1,7 +1,7 @@
 ---
 area: monorepo
 paths: package.json scripts/ .github/ content/ docs/ .agents/ .devin/
-last-reviewed: 4a46e82b5ce1fc0b687075005aa050b7b49a384f
+last-reviewed: 3ed16ab9487fa6985aa1e908ef6361a9a4d038b0
 ---
 
 # Monorepo root
@@ -13,7 +13,7 @@ npm workspaces (`apps/*`, `packages/*`), Node >= 22.12 (`.nvmrc` = 24), npm 11.x
 ## Gate tiers (order matters)
 
 - **Pre-commit** `.husky/pre-commit` → `npx lint-staged`: oxlint + biome + prettier --write + secretlint on staged files, chunked for Windows cmd limits. Typed ESLint deliberately excluded (~30s) — enforced by `npm run lint`/CI.
-- **Pre-push** `.husky/pre-push` → `npm run verify:push`: fast/format/type/typed-lint/case/API-mocks/static/build/bundle. No Jest coverage, no network audit.
+- **Pre-push** `.husky/pre-push` → `npm run verify:prepush` → `scripts/pre-push-check.mjs`: a <10s parallel orchestrator (spawns `node <bin>` directly to dodge Windows .cmd overhead) running file-scoped lint-staged-style checks in check mode plus repo-wide invariant gates vs the upstream merge-base. The full `verify:push` script still exists but is superseded for the hook; typed ESLint, Jest, builds, audits stay in `verify:all`/CI.
 - **CI** (`.github/workflows/ci.yml`): `verify:all` on every push/PR + PR-scoped `check:mutate:diff`/`check:visual-baseline` + dedicated `e2e` job (Playwright container `mcr.microsoft.com/playwright:v1.65.1-noble`). On green `main` runs, `npm run package:vercel` emits Vercel Build Output API artifacts.
 - **Manual deep** `npm run audit:deep` → `scripts/audit-runtime.mjs`: portfolio-only runtime checks (arch spec → Playwright smoke/WCAG/resilience/visual → memlab leak check → Lighthouse budgets).
 
@@ -45,7 +45,7 @@ Falsification specs for root `scripts/*.mjs` gates live in `apps/job-tracker/src
 - Context store: `.agents/context/` — see `index.md`. `.runtime/` inside it is gitignored session state.
 - Hooks: `.devin/hooks.v1.json` registers `scripts/context-hook.mjs` for SessionStart/PostCompaction/UserPromptSubmit/PostToolUse/Stop/SessionEnd. A global dispatcher at `%APPDATA%/devin/hooks/context-hook.mjs` (registered in `%APPDATA%/devin/config.json`) delegates to the repo script with `DEVIN_CONTEXT_HOOK=global`; the repo script self-disables when it detects the global config, preventing double injection. Hook scripts must stay silent-and-fast: any failure exits 0.
 - `.devin/config.local.json` is gitignored local permission allow-lists — never commit real secrets there either.
-- In progress (uncommitted at last review): a `commit-msg` husky hook + `commitlint.config.mjs` enforcing conventional-commit format — AGENTS.md gate-tier table and `package.json` devDeps already updated in the working tree.
+- Commit hygiene: `.husky/commit-msg` → `commitlint --edit` (`commitlint.config.mjs`, conventional config) rejects non-conventional commit messages; `@commitlint/*` devDeps pinned.
 
 ## Pointers
 
